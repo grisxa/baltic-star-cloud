@@ -1,0 +1,12 @@
+<h3>Список участников бреветов велоклуба "Балтийская звезда"</h3>
+<app-add-button (click)="addRider()"></app-add-button>
+<mat-list>
+  <mat-list-item *ngFor="let rider of (riders$ | async)">
+    <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteRider(rider?.uid)">
+      <mat-icon>delete_forever</mat-icon>
+    </button>
+    <a title="{{rider.displayName}}" [routerLink]="['/rider', rider.uid]">{{rider.displayName}}</a>,
+    {{(rider.birthDate?.toDate() | date: 'yyyy г.') || '?'}}, {{rider.city || '?'}}, {{rider.country || '?'}}
+  </mat-list-item>
+</mat-list>
+<app-login-prompt></app-login-prompt>

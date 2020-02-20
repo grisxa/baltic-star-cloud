@@ -1,0 +1,12 @@
+:host {
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 5px;
+  }
+  button.login, button.logout {
+    margin-left: 5px;
+    margin-bottom: 5px;
+  }
+}

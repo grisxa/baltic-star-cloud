@@ -1,0 +1,5 @@
+<div>
+  <button class="login" *ngIf="!auth.isLoggedIn" mat-raised-button (click)="auth.loginWithGoogle()"><mat-icon>exit_to_app</mat-icon>Войти</button>
+  <div *ngIf="auth.isLoggedIn"><mat-icon>person</mat-icon> {{userName}}</div>
+  <button class="logout" *ngIf="auth.isLoggedIn" mat-raised-button (click)="auth.logout()"><mat-icon>logout</mat-icon>Выйти</button>
+</div>

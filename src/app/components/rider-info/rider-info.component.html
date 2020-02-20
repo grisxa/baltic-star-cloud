@@ -1,0 +1,87 @@
+<h2>Участник
+  <app-editable (update)="updateField('firstName')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{rider?.firstName}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [formControl]="formGroup?.get('firstName')" value="{{rider?.firstName}}" size="15">
+    </ng-template>
+  </app-editable>
+  <app-editable (update)="updateField('lastName')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{rider?.lastName}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [formControl]="formGroup?.get('lastName')" value="{{rider?.lastName}}" size="15">
+    </ng-template>
+  </app-editable>
+</h2>
+<p>Карточка №
+  <app-editable (update)="updateField('code')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{rider?.code}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [formControl]="formGroup?.get('code')" value="{{rider?.code}}" size="15">
+    </ng-template>
+  </app-editable>
+</p>
+<div class="code">
+  <qrcode *ngIf="isEditable && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  <ngx-barcode6 *ngIf="!isEditable || !url" [bc-format]="'CODE128'" [bc-value]="rider?.code || rider?.uid" [bc-display-value]="true"></ngx-barcode6>
+</div>
+
+<p *ngIf="!isEditable">Год рождения: {{(rider?.birthDate?.toDate() | date: 'yyyy') || '?'}}</p>
+<p *ngIf="isEditable">День рождения:
+  <app-editable (update)="updateField('birthDate')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{(rider?.birthDate?.toDate() | date: 'shortDate') || '?'}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [matDatepicker]="picker" [formControl]="formGroup.get('birthDate')" placeholder="дата">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </ng-template>
+  </app-editable>
+</p>
+<p>Откуда:
+  <app-editable (update)="updateField('city')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{rider?.city || '?'}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [formControl]="formGroup?.get('city')" value="{{rider?.city || '?'}}" size="15" placeholder="город">
+    </ng-template>
+  </app-editable>,
+  <app-editable (update)="updateField('country')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="isEditable">{{rider?.country || '?'}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="isEditable">
+      <input matInput [formControl]="formGroup?.get('country')" value="{{rider?.country || '?'}}" size="15" placeholder="страна">
+    </ng-template>
+  </app-editable>
+</p>
+
+<h3 *ngIf="auth.isLoggedIn">Журнал</h3>
+<p *ngIf="isEditable" >
+  <button mat-raised-button (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+</p>
+<table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
+  <ng-container matColumnDef="time">
+    <th mat-header-cell *matHeaderCellDef> Дата </th>
+    <td mat-cell *matCellDef="let barcode"> {{barcode.time.toDate() | date:'dd/MM HH:mm'}} </td>
+  </ng-container>
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef> КП </th>
+    <td mat-cell *matCellDef="let barcode"> {{barcode.name || barcode.code}} </td>
+  </ng-container>
+  <mat-text-column name="message" headerText="Статус"></mat-text-column>
+  <tr mat-header-row *matHeaderRowDef="barcodeColumnsToDisplay; sticky: true"></tr>
+  <tr mat-row *matRowDef="let barcode; columns: barcodeColumnsToDisplay"></tr>
+</table>
+<app-login-prompt></app-login-prompt>
+

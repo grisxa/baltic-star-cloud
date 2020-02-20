@@ -1,0 +1,69 @@
+<h2>Бревет <span>{{checkpoint?.brevet?.name}}</span></h2>
+<p>Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</p>
+<h3>
+  <app-editable (update)="updateField('displayName')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="auth.isLoggedIn">{{checkpoint?.displayName}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+      <input matInput [formControl]="formGroup?.get('displayName')" value="{{checkpoint?.displayName}}" size="15">
+    </ng-template>
+  </app-editable>
+</h3>
+<p>Дистанция:
+  <app-editable (update)="updateField('distance')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="auth.isLoggedIn">{{checkpoint?.distance}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+      <input matInput [formControl]="formGroup?.get('distance')" type="number" value="{{checkpoint?.distance}}" size="5">
+    </ng-template>
+  </app-editable>
+  км</p>
+
+<h3>Отметки участников</h3>
+<table mat-table [dataSource]="riders">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Имя </th>
+    <td mat-cell *matCellDef="let rider"> {{rider.name || rider.uid}} </td>
+  </ng-container>
+  <ng-container matColumnDef="in">
+    <th mat-header-cell *matHeaderCellDef> Приехал </th>
+    <td mat-cell *matCellDef="let rider"> {{rider.in.toDate() | date:'dd/MM HH:mm'}} </td>
+  </ng-container>
+  <ng-container matColumnDef="out">
+    <th mat-header-cell *matHeaderCellDef> Уехал </th>
+    <td mat-cell *matCellDef="let rider"> {{rider.out?.toDate() | date:'dd/MM HH:mm'}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="riderColumnsToDisplay; sticky: true"></tr>
+  <tr mat-row *matRowDef="let rider; columns: riderColumnsToDisplay"></tr>
+</table>
+
+<h3 *ngIf="auth.isLoggedIn">Журнал</h3>
+<div class="add-buttons">
+  <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
+  <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+</div>
+<table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
+  <ng-container matColumnDef="time">
+    <th mat-header-cell *matHeaderCellDef> Дата </th>
+    <td mat-cell *matCellDef="let barcode"> {{barcode.time.toDate() | date:'dd/MM HH:mm'}} </td>
+  </ng-container>
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef> Участник </th>
+    <td mat-cell *matCellDef="let barcode"> {{barcode.name || barcode.code}} </td>
+  </ng-container>
+  <mat-text-column name="message" headerText="Статус"></mat-text-column>
+  <tr mat-header-row *matHeaderRowDef="barcodeColumnsToDisplay; sticky: true"></tr>
+  <tr mat-row *matRowDef="let barcode; columns: barcodeColumnsToDisplay"></tr>
+</table>
+<!-- mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator -->
+<div class="code">
+<qrcode *ngIf="auth.isLoggedIn && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+<ngx-barcode6 *ngIf="!url" [bc-format]="'CODE128'" [bc-value]="checkpoint?.uid" [bc-display-value]="true"></ngx-barcode6>
+</div>
+
+<app-login-prompt></app-login-prompt>

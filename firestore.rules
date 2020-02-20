@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* check a rider record for a boolean admin property */
+    function isAdmin() {
+      return get(/databases/$(database)/documents/riders/$(request.auth.token.sub)).data.admin == true;
+    }
+
+    /* check for authentication UID match: avoid counterfeiting */
+    function isOwner(request) {
+      return request.resource.data.owner == request.auth.token.sub
+    }
+
+    match /brevets/{brevet} {
+      allow read;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      /* delete brevet in console only */
+      /* TODO: delete in web */
+      allow delete: if false;
+
+      match /checkpoints/{checkpoint} {
+        allow read;
+        allow create: if isAdmin();
+        allow update: if isAdmin();
+        allow delete: if isAdmin();
+
+        match /riders/{rider} {
+          allow read;
+          allow create: if isAdmin();
+          allow update: if isAdmin();
+          /* delete rider progress records in console only */
+          allow delete: if false;
+        }
+
+        match /private/{document} {
+          allow read, write: if isAdmin();
+        }
+      }
+    }
+    match /checkpoints/{checkpoint} {
+      allow read;
+      allow create, update, delete: if isAdmin();
+
+      match /barcodes/{barcode} {
+        allow read;
+        /* accept signed codes either by the checkpoint or by the rider */
+        allow create: if request.resource.data.signature != null
+                      /* optionally accept manually entered codes by an authenticated user */
+                      || (request.auth.uid != null && isOwner(request));
+        // TODO: improve
+        allow update: if request.auth.uid != null;
+        /* delete barcode reports in console only */
+        allow delete: if false;
+      }
+    }
+    match /riders/{rider} {
+      allow read;
+      /* TODO: allow self-creation only */
+      allow create: if isAdmin() || request.auth.uid != null;
+      /* edit self profile - match by JWT token, forbid uid change */
+      allow update: if (resource.data.owner == request.auth.token.sub
+                    /* forbid changing code: rename the whole document */
+                    &&  resource.data.uid == request.resource.data.uid
+                    &&  resource.data.uid == rider)
+                    || isAdmin();
+      /* admin may delete a rider */
+      allow delete: if isAdmin();
+      match /private/{document} {
+        // TODO: compare to owner
+        allow read, write: if isAdmin() || request.auth.token.sub == rider;
+      }
+      match /barcodes/{barcode} {
+        allow read;
+        allow create: if request.auth.uid != null || request.resource.data.signature != null;
+        allow update: if request.auth.uid != null;
+        /* delete barcode reports in console only */
+        allow delete: if false;
+      }
+    }
+  }
+}

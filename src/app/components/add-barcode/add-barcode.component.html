@@ -1,0 +1,9 @@
+<h2>Бревет <span>{{(checkpoint$ | async)?.brevet?.name}}</span></h2>
+<p>Длина маршрута <span>{{(checkpoint$ | async)?.brevet?.length}}</span> км</p>
+<h3><span>{{(checkpoint$ | async)?.displayName}}</span></h3>
+<p>Дистанция <span>{{(checkpoint$ | async)?.distance}}</span> км</p>
+<app-date-time-picker [formControl]="dateControl"></app-date-time-picker>
+
+<p><input matInput type="text" placeholder="код" [formControl]="codeControl" size="15"/></p>
+<button mat-raised-button (click)="onCancel()">Отменить</button>
+<button mat-raised-button (click)="onSave()">Сохранить</button>

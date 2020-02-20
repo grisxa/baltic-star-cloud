@@ -1,0 +1,6 @@
+<label>
+  <input matInput id="time" [formControl]="timeControl" type="time" required (change)="setTime($event)">
+  <input matInput id="date" [matDatepicker]="picker" [formControl]="dateControl" (dateChange)="setDate($event)">
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</label>

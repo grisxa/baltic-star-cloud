@@ -1,0 +1,54 @@
+<h2>Бревет
+  <app-editable (update)="updateField('name')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="auth.isLoggedIn">{{brevet?.name}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+      <input matInput [formControl]="formGroup?.get('name')" value="{{brevet?.name}}" size="15">
+    </ng-template>
+  </app-editable>
+</h2>
+<p>Длина маршрута
+  <app-editable (update)="updateField('length')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="auth.isLoggedIn">{{brevet?.length}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+      <input matInput [formControl]="formGroup?.get('length')" value="{{brevet?.length}}" size="5" type="number">
+    </ng-template>
+  </app-editable>
+  км</p>
+<div class="date-time-picker">Старт
+  <app-editable (update)="updateField('startDate')">
+    <ng-template appViewMode>
+      <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isAdmin">
+      <app-date-time-picker [formControl]="formGroup.get('startDate')" [value]="brevet?.startDate?.toDate()" name="startDate"></app-date-time-picker>
+    </ng-template>
+  </app-editable>
+</div>
+
+
+<h3>Контрольные пункты</h3>
+<app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
+<mat-list>
+  <mat-list-item *ngFor="let checkpoint of (checkpoints$ | async)">
+    <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteCheckpoint(checkpoint?.uid)">
+      <mat-icon>delete_forever</mat-icon>
+    </button>
+    <a [title]="checkpoint.displayName" [routerLink]="['/brevet', brevet?.uid || 'none', 'checkpoint', checkpoint?.uid || 'none']">{{checkpoint?.displayName}}</a>,
+    {{checkpoint.distance}} км
+  </mat-list-item>
+</mat-list>
+<h3>Отметки участников</h3>
+<table mat-table [dataSource]="progress">
+  <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay">
+    <th mat-header-cell *matHeaderCellDef> {{columnNames[column]}} </th>
+    <td mat-cell *matCellDef="let rider"> {{column === "name" ? rider.name : rider[column]?.toDate() | date:'HH:mm'}} </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+  <tr mat-row *matRowDef="let rider; columns: columnsToDisplay"></tr>
+</table>
+
+<app-login-prompt></app-login-prompt>

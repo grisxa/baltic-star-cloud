@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: row;
+}
+
+input {
+  color: initial;
+  text-decoration: initial;
+  text-decoration-style: initial;
+  text-decoration-line: initial;
+  text-decoration-color: black;
+}
+
+input {
+}

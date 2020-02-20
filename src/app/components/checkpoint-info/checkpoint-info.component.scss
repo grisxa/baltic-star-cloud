@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .mat-cell, .mat-header-cell {
+    padding: 0 10px;
+  }
+  .mat-column-select {
+    overflow: initial;
+  }
+  table {
+    margin-top: 5px;
+  }
+  input {
+    border: 1px solid;
+    padding: 2px;
+  }
+
+  .code {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 5px;
+    margin-left: 5px;
+
+    .mat-checkbox {
+      margin-left: 20px;
+    }
+  }
+
+  .add-buttons {
+    display: flex;
+    flex-direction: row;
+  }
+}
