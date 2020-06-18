@@ -16,7 +16,6 @@ import {
   MatTableModule
 } from '@angular/material';
 import {AngularFireAuthModule} from '@angular/fire/auth';
-import {OwlDateTimeModule, OwlNativeDateTimeModule} from 'ng-pick-datetime';
 
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
