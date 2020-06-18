@@ -14,6 +14,7 @@ import {RiderCheckIn} from '../../models/rider-check-in';
 import {Rider} from '../../models/rider';
 import {takeUntil} from 'rxjs/operators';
 import Timestamp = firebase.firestore.Timestamp;
+import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
 
 @Component({
   selector: 'app-brevet-info',
@@ -25,6 +26,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   private brevet$: Observable<Brevet>;
 
   brevet: Brevet;
+  mapId: number;
   formGroup: FormGroup;
 
   checkpoints$ = new Subject<Checkpoint[]>();
@@ -35,7 +37,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   columnsToDisplay = ['name'];
   columnNames = {name: 'Имя'};
 
-  constructor(private route: ActivatedRoute, private router: Router, public auth: AuthService, private storage: StorageService) {
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              public auth: AuthService,
+              private storage: StorageService,
+              private routeService: PlotarouteInfoService) {
   }
 
   ngOnInit() {
@@ -43,6 +49,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       name: new FormControl('', Validators.required),
       length: new FormControl(0, [Validators.required, Validators.pattern('[0-9]+')]),
       startDate: new FormControl(new Date(), Validators.required),
+      mapUrl: new FormControl('', Validators.required),
     });
 
     this.route.paramMap.subscribe(params => {
@@ -97,17 +104,58 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     this.brevet$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(brevet => {
-      this.brevet = brevet;
-      console.log('= brevet found', brevet);
-      this.formGroup.get('name').setValue(brevet.name);
-      this.formGroup.get('length').setValue(brevet.length);
-      this.formGroup.get('startDate').setValue(brevet.startDate ? brevet.startDate.toDate() : null);
-    });
+        this.brevet = brevet;
+        this.formGroup.get('name').setValue(brevet.name);
+        this.formGroup.get('length').setValue(brevet.length);
+        this.formGroup.get('mapUrl').setValue(brevet.mapUrl);
+        this.mapId = this.findMapId(brevet.mapUrl);
+        this.formGroup.get('startDate').setValue(brevet.startDate ? brevet.startDate.toDate() : null);
+      });
   }
 
   // release watchers
   ngOnDestroy() {
     this.unsubscribe$.next();
+  }
+
+  findMapId(url: string): number {
+    if (!url) {
+      return;
+    }
+    const idSearch = url.match('/route/(\\d+)');
+    if (idSearch && idSearch.length > 1) {
+      return parseInt(idSearch[1], 10);
+    }
+  }
+
+  updateMapUrl() {
+    const control = this.formGroup.get('mapUrl');
+    if (control && control.valid) {
+      const mapId = this.findMapId(control.value);
+      // ignore URL updates if map ID hasn't changed
+      if (mapId === this.findMapId(this.brevet.mapUrl)) {
+        return;
+      }
+      this.routeService.retrieve(mapId)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(data => {
+            this.brevet.name = data.name;
+            this.formGroup.get('name').setValue(data.name);
+
+            this.brevet.length = data.length;
+            this.formGroup.get('length').setValue(data.length);
+
+            this.updateField('mapUrl');
+          },
+          error => {
+            console.error(error);
+            // switch back in case of retrieval error
+            control.setValue(this.brevet.mapUrl);
+          });
+    } else {
+      // switch back if new value is invalid
+      control.setValue(this.brevet.mapUrl);
+    }
   }
 
   updateField(field: string) {

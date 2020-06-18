@@ -37,6 +37,8 @@ import {QRCodeModule} from 'angularx-qrcode';
 import {AddBarcodeComponent} from './components/add-barcode/add-barcode.component';
 import {NgxBarcode6Module} from 'ngx-barcode6';
 import {ScannerDialogModule} from './scanner-dialog/scanner-dialog.module';
+import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map.component';
+import {HttpClientModule} from '@angular/common/http';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -67,7 +69,8 @@ const appRoutes: Routes = [
     AddButtonComponent,
     DateTimePickerComponent,
     SafeUrlPipe,
-    AddBarcodeComponent
+    AddBarcodeComponent,
+    PlotarouteMapComponent
   ],
   imports: [
     BrowserModule,
@@ -80,6 +83,7 @@ const appRoutes: Routes = [
     AngularFirestoreModule,
     AngularFireAuthModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MatButtonModule,
     MatListModule,
     MatTableModule,

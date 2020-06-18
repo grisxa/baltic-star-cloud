@@ -29,6 +29,18 @@
   </app-editable>
 </div>
 
+<p>Карта
+  <app-editable (update)="updateMapUrl()">
+    <ng-template appViewMode>
+      <a *ngIf="brevet?.mapUrl && !auth.isLoggedIn" [attr.data-editable]="auth.isLoggedIn" [href]="brevet?.mapUrl">{{brevet?.mapUrl}}</a>
+      <span *ngIf="!brevet?.mapUrl || auth.isLoggedIn" [attr.data-editable]="auth.isLoggedIn">{{brevet?.mapUrl || 'отсутствует'}}</span>
+    </ng-template>
+    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+      <input matInput [formControl]="formGroup?.get('mapUrl')" value="{{brevet?.mapUrl}}" size="15">
+    </ng-template>
+  </app-editable>
+</p>
+<app-plotaroute-map *ngIf="mapId" [mapId]="mapId"></app-plotaroute-map>
 
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
