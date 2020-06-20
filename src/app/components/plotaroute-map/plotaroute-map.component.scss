@@ -1,6 +1,8 @@
 :host {
 
-  min-width: 640px;
+  min-width: 320px;
+  width: 99vw;
+  max-width: 800px;
 
   .outer-container {
     overflow:hidden;
