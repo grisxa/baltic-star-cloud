@@ -9,7 +9,7 @@ import {RoutePoint} from '../models/route-point';
   providedIn: 'root'
 })
 export class PlotarouteInfoService {
-  private baseUrl = 'https://www.plotaroute.com/get_route.asp?RouteID=';
+  private baseUrl = 'https://cors-anywhere.herokuapp.com/https://www.plotaroute.com/get_route.asp?RouteID=';
 
   constructor(private http: HttpClient) {
   }
