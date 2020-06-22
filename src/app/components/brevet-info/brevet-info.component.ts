@@ -145,6 +145,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
             this.brevet.length = data.length;
             this.formGroup.get('length').setValue(data.length);
 
+            if (data.checkpoints && data.checkpoints.length) {
+              data.checkpoints.forEach(checkpoint => this.storage.createCheckpoint(this.brevet,
+                new Checkpoint('', checkpoint.name, checkpoint.distance)));
+            }
+
             this.updateField('mapUrl');
           },
           error => {
