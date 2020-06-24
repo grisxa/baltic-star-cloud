@@ -25,10 +25,13 @@
     "@angular/router": "~9.1.11",
     "@firebase/firestore-types": "^1.10.0",
     "@zxing/ngx-scanner": "^3.0.0",
+    "angularx-qrcode": "^2.3.4",
     "firebase": "^7.8.0",
     "fs": "0.0.1-security",
     "jsbarcode": "^3.11.0",
     "jsrsasign": "^8.0.12",
+    "ng-pick-datetime": "^7.0.0",
+    "ngx-barcode6": "^1.0.10",
     "rxjs": "~6.5.5",
     "tslib": "^1.10.0",
     "vcard-js": "^1.2.2",
@@ -36,6 +39,8 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
+    "@angular-devkit/architect": "^0.901.9",
+    "@angular-devkit/build-angular": "^0.901.9",
     "@angular/cli": "~9.1.9",
     "@angular/compiler-cli": "~9.1.11",
     "@angular/language-service": "~9.1.11",
