@@ -33,9 +33,9 @@ export class PlotarouteInfoService {
               ...point,
               distance: previousPoint.distance + stepLength
             });
+            console.log('= new point', previousPoint);
             if (previousPoint.isControl()) {
               previousPoint.fixName();
-              previousPoint.fixDistance();
               checkPoints.push(previousPoint);
             }
           });
@@ -44,7 +44,6 @@ export class PlotarouteInfoService {
           if (data.Distance > last.distance + 10000) {
             const lastControl = new RoutePoint({...route.pop(), distance: data.Distance});
             lastControl.fixName('Финиш');
-            lastControl.fixDistance();
             checkPoints.push(lastControl);
           }
           return {

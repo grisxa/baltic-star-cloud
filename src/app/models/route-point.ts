@@ -31,11 +31,4 @@ export class RoutePoint {
     this.name = this.dir || this.labtxt || replacement;
 
   }
-
-  /**
-   * Convert the distance from meters to kilometers
-   */
-  fixDistance() {
-    this.distance = Math.round(this.distance / 1000);
-  }
 }

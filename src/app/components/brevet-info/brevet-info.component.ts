@@ -150,7 +150,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
             if (data.checkpoints && data.checkpoints.length) {
               data.checkpoints.forEach(checkpoint => this.storage.createCheckpoint(this.brevet,
-                new Checkpoint(checkpoint)));
+                new Checkpoint({
+                  ...checkpoint,
+                  // Convert the distance from meters to kilometers
+                  distance: Math.round(checkpoint.distance / 1000)
+                } as RoutePoint)));
             }
 
             this.updateField('mapUrl');
