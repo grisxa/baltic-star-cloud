@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {StorageService} from '../services/storage.service';
 import {ScannerData} from '../models/scanner-data';
 import {Barcode} from '../models/barcode';

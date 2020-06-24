@@ -1,7 +1,9 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DateTimePickerComponent} from './date-time-picker.component';
-import {MatDatepickerModule, MatInputModule, MatNativeDateModule} from '@angular/material';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, OnInit, ViewChild} from '@angular/core';
 import {EditableComponent} from '../editable/editable.component';

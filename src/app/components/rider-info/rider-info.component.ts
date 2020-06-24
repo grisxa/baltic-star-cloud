@@ -11,7 +11,8 @@ import {takeUntil} from 'rxjs/operators';
 import Timestamp = firebase.firestore.Timestamp;
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {Barcode} from '../../models/barcode';
-import {MatDialog, MatTableDataSource} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 @Component({

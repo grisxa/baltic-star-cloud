@@ -9,7 +9,7 @@ import {Observable, Subject} from 'rxjs';
 import {AngularFirestoreDocument} from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import {Checkpoint} from '../../models/checkpoint';
-import {MatTable, MatTableDataSource} from '@angular/material';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import {RiderCheckIn} from '../../models/rider-check-in';
 import {Rider} from '../../models/rider';
 import {takeUntil} from 'rxjs/operators';
@@ -32,7 +32,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[];
 
-  @ViewChild(MatTable, {static: false}) table: MatTable<RiderCheckIn>;
+  @ViewChild(MatTable) table: MatTable<RiderCheckIn>;
   progress = new MatTableDataSource<RiderCheckIn>();
   columnsToDisplay = ['name'];
   columnNames = {name: 'Имя'};
