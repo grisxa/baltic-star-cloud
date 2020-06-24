@@ -5,18 +5,14 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
   TemplateRef
 } from '@angular/core';
 import {ViewModeDirective} from '../../directives/view-mode.directive';
 import {EditModeDirective} from '../../directives/edit-mode.directive';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {By} from '@angular/platform-browser';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {error} from 'util';
 
 
 @Component({
@@ -27,8 +23,8 @@ import {error} from 'util';
 })
 export class EditableComponent implements  OnInit {
   @Output() update = new EventEmitter<boolean>();
-  @ContentChild(ViewModeDirective, null) viewModeTemplate: ViewModeDirective;
-  @ContentChild(EditModeDirective, null) editModeTemplate: EditModeDirective;
+  @ContentChild(ViewModeDirective, {static: true}) viewModeTemplate: ViewModeDirective;
+  @ContentChild(EditModeDirective, {static: false}) editModeTemplate: EditModeDirective;
 
   unsubscribe$ = new Subject();
   editMode = new BehaviorSubject<boolean>(false);
@@ -51,6 +47,7 @@ export class EditableComponent implements  OnInit {
             console.warn('change detection has failed', error.message);
           }
 
+          // auto-focusing
           const element: HTMLElement = this.host.nativeElement.querySelector('input:not(:focus)');
           if (element) {
             element.focus();
@@ -91,7 +88,6 @@ export class EditableComponent implements  OnInit {
     }
   }
 
-  @HostListener('keyup', ['$event'])
   @HostListener('keyup', ['$event'])
   public hostKeyUp(event: KeyboardEvent) {
     const target = event.composedPath();
