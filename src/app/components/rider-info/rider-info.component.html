@@ -69,6 +69,10 @@
     <mat-icon>camera_alt</mat-icon>
     Сканировать
   </button>
+  <button *ngIf="isLocationAvailable()" mat-raised-button (click)="locate()">
+    <mat-icon>my_location</mat-icon>
+    Координаты
+  </button>
 </p>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
   <ng-container matColumnDef="time">

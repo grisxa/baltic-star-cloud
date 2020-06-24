@@ -9,12 +9,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+
 import {AngularFireAuthModule} from '@angular/fire/auth';
 
 import {AppComponent} from './app.component';
@@ -38,6 +42,7 @@ import {NgxBarcode6Module} from 'ngx-barcode6';
 import {ScannerDialogModule} from './scanner-dialog/scanner-dialog.module';
 import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map.component';
 import {HttpClientModule} from '@angular/common/http';
+import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -69,7 +74,8 @@ const appRoutes: Routes = [
     DateTimePickerComponent,
     SafeUrlPipe,
     AddBarcodeComponent,
-    PlotarouteMapComponent
+    PlotarouteMapComponent,
+    CheckpointSearchDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -96,11 +102,18 @@ const appRoutes: Routes = [
     QRCodeModule,
     NgxBarcode6Module,
     MatCheckboxModule,
-    ScannerDialogModule
+    ScannerDialogModule,
+    MatDialogModule,
+    MatRadioModule,
+    MatSnackBarModule
   ],
   exports: [
   ],
   providers: [],
+  entryComponents: [
+    AppComponent,
+    CheckpointSearchDialogComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

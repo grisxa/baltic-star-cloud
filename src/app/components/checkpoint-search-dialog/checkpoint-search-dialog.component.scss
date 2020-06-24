@@ -1,0 +1,9 @@
+:host {
+  .table-container {
+    max-height: 200px;
+    overflow: auto;
+  }
+  .mat-cell, .mat-header-cell {
+    padding: 0 10px;
+  }
+}

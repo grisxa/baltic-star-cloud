@@ -1,5 +1,6 @@
 import * as firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
+import GeoPoint = firebase.firestore.GeoPoint;
 
 export class Barcode {
   uid: string;

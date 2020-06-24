@@ -10,11 +10,13 @@ import {AngularFirestoreDocument} from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import {Checkpoint} from '../../models/checkpoint';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {RiderCheckIn} from '../../models/rider-check-in';
 import {Rider} from '../../models/rider';
 import {takeUntil} from 'rxjs/operators';
 import Timestamp = firebase.firestore.Timestamp;
 import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
+import {RoutePoint} from '../../models/route-point';
 
 @Component({
   selector: 'app-brevet-info',
@@ -41,7 +43,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               private router: Router,
               public auth: AuthService,
               private storage: StorageService,
-              private routeService: PlotarouteInfoService) {
+              private routeService: PlotarouteInfoService,
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
@@ -147,7 +150,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
             if (data.checkpoints && data.checkpoints.length) {
               data.checkpoints.forEach(checkpoint => this.storage.createCheckpoint(this.brevet,
-                new Checkpoint('', checkpoint.name, checkpoint.distance)));
+                new Checkpoint(checkpoint)));
             }
 
             this.updateField('mapUrl');
@@ -190,7 +193,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         .then(() => {
           console.log(`= updated brevet ${this.brevet.uid}`);
         })
-        .catch(error => console.error('brevet update has failed', error.message));
+        .catch(error => {
+          console.error('brevet update has failed', error);
+          this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
+           'Закрыть', {duration: 5000});
+        });
     } else {
       // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
       control.setValue(this.brevet[field] instanceof Timestamp ?
@@ -202,7 +209,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   addCheckpoint() {
     console.log('= add checkpoint');
-    const checkpoint = new Checkpoint('', 'Новый', 0);
+    const checkpoint = new Checkpoint({name: 'Новый', distance: 0} as RoutePoint);
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
       this.router.navigate(['brevet', this.brevet.uid, 'checkpoint', uid]);
     });
@@ -214,6 +221,10 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       .then(() => {
         console.log(`= removed cp ${uid}`);
       })
-      .catch(error => console.error('checkpoint deletion has failed', error.message));
+      .catch(error => {
+        console.error('checkpoint deletion has failed', error);
+        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
+          'Закрыть', {duration: 5000});
+      });
   }
 }

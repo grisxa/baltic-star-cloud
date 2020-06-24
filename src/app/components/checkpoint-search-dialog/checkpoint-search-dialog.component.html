@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Укажите КП</h2>
+<mat-dialog-content class="table-container">
+  <mat-radio-group aria-label="Укажите КП">
+  <table mat-table [dataSource]="checkpoints">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let checkpoint">
+        <mat-radio-button (change)="selection.toggle(checkpoint)"
+                          value="{{checkpoint.uid}}}"></mat-radio-button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="displayName">
+      <th mat-header-cell *matHeaderCellDef> Название </th>
+      <td mat-cell *matCellDef="let checkpoint"> {{checkpoint.displayName}} </td>
+    </ng-container>
+    <ng-container matColumnDef="distance">
+      <th mat-header-cell *matHeaderCellDef> Расстояние </th>
+      <td mat-cell *matCellDef="let checkpoint"> {{checkpoint.distance | number: '1.0-1'}} км </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="checkpointColumnsToDisplay; sticky: true"></tr>
+    <tr mat-row *matRowDef="let checkpoint; columns: checkpointColumnsToDisplay"></tr>
+  </table>
+  </mat-radio-group>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Отменить</button>
+  <button mat-button [mat-dialog-close]="selection.hasValue() && selection.selected[0].uid" cdkFocusInitial>Выбрать</button>
+</mat-dialog-actions>

@@ -6,6 +6,7 @@ export class Brevet {
   name: string;
   length: number;
   startDate: Timestamp;
+  endDate?: Timestamp;
   mapUrl?: string;
 
   constructor(uid: string, name: string, length: number, startDate: Timestamp) {

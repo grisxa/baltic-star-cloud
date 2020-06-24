@@ -8,13 +8,20 @@ import {catchError, filter, flatMap, map, mergeMap, switchMap, switchMapTo, tap}
 import {RiderCheckIn} from '../models/rider-check-in';
 import {Signature} from '../models/signature';
 import {of} from 'rxjs';
+import * as firebase from 'firebase/app';
+import * as geofirestore from 'geofirestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
+  geoCheckpoints: geofirestore.GeoCollectionReference;
 
   constructor(private firestore: AngularFirestore) {
+    this.geoCheckpoints = geofirestore
+      .initializeApp(firebase.firestore())
+      .collection('checkpoints');
+
   }
 
   createBrevet(brevet: Brevet) {
@@ -65,7 +72,7 @@ export class StorageService {
       })
       .then(checkpointUid => {
         console.log('= document saved', checkpointUid);
-        return this.firestore.collection('checkpoints').doc(checkpointUid).set({
+        return this.geoCheckpoints.doc(checkpointUid).set({
           ...checkpoint,
           brevet: {uid, name, length}
         }).then(() => checkpointUid);
@@ -187,6 +194,8 @@ export class StorageService {
       .collection('checkpoints').doc(checkpointUid)
       .valueChanges().pipe(
         tap(data => console.log('checkpoint change', data)),
+        // skip deleted checkpoints
+        filter(Boolean),
         mergeMap((checkpoint: Checkpoint) => this.firestore
           .collection('brevets').doc(checkpoint.brevet.uid)
           .collection('checkpoints').doc(checkpoint.uid)

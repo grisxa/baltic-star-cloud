@@ -8,6 +8,7 @@ import {StorageService} from '../../services/storage.service';
 import * as firebase from 'firebase/app';
 import {takeUntil} from 'rxjs/operators';
 import {User} from 'firebase/app';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-rider-list',
@@ -18,7 +19,10 @@ export class RiderListComponent implements OnInit, OnDestroy {
   riders$ = new Subject<Rider[]>();
   unsubscribe$ = new Subject();
 
-  constructor(private router: Router, public auth: AuthService, private storage: StorageService) {
+  constructor(private router: Router,
+              public auth: AuthService,
+              private storage: StorageService,
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
@@ -53,6 +57,10 @@ export class RiderListComponent implements OnInit, OnDestroy {
       .then(() => {
         console.log(`= removed rider ${uid}`);
       })
-      .catch(error => console.error('rider deletion has failed', error.message));
+      .catch(error => {
+        console.error('rider deletion has failed', error);
+        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
+          'Закрыть', {duration: 5000});
+      });
   }
 }

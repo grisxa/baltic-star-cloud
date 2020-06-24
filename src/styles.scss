@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
-@import "~ng-pick-datetime/assets/style/picker.min.css";
 
 html, body { height: 100%; }
 body {
@@ -42,4 +41,12 @@ p {
 }
 span {
   margin: 0 5px;
+}
+
+.mat-snack-bar-container {
+  background-color: hotpink;
+  color: black;
+}
+.mat-simple-snackbar-action {
+  color: white;
 }

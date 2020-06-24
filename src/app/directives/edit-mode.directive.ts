@@ -3,7 +3,8 @@ import {Directive, OnChanges, SimpleChanges, TemplateRef} from '@angular/core';
 @Directive({
   selector: '[appEditMode]'
 })
-export class EditModeDirective{
+export class EditModeDirective {
 
-  constructor(public template: TemplateRef<any>) { }
+  constructor(public template: TemplateRef<any>) {
+  }
 }

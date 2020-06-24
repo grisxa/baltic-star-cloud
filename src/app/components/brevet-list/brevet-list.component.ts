@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import * as firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-brevet-list',
@@ -16,7 +17,10 @@ import Timestamp = firebase.firestore.Timestamp;
 export class BrevetListComponent implements OnInit {
   brevets$ = new Subject<Brevet[]>();
 
-  constructor(private router: Router, public auth: AuthService, private storage: StorageService) {
+  constructor(private router: Router,
+              public auth: AuthService,
+              private storage: StorageService,
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
@@ -39,6 +43,10 @@ export class BrevetListComponent implements OnInit {
       .then(() => {
         console.log(`= removed brevet ${uid}`);
       })
-      .catch(error => console.error('checkpoint deletion has failed', error.message));
+      .catch(error => {
+        console.error('brevet removal has failed', error);
+        this.snackBar.open(`Не удалось удалить бревет. ${error.message}`,
+          'Закрыть', {duration: 5000});
+      });
   }
 }
