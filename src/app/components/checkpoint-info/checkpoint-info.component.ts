@@ -3,7 +3,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
 
 import {Checkpoint} from '../../models/checkpoint';
-import {MatDialog, MatPaginator, MatTableDataSource} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import {AuthService} from '../../services/auth.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage.service';
