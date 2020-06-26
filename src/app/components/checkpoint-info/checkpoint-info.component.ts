@@ -16,6 +16,7 @@ import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.compon
 import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
 import * as firebase from 'firebase/app';
 import GeoPoint = firebase.firestore.GeoPoint;
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -41,7 +42,8 @@ export class CheckpointInfoComponent implements OnInit {
               public dialog: MatDialog,
               private router: Router,
               private storage: StorageService,
-              public auth: AuthService) {
+              public auth: AuthService,
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
@@ -94,7 +96,17 @@ export class CheckpointInfoComponent implements OnInit {
     if (control && control.valid) {
       console.log('new value of', field, control.value);
       this.checkpoint[field] = control.value;
-      this.storage.updateCheckpoint(this.checkpoint);
+      this.storage.updateCheckpoint(this.checkpoint)
+         .then(() => {
+          console.log(`= updated checkpoint ${this.checkpoint.uid}`);
+        })
+        .catch(error => {
+          console.error('brevet update has failed', error);
+          this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
+            'Закрыть', {duration: 5000});
+        });
+    } else {
+      control.setValue(this.checkpoint[field]);
     }
   }
 
