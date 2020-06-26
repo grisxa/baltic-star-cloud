@@ -19,7 +19,7 @@
 <p>Карточка №
   <app-editable (update)="updateField('code')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="isEditable">{{rider?.code}}</span>
+      <span [attr.data-editable]="isEditable">{{rider?.code || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
       <input matInput [formControl]="formGroup?.get('code')" value="{{rider?.code}}" size="15">
