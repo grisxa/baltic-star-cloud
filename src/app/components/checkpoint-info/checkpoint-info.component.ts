@@ -13,6 +13,9 @@ import {Barcode} from '../../models/barcode';
 import {RiderCheckIn} from '../../models/rider-check-in';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
+import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
+import * as firebase from 'firebase/app';
+import GeoPoint = firebase.firestore.GeoPoint;
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -111,6 +114,20 @@ export class CheckpointInfoComponent implements OnInit {
         this.storage.createBarcode('checkpoints',
           this.checkpoint.uid, barcode, this.auth.user.uid)
           .then(uid => console.log('= barcode created', uid));
+      });
+  }
+
+  showMap(): void {
+    const dialogRef = this.dialog.open(MapboxDialogComponent, {
+      width: '75vw',
+      data: this.checkpoint.coordinates
+    });
+    dialogRef.afterClosed()
+      .subscribe(data => {
+        if (data && data.latitude && data.longitude) {
+          this.checkpoint.coordinates = new GeoPoint(data.latitude, data.longitude);
+          this.storage.updateCheckpoint(this.checkpoint);
+        }
       });
   }
 

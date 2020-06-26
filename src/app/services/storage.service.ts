@@ -95,8 +95,7 @@ export class StorageService {
       .collection('checkpoints').doc(checkpointUid).delete();
   }
   updateCheckpoint(checkpoint: Checkpoint) {
-    return this.firestore
-      .collection('checkpoints').doc(checkpoint.uid)
+    return this.geoCheckpoints.doc(checkpoint.uid)
       .update({...checkpoint, copy: false});
   }
   getBarcodeRoot(checkpointUid: string): AngularFirestoreDocument<Checkpoint> {

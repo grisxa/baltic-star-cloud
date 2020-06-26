@@ -20,6 +20,14 @@
     </ng-template>
   </app-editable>
   км</p>
+<div class="coordinates">Координаты:
+  <span>{{checkpoint?.coordinates?.latitude || 0 | number: '1.1-4'}},
+    {{checkpoint?.coordinates?.longitude || 0 | number: '1.1-4'}}</span>
+  <button mat-raised-button (click)="showMap()">
+    <mat-icon>map</mat-icon>
+    Карта
+  </button>
+</div>
 
 <h3>Отметки участников</h3>
 <table mat-table [dataSource]="riders">

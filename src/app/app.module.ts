@@ -43,6 +43,7 @@ import {ScannerDialogModule} from './scanner-dialog/scanner-dialog.module';
 import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map.component';
 import {HttpClientModule} from '@angular/common/http';
 import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
+import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -75,7 +76,8 @@ const appRoutes: Routes = [
     SafeUrlPipe,
     AddBarcodeComponent,
     PlotarouteMapComponent,
-    CheckpointSearchDialogComponent
+    CheckpointSearchDialogComponent,
+    MapboxDialogComponent
   ],
   imports: [
     BrowserModule,

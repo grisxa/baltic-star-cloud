@@ -1,0 +1,26 @@
+<div class="map" id="mapbox"></div>
+<div class="controls">
+  <div class="coordinates-container">
+    <div class="coordinate">
+      <mat-label>Широта</mat-label>
+      <input matInput
+             type="number" step="0.001"
+             [formControl]="formGroup?.get('latitude')"
+             placeholder="0.0"
+             size="10">
+    </div>
+    <div class="coordinate">
+      <mat-label>Долгота</mat-label>
+      <input matInput
+             type="number" step="0.001"
+             [formControl]="formGroup?.get('longitude')"
+             placeholder="0.0"
+             size="10">
+    </div>
+  </div>
+  <mat-dialog-actions>
+    <button mat-raised-button mat-dialog-close>Закрыть</button>
+    <button mat-raised-button [mat-dialog-close]="formGroup?.value"
+            *ngIf="auth.isAdmin" cdkFocusInitial>Выбрать</button>
+  </mat-dialog-actions>
+</div>

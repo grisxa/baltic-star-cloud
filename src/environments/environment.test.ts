@@ -14,6 +14,9 @@ export const environment = {
     appId: 'test',
     measurementId: 'test'
   },
+  mapbox: {
+    accessToken: 'test'
+  },
   router: {
     enableTracing: true
   }
