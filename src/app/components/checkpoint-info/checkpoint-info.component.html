@@ -3,9 +3,9 @@
 <h3>
   <app-editable (update)="updateField('displayName')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="auth.isLoggedIn">{{checkpoint?.displayName}}</span>
+      <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.displayName}}</span>
     </ng-template>
-    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+    <ng-template appEditMode *ngIf="auth.isAdmin">
       <input matInput [formControl]="formGroup?.get('displayName')" value="{{checkpoint?.displayName}}" size="15">
     </ng-template>
   </app-editable>
@@ -13,9 +13,9 @@
 <p>Дистанция:
   <app-editable (update)="updateField('distance')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="auth.isLoggedIn">{{checkpoint?.distance}}</span>
+      <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.distance}}</span>
     </ng-template>
-    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+    <ng-template appEditMode *ngIf="auth.isAdmin">
       <input matInput [formControl]="formGroup?.get('distance')" type="number" value="{{checkpoint?.distance}}" size="5">
     </ng-template>
   </app-editable>

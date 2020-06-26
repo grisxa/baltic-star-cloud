@@ -1,9 +1,9 @@
 <h2>Бревет
   <app-editable (update)="updateField('name')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="auth.isLoggedIn">{{brevet?.name}}</span>
+      <span [attr.data-editable]="auth.isAdmin">{{brevet?.name}}</span>
     </ng-template>
-    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+    <ng-template appEditMode *ngIf="auth.isAdmin">
       <input matInput [formControl]="formGroup?.get('name')" value="{{brevet?.name}}" size="15">
     </ng-template>
   </app-editable>
@@ -11,9 +11,9 @@
 <p>Длина маршрута
   <app-editable (update)="updateField('length')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="auth.isLoggedIn">{{brevet?.length}}</span>
+      <span [attr.data-editable]="auth.isAdmin">{{brevet?.length}}</span>
     </ng-template>
-    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+    <ng-template appEditMode *ngIf="auth.isAdmin">
       <input matInput [formControl]="formGroup?.get('length')" value="{{brevet?.length}}" size="5" type="number">
     </ng-template>
   </app-editable>
@@ -32,10 +32,10 @@
 <p>Карта
   <app-editable (update)="updateMapUrl()">
     <ng-template appViewMode>
-      <span *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isLoggedIn">{{brevet?.mapUrl}}</span>
-      <span *ngIf="!brevet?.mapUrl" [attr.data-editable]="auth.isLoggedIn">отсутствует</span>
+      <span *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">{{brevet?.mapUrl}}</span>
+      <span *ngIf="!brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">отсутствует</span>
     </ng-template>
-    <ng-template appEditMode *ngIf="auth.isLoggedIn">
+    <ng-template appEditMode *ngIf="auth.isAdmin">
       <input matInput [formControl]="formGroup?.get('mapUrl')" value="{{brevet?.mapUrl}}" size="15">
     </ng-template>
   </app-editable>
