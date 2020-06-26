@@ -10,11 +10,15 @@ import {Rider} from '../../models/rider';
 })
 export class LoginPromptComponent implements OnInit {
   userName = 'unknown';
+  url = '';
 
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
-    this.auth.user$.subscribe((user: User|Rider) => this.userName = user ? user.displayName : '' );
+    this.auth.user$.subscribe((user: User|Rider) => {
+      this.userName = user ? user.displayName : '';
+      this.url = user.hasOwnProperty('owner') ? `/rider/${user.uid}` : null;
+    });
   }
 
 }
