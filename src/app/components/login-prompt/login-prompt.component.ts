@@ -17,7 +17,7 @@ export class LoginPromptComponent implements OnInit {
   ngOnInit() {
     this.auth.user$.subscribe((user: User|Rider) => {
       this.userName = user ? user.displayName : '';
-      this.url = user.hasOwnProperty('owner') ? `/rider/${user.uid}` : null;
+      this.url = user && user.hasOwnProperty('owner') ? `/rider/${user.uid}` : null;
     });
   }
 
