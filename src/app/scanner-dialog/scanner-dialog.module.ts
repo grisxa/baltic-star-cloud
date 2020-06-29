@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ScannerDialogComponent} from './scanner-dialog.component';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
-
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
@@ -10,6 +10,7 @@ import {ZXingScannerModule} from '@zxing/ngx-scanner';
   imports: [
     CommonModule,
     ZXingScannerModule,
+    MatButtonModule,
   ],
   exports: [ ScannerDialogComponent ],
   entryComponents: [ScannerDialogComponent]

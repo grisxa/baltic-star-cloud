@@ -117,8 +117,7 @@ export class CheckpointInfoComponent implements OnInit {
 
   startScanner(): void {
     const dialogRef = this.dialog.open(ScannerDialogComponent, {
-      width: '75vw',
-      data: {checkpoint: this.checkpoint.uid, auth: this.auth.user.uid}
+      width: '75vw'
     });
     dialogRef.componentInstance.onSuccess.pipe(
       takeUntil(dialogRef.afterClosed()))

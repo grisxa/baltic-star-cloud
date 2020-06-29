@@ -1,8 +1,7 @@
-import {Component, EventEmitter, Inject} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {StorageService} from '../services/storage.service';
-import {ScannerData} from '../models/scanner-data';
+import {Component, EventEmitter} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {Barcode} from '../models/barcode';
+import {BarcodeFormat} from '@zxing/library';
 
 @Component({
   selector: 'app-scanner-dialog',
@@ -12,9 +11,9 @@ import {Barcode} from '../models/barcode';
 export class ScannerDialogComponent {
   onSuccess = new EventEmitter<Barcode>();
   lastCode: string;
+  acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
 
-  constructor(public dialogRef: MatDialogRef<ScannerDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: ScannerData) { }
+  constructor(public dialogRef: MatDialogRef<ScannerDialogComponent>) { }
 
   scanSuccessHandler(code: string) {
     if (code === this.lastCode) {

@@ -1,4 +1,4 @@
 <zxing-scanner
-  [formats]="['QR_CODE', 'EAN_13', 'CODE_128']"
+  [formats]="acceptedFormats"
   (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
 <button mat-raised-button (click)="onNoClick()">Закрыть</button>
