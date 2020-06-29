@@ -70,8 +70,7 @@
 </table>
 <!-- mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator -->
 <div class="code">
-<qrcode *ngIf="auth.isLoggedIn && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-<ngx-barcode6 *ngIf="!url" [bc-format]="'CODE128'" [bc-value]="checkpoint?.uid" [bc-display-value]="true"></ngx-barcode6>
+<qrcode *ngIf="auth.isAdmin && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
 </div>
 
 <app-login-prompt></app-login-prompt>
