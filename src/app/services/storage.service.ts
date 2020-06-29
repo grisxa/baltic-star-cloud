@@ -40,10 +40,6 @@ export class StorageService {
       });
   }
 
-  getBrevet2(uid: string): AngularFirestoreDocument<Brevet> {
-    console.log('= search brevet', uid);
-    return this.firestore.collection('brevets').doc<Brevet>(uid || 'none');
-  }
   getBrevet(uid: string) {
     console.log('= search brevet', uid);
     return this.firestore.collection('brevets').doc<Brevet>(uid || 'none')
