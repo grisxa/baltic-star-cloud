@@ -29,7 +29,7 @@
   </app-editable>
 </div>
 
-<p>Карта
+<p>Маршрут
   <app-editable (update)="updateMapUrl()">
     <ng-template appViewMode>
       <span *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">{{brevet?.mapUrl}}</span>
@@ -41,7 +41,12 @@
   </app-editable>
   <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank" title="открыть"><mat-icon>launch</mat-icon></a>
 </p>
-<app-plotaroute-map *ngIf="mapId" [mapId]="mapId"></app-plotaroute-map>
+
+<div *ngIf="brevet?.mapUrl" class="plotaroutMap">
+  <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
+  <button mat-raised-button *ngIf="showMap"  (click)="showMap=!showMap"><mat-icon>expand_less</mat-icon>Карта</button>
+  <app-plotaroute-map *ngIf="mapId && showMap" [mapId]="mapId"></app-plotaroute-map>
+</div>
 
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>

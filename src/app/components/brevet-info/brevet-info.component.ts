@@ -30,6 +30,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   brevet: Brevet;
   mapId: number;
   formGroup: FormGroup;
+  showMap = false;
 
   checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[];
