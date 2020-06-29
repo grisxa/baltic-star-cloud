@@ -4,7 +4,7 @@
       <span [attr.data-editable]="isEditable">{{rider?.firstName}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('firstName')" value="{{rider?.firstName}}" size="15">
+      <input matInput [formControl]="formGroup?.get('firstName')" value="{{rider?.firstName}}" size="15" placeholder="имя">
     </ng-template>
   </app-editable>
   <app-editable (update)="updateField('lastName')">
@@ -12,7 +12,7 @@
       <span [attr.data-editable]="isEditable">{{rider?.lastName}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('lastName')" value="{{rider?.lastName}}" size="15">
+      <input matInput [formControl]="formGroup?.get('lastName')" value="{{rider?.lastName}}" size="15" placeholder="фамилия">
     </ng-template>
   </app-editable>
 </h2>
@@ -22,7 +22,7 @@
       <span [attr.data-editable]="isEditable">{{rider?.code || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('code')" value="{{rider?.code}}" size="15">
+      <input matInput [formControl]="formGroup?.get('code')" value="{{rider?.code}}" size="15" placeholder="номер">
     </ng-template>
   </app-editable>
 </p>
