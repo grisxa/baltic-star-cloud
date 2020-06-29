@@ -101,7 +101,7 @@ export class CheckpointInfoComponent implements OnInit {
           console.log(`= updated checkpoint ${this.checkpoint.uid}`);
         })
         .catch(error => {
-          console.error('brevet update has failed', error);
+          console.error('checkpoint update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
             'Закрыть', {duration: 5000});
         });
@@ -137,7 +137,15 @@ export class CheckpointInfoComponent implements OnInit {
       .subscribe(data => {
         if (data && data.latitude && data.longitude) {
           this.checkpoint.coordinates = new GeoPoint(data.latitude, data.longitude);
-          this.storage.updateCheckpoint(this.checkpoint);
+          this.storage.updateCheckpoint(this.checkpoint)
+            .then(() => {
+              console.log(`= updated checkpoint ${this.checkpoint.uid}`);
+            })
+            .catch(error => {
+              console.error('checkpoint update has failed', error);
+              this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
+                'Закрыть', {duration: 5000});
+            });
         }
       });
   }
