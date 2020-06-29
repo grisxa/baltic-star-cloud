@@ -18,6 +18,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 import {AngularFireAuthModule} from '@angular/fire/auth';
 
@@ -44,6 +45,7 @@ import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map
 import {HttpClientModule} from '@angular/common/http';
 import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
 import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.component';
+import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -77,7 +79,8 @@ const appRoutes: Routes = [
     AddBarcodeComponent,
     PlotarouteMapComponent,
     CheckpointSearchDialogComponent,
-    MapboxDialogComponent
+    MapboxDialogComponent,
+    OfflineSwitchComponent
   ],
   imports: [
     BrowserModule,
@@ -87,7 +90,7 @@ const appRoutes: Routes = [
       environment.router
     ),
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
     AngularFireAuthModule,
     BrowserAnimationsModule,
     HttpClientModule,
@@ -107,7 +110,8 @@ const appRoutes: Routes = [
     ScannerDialogModule,
     MatDialogModule,
     MatRadioModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSlideToggleModule
   ],
   exports: [
   ],
