@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {Brevet} from '../../models/brevet';
@@ -6,17 +6,21 @@ import {AuthService} from '../../services/auth.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage.service';
 import {Observable, Subject} from 'rxjs';
-import {AngularFirestoreDocument} from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import {Checkpoint} from '../../models/checkpoint';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {Rider} from '../../models/rider';
 import {takeUntil} from 'rxjs/operators';
 import Timestamp = firebase.firestore.Timestamp;
 import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
 import {RoutePoint} from '../../models/route-point';
+import {LocationService} from '../../services/location.service';
+import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
+import {Barcode} from '../../models/barcode';
+import {MatDialog} from '@angular/material/dialog';
+import {CheckpointNotFound} from '../../models/checkpoint-not-found';
+import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
 
 @Component({
   selector: 'app-brevet-info',
@@ -44,6 +48,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               private router: Router,
               public auth: AuthService,
               private storage: StorageService,
+              public dialog: MatDialog,
+              public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,
               private snackBar: MatSnackBar) {
   }
@@ -120,6 +126,10 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   // release watchers
   ngOnDestroy() {
     this.unsubscribe$.next();
+  }
+
+  get allowCheckIn(): boolean {
+    return !!this.auth.user;
   }
 
   findMapId(url: string): number {
@@ -230,6 +240,81 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         console.error('checkpoint deletion has failed', error);
         this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
           'Закрыть', {duration: 5000});
+      });
+  }
+
+  startScanner() {
+    const dialogRef = this.dialog.open(ScannerDialogComponent, {
+      width: '75vw'
+    });
+    // track every code coming from the scanner
+    dialogRef.componentInstance.onSuccess
+      .pipe(takeUntil(dialogRef.afterClosed()))
+      .subscribe((barcode: Barcode) => this.storage
+        .hasCheckpoint(this.brevet.uid, barcode.code)
+        .then(found => found ?
+          this.storage.createBarcode('riders',
+            this.auth.user.uid, barcode, this.auth.user.uid) :
+          Promise.reject(new CheckpointNotFound('wrong checkpoint'))
+        )
+        .then(uid => console.log('= barcode created', uid))
+        .catch(error => {
+          if (error instanceof CheckpointNotFound) {
+            this.snackBar.open('Неверный контрольный пункт',
+              'Закрыть', {duration: 5000});
+          } else {
+            console.error('= barcode reporting has failed', error);
+            this.snackBar.open(`Не удалось отправить код. ${error.message}`,
+              'Закрыть', {duration: 5000});
+          }
+        }));
+  }
+
+  locate(): void {
+    // request current coordinates
+    this.geoLocation.get()
+      // find checkpoints nearby
+      .then((position: Position) => this.storage.listCloseCheckpoints(position))
+      // get the checkpoint info + delta distance to the current point
+      .then(snapshot => snapshot.docs
+        .map((doc): Checkpoint => Object.assign({}, doc.data(), {delta: doc.distance})))
+      // skip checkpoints not in the brevet
+      .then(checkpoints => this.storage
+        .filterCheckpoints(this.brevet.uid, checkpoints).toPromise())
+      // filter out checkpoints by brevet's date
+      .then(checkpoints => checkpoints
+        .filter(checkpoint => Checkpoint.prototype.isOnline.call(checkpoint, Timestamp.now())))
+      // sort them by the distance, closest first
+      .then(checkpoints => checkpoints.sort((a, b) => a.delta - b.delta))
+      .then(checkpoints => checkpoints.length > 1 ? this.dialog
+          // offer selecting among several controls
+          .open(CheckpointSearchDialogComponent, {data: checkpoints})
+          .afterClosed().toPromise() :
+        checkpoints.length === 1 ?
+          // or just return the first
+          Promise.resolve(checkpoints[0].uid) :
+          Promise.reject(new CheckpointNotFound('nothing found'))
+      )
+      .then((uid: string) => uid ?
+        this.storage.createBarcode('riders',
+          this.auth.user.uid,
+          new Barcode(undefined, uid, undefined),
+          this.auth.user.uid) :
+        Promise.reject('no uid'))
+      .then(uid => console.log('= record created', uid))
+      .catch(error => {
+        if (error instanceof CheckpointNotFound) {
+          this.snackBar.open('КП поблизости не найдено.',
+            'Закрыть', {duration: 5000});
+        } else {
+          // fallback
+          console.error('= location error', error);
+          let message = error.message || error;
+          if (message.includes('of undefined')) {
+            message = 'КП поблизости не найдено.';
+          }
+          this.snackBar.open(message, 'Закрыть', {duration: 5000});
+        }
       });
   }
 }

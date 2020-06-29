@@ -1,15 +1,16 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {AngularFirestore, AngularFirestoreDocument, QueryDocumentSnapshot} from '@angular/fire/firestore';
 import {Brevet} from '../models/brevet';
 import {Checkpoint} from '../models/checkpoint';
 import {Rider} from '../models/rider';
 import {Barcode} from '../models/barcode';
-import {catchError, filter, flatMap, map, mergeMap, switchMap, switchMapTo, tap} from 'rxjs/operators';
+import {filter, map, mergeMap, tap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
-import {Signature} from '../models/signature';
-import {of} from 'rxjs';
 import * as firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
+
+import GeoPoint = firebase.firestore.GeoPoint;
+import QuerySnapshot = firebase.firestore.QuerySnapshot;
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,32 @@ export class StorageService {
   updateBrevet(brevet: Brevet) {
     return this.firestore.collection('brevets')
       .doc(brevet.uid).update(brevet);
+  }
+
+  hasCheckpoint(brevetUid: string, checkpointUid: string) {
+    return this.firestore
+      .collection('brevets').doc(brevetUid)
+      .collection('checkpoints').doc(checkpointUid)
+      .get().toPromise()
+      .then(doc => doc.exists);
+  }
+
+  filterCheckpoints(brevetUid: string, checkpoins: Checkpoint[]) {
+    return this.firestore
+      .collection('brevets').doc(brevetUid)
+      .collection('checkpoints').get()
+      .pipe(map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
+        map(docs => docs.map(doc => doc.data())
+          .filter(checkpoint => checkpoins.map(cp => cp.uid).includes(checkpoint.uid)))
+      );
+  }
+
+  listCloseCheckpoints(position: Position) {
+    return this.geoCheckpoints
+      .near({
+        center: new GeoPoint(position.coords.latitude, position.coords.longitude),
+        radius: 1.2
+      }).get();
   }
 
   createCheckpoint(brevet: Brevet, checkpoint: Checkpoint): Promise<string | void> {

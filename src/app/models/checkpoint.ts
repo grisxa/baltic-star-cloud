@@ -9,8 +9,11 @@ import Timestamp = firebase.firestore.Timestamp;
 export class Checkpoint {
   displayName: string;
   uid: string;
+  // to the start by track
   distance?: number;
   coordinates?: GeoPoint;
+  // to the current position
+  delta?: number;
   copy?: boolean;
 
   // Checkpoint info page, brevet info

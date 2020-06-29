@@ -43,6 +43,10 @@ export class LocationService {
   constructor() {
   }
 
+  isLocationAvailable(): boolean {
+    return !!navigator.geolocation;
+  }
+
   get() {
     return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(

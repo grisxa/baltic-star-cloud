@@ -59,6 +59,19 @@
     {{checkpoint.distance}} км
   </mat-list-item>
 </mat-list>
+
+<h3 *ngIf="allowCheckIn">Самоотметка</h3>
+<p *ngIf="allowCheckIn">
+  <button mat-raised-button (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
+    <mat-icon>my_location</mat-icon>
+    Координаты
+  </button>
+</p>
+
 <h3>Отметки участников</h3>
 <table mat-table [dataSource]="progress">
   <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay">
