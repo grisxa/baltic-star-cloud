@@ -1,8 +1,8 @@
 <div>
   <button class="login" *ngIf="!auth.isLoggedIn" mat-raised-button (click)="auth.loginWithGoogle()"><mat-icon>exit_to_app</mat-icon>Войти</button>
   <div *ngIf="auth.isLoggedIn && url">
-    <a [href]="url"><mat-icon>person</mat-icon></a>
-    <a [href]="url">{{userName}}</a>
+    <a [href]="url" title="Личная карточка"><mat-icon>person</mat-icon></a>
+    <a [href]="url" title="Личная карточка">{{userName}}</a>
   </div>
   <div *ngIf="auth.isLoggedIn && !url"><mat-icon>person</mat-icon> {{userName}}</div>
   <button class="logout" *ngIf="auth.isLoggedIn" mat-raised-button (click)="auth.logout()"><mat-icon>logout</mat-icon>Выйти</button>
