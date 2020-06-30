@@ -12,22 +12,30 @@
   .controls {
     display: flex;
     flex-direction: row;
-    //flex-grow: 1;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
 
-    .coordinates-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .mat-form-field {
+      flex-grow: 1;
+      width: 10ch;
+      padding: 4px;
+    }
 
-      .coordinate {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 5px;
+    ::ng-deep .mat-form-field-wrapper {
+      padding-bottom: .25em;
+    }
 
-        input {
-          margin-left: 5px;
-        }
+    ::ng-deep .mat-form-field-underline {
+      bottom: .25em;
+    }
+
+    .mat-dialog-actions {
+      flex-grow: 1;
+      justify-content: center;
+
+      button {
+        margin: 4px;
       }
     }
   }
