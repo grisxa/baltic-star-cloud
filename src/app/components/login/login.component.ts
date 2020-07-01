@@ -14,7 +14,7 @@ export class LoginComponent {
 
   onError(event) {
     console.error('= login error', event);
-    if (!(event instanceof TypeError && event.message === 'this.user is null')) {
+    if (!(event instanceof TypeError)) {
       this.snackBar.open(`Ошибка входа. ${event.message}`,
         'Закрыть', {duration: 5000});
     }
