@@ -16,10 +16,11 @@ export class AfterLoginComponent implements OnInit {
 
   ngOnInit(): void {
     // create a card for the new account and redirect to it
-    if (!this.auth.hasCard) {
-      const name = this.auth.user.displayName.split(/\s+/);
-      const lastName = name.pop();
-      const firstName = name.shift();
+    if (this.auth.user && !this.auth.hasCard) {
+      const displayName = this.auth.user.displayName || '';
+      const name = displayName.split(/\s+/);
+      const lastName = name.pop() || '';
+      const firstName = name.shift() || '';
 
       const uid = this.auth.user.uid;
       const rider = new Rider(uid, uid, firstName, lastName);
