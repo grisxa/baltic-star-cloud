@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 import {AuthProvider} from 'ngx-auth-firebaseui';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   providers = AuthProvider;
 
-  constructor() { }
+  constructor(private snackBar: MatSnackBar) { }
 
-  ngOnInit(): void {
-  }
-
-  printError(event) {
+  onError(event) {
     console.error('= login error', event);
+    if (!(event instanceof TypeError && event.message === 'this.user is null')) {
+      this.snackBar.open(`Ошибка входа. ${event.message}`,
+        'Закрыть', {duration: 5000});
+    }
   }
 }

@@ -16,11 +16,13 @@ export const environment = {
   },
   auth: {
     toastMessageOnAuthSuccess: false,
-    toastMessageOnAuthError: true,
+    toastMessageOnAuthError: false,
     passwordMaxLength: 15,
     passwordMinLength: 6,
     nameMaxLength: 50,
     nameMinLength: 3,
+    guardProtectedRoutesUntilEmailIsVerified: true,
+    enableEmailVerification: true,
   },
   mapbox: {
     accessToken: 'test'

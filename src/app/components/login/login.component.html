@@ -2,6 +2,6 @@
 <ngx-auth-firebaseui
   [guestEnabled]="false"
   [providers]="[providers.Google, providers.Facebook, providers.EmailAndPassword]"
-  (onError)="printError($event)">
+  (onError)="onError($event)">
 </ngx-auth-firebaseui>
 </div>

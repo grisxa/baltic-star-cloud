@@ -31,6 +31,11 @@ export class AuthService {
     });
   }
 
+  get hasCard(): boolean {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user && user.hasOwnProperty('owner');
+  }
+
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user'));
     return user !== null;
