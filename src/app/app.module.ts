@@ -48,6 +48,7 @@ import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 import {NgxAuthFirebaseUIModule} from 'ngx-auth-firebaseui';
 import {LoginComponent} from './components/login/login.component';
+import {AfterLoginComponent} from './components/after-login/after-login.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -61,6 +62,7 @@ const appRoutes: Routes = [
   {path: 'brevets', component: BrevetListComponent},
   {path: 'checkpoint/:uid/addbarcode', component: AddBarcodeComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'after-login', component: AfterLoginComponent},
 ];
 
 @NgModule({
@@ -84,7 +86,8 @@ const appRoutes: Routes = [
     CheckpointSearchDialogComponent,
     MapboxDialogComponent,
     OfflineSwitchComponent,
-    LoginComponent
+    LoginComponent,
+    AfterLoginComponent
   ],
   imports: [
     BrowserModule,
