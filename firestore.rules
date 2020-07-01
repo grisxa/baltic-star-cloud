@@ -12,6 +12,12 @@ service cloud.firestore {
       return request.resource.data.owner == request.auth.token.sub
     }
 
+    match /users/{document} {
+      allow read, create;
+      allow write: if resource.data.uid == request.resource.data.uid
+                   && resource.data.uid == document
+    }
+
     match /brevets/{brevet} {
       allow read;
       allow create: if isAdmin();

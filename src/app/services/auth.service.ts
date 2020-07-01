@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {auth, User} from 'firebase/app';
+import {User} from 'firebase/app';
 import {Observable, of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
-import {switchMap} from 'rxjs/operators';
+import {switchMap, takeUntil} from 'rxjs/operators';
 import {Rider} from '../models/rider';
 
 @Injectable({
@@ -13,10 +13,12 @@ export class AuthService {
   // may be either a Google Auth user or an UID-mapped rider
   user: User|Rider;
   user$: Observable<User|Rider>;
+  private unsubscribe$ = new Subject();
 
-  constructor(public afAuth: AngularFireAuth, storage: StorageService) {
+  constructor(public fireAuth: AngularFireAuth, storage: StorageService) {
     localStorage.setItem('user', null);
-    this.user$ = this.afAuth.authState.pipe(
+    this.user$ = this.fireAuth.authState.pipe(
+      takeUntil(this.unsubscribe$),
       switchMap((user: User) => user ?
         storage.watchRider(user.uid).pipe(
           switchMap((rider: Rider) => rider ? of(rider) : of(user))
@@ -40,14 +42,7 @@ export class AuthService {
   }
 
   async logout() {
-    await this.afAuth.auth.signOut();
+    await this.fireAuth.signOut();
     localStorage.removeItem('user');
   }
-
-  async loginWithGoogle() {
-    const provider = new auth.GoogleAuthProvider();
-    provider.addScope('profile');
-    await this.afAuth.auth.signInWithRedirect(new auth.GoogleAuthProvider());
-  }
-
 }

@@ -1,5 +1,5 @@
 <div>
-  <button class="login" *ngIf="!auth.isLoggedIn" mat-raised-button (click)="auth.loginWithGoogle()"><mat-icon>exit_to_app</mat-icon>Войти</button>
+  <button class="login" *ngIf="!auth.isLoggedIn" mat-raised-button [routerLink]="['/login']"><mat-icon>exit_to_app</mat-icon>Войти</button>
   <div *ngIf="auth.isLoggedIn && url">
     <a [href]="url" title="Личная карточка"><mat-icon>person</mat-icon></a>
     <a [href]="url" title="Личная карточка">{{userName}}</a>
