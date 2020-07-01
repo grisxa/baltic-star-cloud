@@ -1,18 +1,28 @@
 <h2>Участник
   <app-editable (update)="updateField('firstName')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="isEditable">{{rider?.firstName}}</span>
+      <span [attr.data-editable]="isEditable">{{rider?.firstName || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('firstName')" value="{{rider?.firstName}}" size="15" placeholder="имя">
+      <mat-form-field>
+        <mat-label>Имя</mat-label>
+        <input matInput [formControl]="formGroup?.get('firstName')"
+               value="{{rider?.firstName}}" size="15"
+               placeholder="Иван">
+      </mat-form-field>
     </ng-template>
   </app-editable>
   <app-editable (update)="updateField('lastName')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="isEditable">{{rider?.lastName}}</span>
+      <span [attr.data-editable]="isEditable">{{rider?.lastName || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('lastName')" value="{{rider?.lastName}}" size="15" placeholder="фамилия">
+      <mat-form-field>
+        <mat-label>Фамилия</mat-label>
+        <input matInput [formControl]="formGroup?.get('lastName')"
+               value="{{rider?.lastName}}" size="15"
+               placeholder="Петров">
+      </mat-form-field>
     </ng-template>
   </app-editable>
 </h2>
@@ -22,7 +32,12 @@
       <span [attr.data-editable]="isEditable">{{rider?.code || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('code')" value="{{rider?.code}}" size="15" placeholder="номер">
+      <mat-form-field>
+        <mat-label>Номер</mat-label>
+        <input matInput [formControl]="formGroup?.get('code')"
+               value="{{rider?.code}}" size="15"
+               placeholder="001234">
+      </mat-form-field>
     </ng-template>
   </app-editable>
 </p>
@@ -38,7 +53,11 @@
       <span [attr.data-editable]="isEditable">{{(rider?.birthDate?.toDate() | date: 'shortDate') || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [matDatepicker]="picker" [formControl]="formGroup.get('birthDate')" placeholder="дата">
+      <mat-form-field>
+        <mat-label>Дата</mat-label>
+        <input matInput [matDatepicker]="picker" [formControl]="formGroup.get('birthDate')"
+               placeholder="23/12/1967">
+      </mat-form-field>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </ng-template>
@@ -50,7 +69,12 @@
       <span [attr.data-editable]="isEditable">{{rider?.city || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('city')" value="{{rider?.city || '?'}}" size="15" placeholder="город">
+      <mat-form-field>
+        <mat-label>Город</mat-label>
+        <input matInput [formControl]="formGroup?.get('city')"
+               value="{{rider?.city || '?'}}" size="15"
+               placeholder="Санкт-Петербург">
+      </mat-form-field>
     </ng-template>
   </app-editable>,
   <app-editable (update)="updateField('country')">
@@ -58,7 +82,12 @@
       <span [attr.data-editable]="isEditable">{{rider?.country || '?'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="isEditable">
-      <input matInput [formControl]="formGroup?.get('country')" value="{{rider?.country || '?'}}" size="15" placeholder="страна">
+      <mat-form-field>
+        <mat-label>Страна</mat-label>
+        <input matInput [formControl]="formGroup?.get('country')"
+               value="{{rider?.country || '?'}}" size="15"
+               placeholder="Россия">
+      </mat-form-field>
     </ng-template>
   </app-editable>
 </p>

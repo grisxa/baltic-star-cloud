@@ -46,6 +46,10 @@ import {HttpClientModule} from '@angular/common/http';
 import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
 import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.component';
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
+import {NgxAuthFirebaseUIModule} from 'ngx-auth-firebaseui';
+import {LoginComponent} from './components/login/login.component';
+import {AfterLoginComponent} from './components/after-login/after-login.component';
+import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -57,7 +61,18 @@ const appRoutes: Routes = [
   {path: 'riders', component: RiderListComponent},
   {path: 'brevet', component: BrevetListComponent},
   {path: 'brevets', component: BrevetListComponent},
-  {path: 'checkpoint/:uid/addbarcode', component: AddBarcodeComponent},
+  {
+    path: 'checkpoint/:uid/addbarcode',
+    component: AddBarcodeComponent,
+    canActivate: [AngularFireAuthGuard]
+  },
+  {path: 'login', component: LoginComponent},
+  {
+    path: 'after-login',
+    component: AfterLoginComponent,
+    canActivate: [AngularFireAuthGuard]
+  },
+  {path: '**', redirectTo: 'brevets'},
 ];
 
 @NgModule({
@@ -80,7 +95,9 @@ const appRoutes: Routes = [
     PlotarouteMapComponent,
     CheckpointSearchDialogComponent,
     MapboxDialogComponent,
-    OfflineSwitchComponent
+    OfflineSwitchComponent,
+    LoginComponent,
+    AfterLoginComponent
   ],
   imports: [
     BrowserModule,
@@ -91,6 +108,9 @@ const appRoutes: Routes = [
     ),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
+    NgxAuthFirebaseUIModule.forRoot(environment.firebase,
+      () => '[DEFAULT]',
+      environment.auth),
     AngularFireAuthModule,
     BrowserAnimationsModule,
     HttpClientModule,

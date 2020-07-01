@@ -1,0 +1,8 @@
+<div class="container">
+<ngx-auth-firebaseui
+  [guestEnabled]="false"
+  [providers]="[providers.Google, providers.Facebook, providers.EmailAndPassword]"
+  goBackURL="/after-login"
+  (onError)="onError($event)">
+</ngx-auth-firebaseui>
+</div>
