@@ -73,13 +73,20 @@
 </p>
 
 <h3>Отметки участников</h3>
-<table mat-table [dataSource]="progress">
-  <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay">
-    <th mat-header-cell *matHeaderCellDef> {{columnNames[column]}} </th>
-    <td mat-cell *matCellDef="let rider"> {{column === "name" ? rider.name : rider[column]?.toDate() | date:'HH:mm'}} </td>
-  </ng-container>
-  <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-  <tr mat-row *matRowDef="let rider; columns: columnsToDisplay"></tr>
-</table>
+<div class="table-container">
+  <table mat-table [dataSource]="progress">
+    <ng-container matColumnDef="name" sticky>
+      <th mat-header-cell *matHeaderCellDef> {{columnNames['name']}} </th>
+      <td mat-cell *matCellDef="let rider"> {{rider.name}} </td>
+    </ng-container>
+    <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay.slice(1)">
+      <th mat-header-cell *matHeaderCellDef> {{columnNames[column]}} </th>
+      <td mat-cell
+          *matCellDef="let rider"> {{rider[column]?.toDate() | date:'HH:mm'}} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+    <tr mat-row *matRowDef="let rider; columns: columnsToDisplay"></tr>
+  </table>
+</div>
 
 <app-login-prompt></app-login-prompt>
