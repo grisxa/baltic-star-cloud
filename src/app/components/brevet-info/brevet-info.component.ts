@@ -301,7 +301,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           new Barcode(undefined, uid, undefined),
           this.auth.user.uid) :
         Promise.reject('no uid'))
-      .then(uid => console.log('= record created', uid))
+      .then(uid => {
+        console.log('= record created', uid);
+        this.snackBar.open('Координаты записаны',
+          'Закрыть', {duration: 5000});
+      })
       .catch(error => {
         if (error instanceof CheckpointNotFound) {
           this.snackBar.open('КП поблизости не найдено.',

@@ -124,7 +124,12 @@ export class CheckpointInfoComponent implements OnInit {
       .subscribe((barcode: Barcode) => {
         this.storage.createBarcode('checkpoints',
           this.checkpoint.uid, barcode, this.auth.user.uid)
-          .then(uid => console.log('= barcode created', uid));
+          .then(uid => console.log('= barcode created', uid))
+          .catch(error => {
+            console.error('= barcode reporting has failed', error);
+            this.snackBar.open(`Не удалось отправить код. ${error.message}`,
+              'Закрыть', {duration: 5000});
+          });
       });
   }
 

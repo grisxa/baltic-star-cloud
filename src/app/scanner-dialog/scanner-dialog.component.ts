@@ -2,6 +2,7 @@ import {Component, EventEmitter} from '@angular/core';
 import {Barcode} from '../models/barcode';
 import {BarcodeFormat} from '@zxing/library';
 import {ToneService} from '../services/tone.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-scanner-dialog',
@@ -13,7 +14,7 @@ export class ScannerDialogComponent {
   lastCode: string;
   acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
 
-  constructor(private toneService: ToneService) {
+  constructor(private toneService: ToneService, private snackBar: MatSnackBar) {
   }
 
   scanSuccessHandler(code: string) {
@@ -33,6 +34,8 @@ export class ScannerDialogComponent {
       return;
     }
     this.toneService.make(3200, 80);
+    this.snackBar.open(`Прочитан код ${barcode.code}`,
+      'Закрыть', {duration: 5000});
     this.onSuccess.emit(barcode);
   }
 }
