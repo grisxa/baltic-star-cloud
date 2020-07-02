@@ -37,6 +37,15 @@
       margin-left: 5px;
     }
   }
+
+  .url {
+    max-width: calc(100vw - 10ch - 32px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 5px;
+  }
+
   .mat-header-cell {
     padding-right: 10px;
   }

@@ -32,7 +32,7 @@
 <p>Маршрут
   <app-editable (update)="updateMapUrl()">
     <ng-template appViewMode>
-      <span *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">{{brevet?.mapUrl}}</span>
+      <div *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin" class="url">{{brevet?.mapUrl}}</div>
       <span *ngIf="!brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">отсутствует</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
