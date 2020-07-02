@@ -1,4 +1,6 @@
 <zxing-scanner
   [formats]="acceptedFormats"
   (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
-<button mat-raised-button (click)="onNoClick()">Закрыть</button>
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Закрыть</button>
+</mat-dialog-actions>

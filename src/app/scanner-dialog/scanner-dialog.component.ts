@@ -1,7 +1,7 @@
 import {Component, EventEmitter} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
 import {Barcode} from '../models/barcode';
 import {BarcodeFormat} from '@zxing/library';
+import {ToneService} from '../services/tone.service';
 
 @Component({
   selector: 'app-scanner-dialog',
@@ -13,7 +13,8 @@ export class ScannerDialogComponent {
   lastCode: string;
   acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
 
-  constructor(public dialogRef: MatDialogRef<ScannerDialogComponent>) { }
+  constructor(private toneService: ToneService) {
+  }
 
   scanSuccessHandler(code: string) {
     if (code === this.lastCode) {
@@ -31,11 +32,7 @@ export class ScannerDialogComponent {
     if (!barcode.code) {
       return;
     }
+    this.toneService.make(3200, 80);
     this.onSuccess.emit(barcode);
   }
-
-  onNoClick() {
-    this.dialogRef.close();
-  }
-
 }

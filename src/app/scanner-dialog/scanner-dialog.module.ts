@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {ScannerDialogComponent} from './scanner-dialog.component';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {MatButtonModule} from '@angular/material/button';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 @NgModule({
@@ -11,6 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
     CommonModule,
     ZXingScannerModule,
     MatButtonModule,
+    MatDialogModule,
   ],
   exports: [ ScannerDialogComponent ],
   entryComponents: [ScannerDialogComponent]
