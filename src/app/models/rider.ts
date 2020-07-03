@@ -18,9 +18,16 @@ export class Rider {
   city: string;
   country: string;
 
-  constructor(auth: string, uid: string, firstName: string, lastName: string) {
+  constructor(auth: string, uid: string, displayName: string) {
     this.owner = auth;
     this.uid = uid;
+
+    // put fallbacks for first/last name
+    displayName = displayName || '';
+    const name = displayName.split(/\s+/);
+    const lastName = name.pop() || '?';
+    const firstName = name.shift() || '?';
+
     this.firstName = firstName;
     this.lastName = lastName;
 

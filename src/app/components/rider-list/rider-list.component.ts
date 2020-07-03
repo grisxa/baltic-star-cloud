@@ -5,9 +5,7 @@ import {Rider} from '../../models/rider';
 import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
-import * as firebase from 'firebase/app';
 import {takeUntil} from 'rxjs/operators';
-import {User} from 'firebase/app';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
@@ -40,12 +38,8 @@ export class RiderListComponent implements OnInit, OnDestroy {
   }
 
   addRider() {
-    const name = this.auth.user.displayName.split(/\s+/);
-    const lastName = name.pop() || '?';
-    const firstName = name.shift() || '?';
-
     const uid = this.auth.user.uid;
-    const rider = new Rider(uid, uid, firstName, lastName);
+    const rider = new Rider(uid, uid, this.auth.user.displayName);
     this.storage.createRider(rider).then(newUid => {
       this.router.navigate(['rider', newUid]);
     });

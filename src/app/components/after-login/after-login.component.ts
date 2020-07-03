@@ -17,13 +17,8 @@ export class AfterLoginComponent implements OnInit {
   ngOnInit(): void {
     // create a card for the new account and redirect to it
     if (this.auth.user && !this.auth.hasCard) {
-      const displayName = this.auth.user.displayName || '';
-      const name = displayName.split(/\s+/);
-      const lastName = name.pop() || '';
-      const firstName = name.shift() || '';
-
       const uid = this.auth.user.uid;
-      const rider = new Rider(uid, uid, firstName, lastName);
+      const rider = new Rider(uid, uid, this.auth.user.displayName);
       this.storage.createRider(rider).then(newUid => {
         this.router.navigate(['rider', newUid]);
       });
