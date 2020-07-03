@@ -7,7 +7,9 @@ export class ToneService {
   audioContext: AudioContext;
 
   constructor() {
-    this.audioContext = new window.AudioContext();
+    // @ts-ignore
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.audioContext = new AudioContext();
   }
 
   /**
