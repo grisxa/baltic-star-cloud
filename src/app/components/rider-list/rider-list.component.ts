@@ -38,8 +38,12 @@ export class RiderListComponent implements OnInit, OnDestroy {
   }
 
   addRider() {
-    const uid = this.auth.user.uid;
-    const rider = new Rider(uid, uid, this.auth.user.displayName);
+    const owner = this.auth.user.uid;
+    // admin creates new cards
+    // new user creates own card
+    const uid = this.auth.hasCard ? this.auth.isAdmin ? '' : owner : owner;
+    console.log('add rider', owner, uid);
+    const rider = new Rider(owner, uid, this.auth.user.displayName);
     this.storage.createRider(rider).then(newUid => {
       this.router.navigate(['rider', newUid]);
     });

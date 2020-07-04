@@ -147,9 +147,19 @@ export class StorageService {
   }
 
   createRider(rider: Rider) {
-    return this.firestore.collection('riders').doc(rider.uid)
-      .set({...rider}, {merge: true})
-      .then(uid => {
+    const docPromise: Promise<void> = rider.uid ?
+      this.firestore.collection<Rider>('riders')
+        .doc(rider.uid)
+        .set({...rider}, {merge: true}) :
+      this.firestore.collection<Rider>('riders')
+        .add({...rider})
+        .then(docRef => {
+          rider.uid = docRef.id;
+          console.log('= storage rider', rider);
+          return docRef.update({...rider});
+        });
+    return docPromise
+      .then(() => {
         console.log('= document saved', rider.uid);
         return rider.uid;
       })
