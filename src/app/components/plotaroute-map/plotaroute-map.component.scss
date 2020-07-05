@@ -1,8 +1,6 @@
 :host {
 
   min-width: 320px;
-  width: 99vw;
-  max-width: 800px;
 
   .outer-container {
     overflow:hidden;
@@ -11,8 +9,8 @@
 
   .inner-container {
     position:relative;
-    width:100%;
-    padding-top:56.25%;
+    // aspect ratio 4:3
+    padding-top: 75%;
     overflow:visible;
   }
 

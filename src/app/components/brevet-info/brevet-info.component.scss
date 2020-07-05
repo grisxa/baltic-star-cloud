@@ -6,7 +6,7 @@
   .plotaroutMap {
     margin-left: 5px;
     min-width: 320px;
-    width: 99vw;
+    width: calc(100vw - 23px);
     max-width: 800px;
 
     button {
