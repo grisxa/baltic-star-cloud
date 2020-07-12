@@ -16,6 +16,9 @@ export class Checkpoint {
   delta?: number;
   copy?: boolean;
 
+  sleep?: boolean;
+  selfcheck?: boolean;
+
   // Checkpoint info page, brevet info
   brevet?: Brevet;
 

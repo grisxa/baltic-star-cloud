@@ -50,6 +50,7 @@ import {NgxAuthFirebaseUIModule} from 'ngx-auth-firebaseui';
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -131,7 +132,8 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatRadioModule,
     MatSnackBarModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatButtonToggleModule
   ],
   exports: [
   ],
