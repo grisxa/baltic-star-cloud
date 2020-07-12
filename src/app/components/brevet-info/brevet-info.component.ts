@@ -43,6 +43,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   progress = new MatTableDataSource<RiderCheckIn>();
   columnsToDisplay = ['name'];
   columnNames = {name: 'Имя'};
+  columnTypes = {name: ''};
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -75,6 +76,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
             const id = 'cp' + (i + 1);
             this.columnsToDisplay.push(id);
             this.columnNames[id] = cp.displayName;
+            this.columnTypes[id] = cp.sleep ? 'checkpoint-type-sleep' :
+              cp.selfcheck ? 'checkpoint-type-selfcheck' : '';
           });
           this.checkpoints$.next(this.checkpoints);
         });
