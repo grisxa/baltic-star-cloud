@@ -51,6 +51,8 @@ export class CheckpointInfoComponent implements OnInit {
     this.formGroup = new FormGroup({
       displayName: new FormControl('', Validators.required),
       distance: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]),
+      sleep: new FormControl('', Validators.required),
+      selfcheck: new FormControl('', Validators.required),
     });
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('brevetUid');
@@ -84,6 +86,8 @@ export class CheckpointInfoComponent implements OnInit {
         this.checkpoint = checkpoint;
         this.formGroup.get('displayName').setValue(checkpoint.displayName);
         this.formGroup.get('distance').setValue(checkpoint.distance);
+        this.formGroup.get('sleep').setValue(checkpoint.sleep);
+        this.formGroup.get('selfcheck').setValue(checkpoint.selfcheck);
       });
   }
 
@@ -110,6 +114,15 @@ export class CheckpointInfoComponent implements OnInit {
     }
   }
 
+  updateSleep(event) {
+    this.formGroup.get('sleep').setValue(event.source.checked);
+    this.updateField('sleep');
+  }
+
+  updateSelfCheck(event) {
+    this.formGroup.get('selfcheck').setValue(event.source.checked);
+    this.updateField('selfcheck');
+  }
   addBarcode() {
     console.log('= add barcode');
     this.router.navigate(['checkpoint', this.checkpoint.uid, 'addbarcode']);
