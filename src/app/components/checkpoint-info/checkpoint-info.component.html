@@ -13,17 +13,19 @@
   <mat-icon *ngIf="!auth.isAdmin && checkpoint?.sleep" class="checkpoint-type-icon"
             title="Спальный" svgIcon="icon_bed"></mat-icon>
   <mat-button-toggle *ngIf="auth.isAdmin" class="checkpoint-type-button"
+                     title="Спальный"
                      [checked]="checkpoint?.sleep"
                      (change)="updateSleep($event)">
-    <mat-icon title="Спальный" svgIcon="icon_bed"></mat-icon>
+    <mat-icon svgIcon="icon_bed"></mat-icon>
   </mat-button-toggle>
 
   <mat-icon *ngIf="!auth.isAdmin && checkpoint?.selfcheck" class="checkpoint-type-icon"
-            title="Спальный" svgIcon="icon_qr"></mat-icon>
+            title="Самоотметка" svgIcon="icon_qr"></mat-icon>
   <mat-button-toggle *ngIf="auth.isAdmin" class="checkpoint-type-button"
+                     title="Самоотметка"
                      [checked]="checkpoint?.selfcheck"
                      (change)="updateSelfCheck($event)">
-    <mat-icon title="Спальный" svgIcon="icon_qr"></mat-icon>
+    <mat-icon svgIcon="icon_qr"></mat-icon>
   </mat-button-toggle>
 </h3>
 <p>Дистанция:
