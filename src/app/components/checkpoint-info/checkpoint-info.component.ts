@@ -17,6 +17,7 @@ import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
 import * as firebase from 'firebase/app';
 import GeoPoint = firebase.firestore.GeoPoint;
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -47,6 +48,8 @@ export class CheckpointInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.riders.sort = new MatSort();
+    this.riders.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
     this.barcodes.paginator = this.paginator;
     this.formGroup = new FormGroup({
       displayName: new FormControl('', Validators.required),
@@ -70,6 +73,8 @@ export class CheckpointInfoComponent implements OnInit {
           console.log('got riders', checkIns);
           this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
             ...checkIn,
+            // TODO: rely on lastName presence (?) in the document
+            lastName: checkIn.lastName || checkIn.name.split(/\s/).pop(),
             in: checkIn.time[0],
             out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
           } as RiderCheckIn));
