@@ -13,6 +13,7 @@ import {Barcode} from '../../models/barcode';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {Title} from '@angular/platform-browser';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
 
   constructor(private route: ActivatedRoute,
+              private titleService: Title,
               public auth: AuthService,
               public dialog: MatDialog,
               private storage: StorageService,
@@ -38,6 +40,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Участник');
     this.formGroup = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
@@ -61,6 +64,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
     this.rider$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(rider => {
+        this.titleService.setTitle(`${rider.firstName} ${rider.lastName}`);
         this.rider = rider;
         console.log('= rider found', rider);
         this.formGroup.get('firstName').setValue(rider.firstName);
