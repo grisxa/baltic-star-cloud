@@ -21,6 +21,7 @@ import {Barcode} from '../../models/barcode';
 import {MatDialog} from '@angular/material/dialog';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
+import {SettingService} from '../../services/setting.service';
 
 @Component({
   selector: 'app-brevet-info',
@@ -49,6 +50,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               private router: Router,
               public auth: AuthService,
               private storage: StorageService,
+              public settings: SettingService,
               public dialog: MatDialog,
               public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,

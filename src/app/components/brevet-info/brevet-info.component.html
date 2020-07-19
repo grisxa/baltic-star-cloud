@@ -51,7 +51,28 @@
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
 <mat-list>
-  <app-checkpoint-list-item *ngFor="let checkpoint of (checkpoints$ | async)" [checkpoint]="checkpoint"></app-checkpoint-list-item>
+  <app-checkpoint-list-item [checkpoint]="checkpoints?.length && checkpoints[0]">
+    <ng-container *ngIf="brevet?.uid && settings.getValue('expand.' + brevet.uid) else expandButton">
+      <button mat-raised-button title="Свернуть" *ngIf="checkpoints?.length > 3"
+              (click)="brevet?.uid && settings.setValue('expand.' + brevet.uid, false)">
+        <mat-icon>expand_less</mat-icon>
+        Меньше
+      </button>
+    </ng-container>
+    <ng-template #expandButton>
+      <button mat-raised-button title="Развернуть" *ngIf="checkpoints?.length > 3"
+              (click)="brevet?.uid && settings.setValue('expand.' + brevet.uid, true)">
+        <mat-icon>expand_more</mat-icon>
+        Больше
+      </button>
+    </ng-template>
+  </app-checkpoint-list-item>
+  <ng-container *ngIf="checkpoints?.length <=3 || brevet?.uid && settings.getValue('expand.' + brevet.uid)">
+    <app-checkpoint-list-item *ngFor="let checkpoint of checkpoints?.slice(1, -1)"
+                              [checkpoint]="checkpoint"></app-checkpoint-list-item>
+  </ng-container>
+  <app-checkpoint-list-item
+    [checkpoint]="checkpoints?.length > 1 && checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
 </mat-list>
 
 <h3 *ngIf="allowCheckIn">Самоотметка</h3>

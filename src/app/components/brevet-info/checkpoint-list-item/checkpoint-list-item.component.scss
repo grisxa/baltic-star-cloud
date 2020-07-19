@@ -1,5 +1,5 @@
 :host {
-  mat-list-item span {
-    padding: 5px;
+  ::ng-deep .mat-raised-button {
+    margin-left: 5px;
   }
 }

@@ -1,4 +1,4 @@
-<mat-list-item>
+<mat-list-item *ngIf="checkpoint">
   <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteCheckpoint(checkpoint?.uid)">
     <mat-icon>delete_forever</mat-icon>
   </button>
@@ -8,4 +8,5 @@
             title="Спальный" svgIcon="icon_bed"></mat-icon>
   <mat-icon *ngIf="checkpoint?.selfcheck" class="checkpoint-type-icon"
             title="Самоотметка" svgIcon="icon_qr"></mat-icon>
+  <ng-content></ng-content>
 </mat-list-item>
