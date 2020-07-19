@@ -233,19 +233,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteCheckpoint(uid: string) {
-    console.log('= delete checkpoint', uid);
-    this.storage.deleteCheckpoint(this.brevet.uid, uid)
-      .then(() => {
-        console.log(`= removed cp ${uid}`);
-      })
-      .catch(error => {
-        console.error('checkpoint deletion has failed', error);
-        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
-          'Закрыть', {duration: 5000});
-      });
-  }
-
   startScanner() {
     const dialogRef = this.dialog.open(ScannerDialogComponent, {
       width: '75vw'
