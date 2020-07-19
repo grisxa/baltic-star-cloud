@@ -48,6 +48,18 @@
   <app-plotaroute-map *ngIf="mapId && showMap" [mapId]="mapId"></app-plotaroute-map>
 </div>
 
+<h3 *ngIf="allowCheckIn">Самоотметка</h3>
+<p *ngIf="allowCheckIn">
+  <button mat-raised-button (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
+    <mat-icon>my_location</mat-icon>
+    Координаты
+  </button>
+</p>
+
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
 <mat-list>
@@ -74,18 +86,6 @@
   <app-checkpoint-list-item
     [checkpoint]="checkpoints?.length > 1 && checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
 </mat-list>
-
-<h3 *ngIf="allowCheckIn">Самоотметка</h3>
-<p *ngIf="allowCheckIn">
-  <button mat-raised-button (click)="startScanner()">
-    <mat-icon>camera_alt</mat-icon>
-    Сканировать
-  </button>
-  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
-    <mat-icon>my_location</mat-icon>
-    Координаты
-  </button>
-</p>
 
 <h3>Отметки участников</h3>
 <div class="table-container">

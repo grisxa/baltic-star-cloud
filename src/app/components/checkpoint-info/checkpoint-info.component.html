@@ -48,6 +48,13 @@
 </div>
 
 <h3>Отметки участников</h3>
+<div class="add-buttons">
+  <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
+  <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+</div>
 <table mat-table [dataSource]="riders">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Имя </th>
@@ -66,13 +73,6 @@
 </table>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
-<div class="add-buttons">
-  <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
-  <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
-    <mat-icon>camera_alt</mat-icon>
-    Сканировать
-  </button>
-</div>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
   <ng-container matColumnDef="time">
     <th mat-header-cell *matHeaderCellDef> Дата </th>
