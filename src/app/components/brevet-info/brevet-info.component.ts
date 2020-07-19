@@ -21,6 +21,7 @@ import {Barcode} from '../../models/barcode';
 import {MatDialog} from '@angular/material/dialog';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
+import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 
 @Component({
@@ -59,6 +60,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.titleService.setTitle('Бревет');
+    this.progress.sort = new MatSort();
+    this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
       length: new FormControl(0, [Validators.required, Validators.pattern('[0-9]+')]),
@@ -106,13 +109,14 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               // console.log('new rider', rider);
               const row = {
                 name: rider.name,
+                lastName: rider.lastName,
                 uid: rider.uid,
                 ['cp' + (checkpointIndex + 1)]: checkIn
               } as RiderCheckIn;
               this.progress.data.push(row);
             }
-            this.table.renderRows();
           });
+          this.table.renderRows();
           // console.log('= updated table', this.progress.data);
           // this.dataSource.paginator = this.paginator;
         });

@@ -11,6 +11,7 @@ import * as geofirestore from 'geofirestore';
 
 import GeoPoint = firebase.firestore.GeoPoint;
 import QuerySnapshot = firebase.firestore.QuerySnapshot;
+import {of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -261,6 +262,8 @@ export class StorageService {
                 uid: checkpoint.uid,
                 riders: riders.map(rider => ({
                   name: rider.name,
+                  // TODO: rely on lastName presence (?) in the document
+                  lastName: rider.lastName || rider.name.split(/\s/).pop(),
                   uid: rider.uid,
                   time: rider.time,
                 } as RiderCheckIn))

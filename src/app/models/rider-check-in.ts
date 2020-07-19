@@ -4,6 +4,7 @@ import Timestamp = firebase.firestore.Timestamp;
 export class RiderCheckIn {
   uid: string;
   name: string;
+  lastName?: string;
 
   // Brevet info page, progress table
   time?: Timestamp[];
