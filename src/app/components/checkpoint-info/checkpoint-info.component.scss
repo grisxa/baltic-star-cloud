@@ -48,6 +48,9 @@
     }
   }
 
+  ::ng-deep .mat-raised-button {
+    margin-left: 5px;
+  }
   .add-buttons {
     display: flex;
     flex-direction: row;

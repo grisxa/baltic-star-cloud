@@ -46,6 +46,10 @@
     margin-left: 5px;
   }
 
+  ::ng-deep .mat-raised-button {
+    margin-left: 5px;
+  }
+
   .table-container {
     max-width: calc(100vw - 18px);
     max-height: calc(100vh - 18px);
