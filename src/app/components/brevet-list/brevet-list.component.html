@@ -1,18 +1,8 @@
 <h2><span>Календарь велоклуба</span>
     <span>«Балтийская звезда»</span></h2>
-<h3>2020 год</h3>
-<app-brevet-archive></app-brevet-archive>
+<app-brevet-archive [brevets]="oldBrevets"></app-brevet-archive>
 <mat-list>
-  <mat-list-item *ngFor="let brevet of (brevets$ | async)">
-    <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteBrevet(brevet.uid)">
-      <mat-icon>delete_forever</mat-icon>
-    </button>
-    <span>{{brevet.startDate.toDate() | date: 'dd/MM/yyyy'}}</span>
-    <a [title]="brevet.name" [routerLink]="['/brevet', brevet.uid]">
-      {{brevet.name}}
-    </a>
-    <span>({{brevet.length}} км)</span>
-  </mat-list-item>
+  <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
 </mat-list>
 <app-add-button *ngIf="auth.isAdmin" (click)="addBrevet()"></app-add-button>
 <p><a title="Участники бреветов" [routerLink]="['/riders']">Список участников</a></p>

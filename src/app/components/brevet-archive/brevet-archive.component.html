@@ -1,1 +1,20 @@
-<p><i>архив бреветов</i></p>
+<mat-list *ngIf="brevets?.length > 0">
+  <mat-list-item>
+    <button mat-raised-button title="Свернуть" *ngIf="settings.getValue('expand_brevets') else expandButton"
+            (click)="settings.setValue('expand_brevets', false)">
+      <mat-icon>expand_less</mat-icon>
+      Архив
+    </button>
+    <ng-template #expandButton>
+      <button mat-raised-button title="Развернуть"
+              (click)="settings.setValue('expand_brevets', true)">
+        <mat-icon>expand_more</mat-icon>
+        Архив
+      </button>
+    </ng-template>
+  </mat-list-item>
+  <ng-container *ngIf="settings.getValue('expand_brevets')">
+    <app-brevet-list-item *ngFor="let brevet of brevets"
+                          [brevet]="brevet"></app-brevet-list-item>
+  </ng-container>
+</mat-list>

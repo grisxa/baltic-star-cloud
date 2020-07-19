@@ -52,6 +52,8 @@ import {AfterLoginComponent} from './components/after-login/after-login.componen
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
+import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
+import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-list-item/checkpoint-list-item.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -99,7 +101,9 @@ const appRoutes: Routes = [
     MapboxDialogComponent,
     OfflineSwitchComponent,
     LoginComponent,
-    AfterLoginComponent
+    AfterLoginComponent,
+    BrevetListItemComponent,
+    CheckpointListItemComponent
   ],
   imports: [
     BrowserModule,

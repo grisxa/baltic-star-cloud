@@ -4,10 +4,11 @@ import {AuthService} from '../../services/auth.service';
 import {Brevet} from '../../models/brevet';
 import {StorageService} from '../../services/storage.service';
 import {Router} from '@angular/router';
-import {Subject} from 'rxjs';
 import * as firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
 import {MatSnackBar} from '@angular/material/snack-bar';
+
+const WEEK = 1000 * 60 * 60 * 24 * 7;
 
 @Component({
   selector: 'app-brevet-list',
@@ -15,7 +16,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrls: ['./brevet-list.component.scss']
 })
 export class BrevetListComponent implements OnInit {
-  brevets$ = new Subject<Brevet[]>();
+  oldBrevets: Brevet[] = [];
+  newBrevets: Brevet[] = [];
 
   constructor(private router: Router,
               public auth: AuthService,
@@ -26,7 +28,13 @@ export class BrevetListComponent implements OnInit {
   ngOnInit() {
     this.storage.listBrevets().subscribe(snapshot => {
       console.log('= brevets', snapshot.docs);
-      this.brevets$.next(snapshot.docs.map(doc => doc.data()) as Brevet[]);
+      const today = new Date();
+      const recently = new Date(today.getTime() - WEEK);
+      snapshot.docs.map(doc => doc.data() as Brevet)
+        .forEach(brevet => brevet.startDate.toDate() < recently ?
+          this.oldBrevets.push(brevet) :
+          this.newBrevets.push(brevet)
+        );
     });
   }
 

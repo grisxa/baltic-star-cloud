@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Brevet} from '../../models/brevet';
+import {SettingService} from '../../services/setting.service';
 
 @Component({
   selector: 'app-brevet-archive',
@@ -6,8 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./brevet-archive.component.scss']
 })
 export class BrevetArchiveComponent implements OnInit {
+  @Input() brevets: Brevet[];
 
-  constructor() { }
+  constructor(public settings: SettingService) { }
 
   ngOnInit() {
   }

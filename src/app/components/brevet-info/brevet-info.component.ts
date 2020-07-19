@@ -21,6 +21,7 @@ import {Barcode} from '../../models/barcode';
 import {MatDialog} from '@angular/material/dialog';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
+import {SettingService} from '../../services/setting.service';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 
@@ -52,6 +53,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               private titleService: Title,
               public auth: AuthService,
               private storage: StorageService,
+              public settings: SettingService,
               public dialog: MatDialog,
               public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,
@@ -239,19 +241,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
       this.router.navigate(['brevet', this.brevet.uid, 'checkpoint', uid]);
     });
-  }
-
-  deleteCheckpoint(uid: string) {
-    console.log('= delete checkpoint', uid);
-    this.storage.deleteCheckpoint(this.brevet.uid, uid)
-      .then(() => {
-        console.log(`= removed cp ${uid}`);
-      })
-      .catch(error => {
-        console.error('checkpoint deletion has failed', error);
-        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
-          'Закрыть', {duration: 5000});
-      });
   }
 
   startScanner() {
