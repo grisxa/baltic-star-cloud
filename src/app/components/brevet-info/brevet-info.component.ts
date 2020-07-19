@@ -22,6 +22,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
 import {MatSort} from '@angular/material/sort';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-brevet-info',
@@ -48,6 +49,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private router: Router,
+              private titleService: Title,
               public auth: AuthService,
               private storage: StorageService,
               public dialog: MatDialog,
@@ -57,6 +59,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Бревет');
     this.progress.sort = new MatSort();
     this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
     this.formGroup = new FormGroup({
@@ -121,6 +124,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     this.brevet$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(brevet => {
+        this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
         this.formGroup.get('name').setValue(brevet.name);
         this.formGroup.get('length').setValue(brevet.length);

@@ -7,6 +7,7 @@ import GeoPoint = firebase.firestore.GeoPoint;
 import Timestamp = firebase.firestore.Timestamp;
 
 export class Checkpoint {
+  // TODO: switch to name
   displayName: string;
   uid: string;
   // to the start by track

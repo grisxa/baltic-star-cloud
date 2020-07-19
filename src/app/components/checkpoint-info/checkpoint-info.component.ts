@@ -18,6 +18,7 @@ import * as firebase from 'firebase/app';
 import GeoPoint = firebase.firestore.GeoPoint;
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSort} from '@angular/material/sort';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -40,6 +41,7 @@ export class CheckpointInfoComponent implements OnInit {
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
   constructor(private route: ActivatedRoute,
+              private titleService: Title,
               public dialog: MatDialog,
               private router: Router,
               private storage: StorageService,
@@ -48,6 +50,7 @@ export class CheckpointInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Контрольный пункт');
     this.riders.sort = new MatSort();
     this.riders.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
     this.barcodes.paginator = this.paginator;
@@ -88,6 +91,7 @@ export class CheckpointInfoComponent implements OnInit {
         if (checkpoint === undefined) {
           return;
         }
+        this.titleService.setTitle(`Бревет ${checkpoint.brevet.name} - ${checkpoint.displayName}`);
         this.checkpoint = checkpoint;
         this.formGroup.get('displayName').setValue(checkpoint.displayName);
         this.formGroup.get('distance').setValue(checkpoint.distance);
