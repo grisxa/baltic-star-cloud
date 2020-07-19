@@ -1,0 +1,10 @@
+<mat-list-item>
+  <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteBrevet(brevet.uid)">
+    <mat-icon>delete_forever</mat-icon>
+  </button>
+  <span>{{brevet.startDate.toDate() | date: 'dd/MM/yyyy'}}</span>
+  <a [title]="brevet.name" [routerLink]="['/brevet', brevet.uid]">
+    {{brevet.name}}
+  </a>
+  <span>({{brevet.length}} км)</span>
+</mat-list-item>
