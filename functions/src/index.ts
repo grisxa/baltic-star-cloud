@@ -96,6 +96,8 @@ interface Control {
   distance?: number;
   brevet: Brevet;
   copy?: boolean;
+  selfcheck?: boolean;
+  sleep?: boolean;
 }
 
 interface Rider {
@@ -270,6 +272,8 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
     return db.doc(`checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      selfcheck: data.selfcheck,
+      sleep: data.sleep,
       copy: true
     }, {merge: true})
       .then(() => console.log(`updated /checkpoints/ ${checkpointUid}`))
@@ -291,6 +295,8 @@ export const updateCheckpoint = functions.firestore.document('checkpoints/{check
     return db.doc(`brevets/${data.brevet.uid}/checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      selfcheck: data.selfcheck,
+      sleep: data.sleep,
       copy: true
     }, {merge: true})
       .then(() => console.log(`updated /checkpoints/ ${checkpointUid}`))
