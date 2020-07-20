@@ -7,6 +7,7 @@ import DocumentReference = admin.firestore.DocumentReference;
 import DocumentData = admin.firestore.DocumentData;
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import checkpointPrint from './checkpoint-print';
 
 // import secret from './secret';
 
@@ -21,6 +22,8 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 */
+
+export const printCheckpoint = checkpointPrint;
 
 /*
 function makeSignature(text: string) {

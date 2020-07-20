@@ -88,7 +88,9 @@
 </table>
 <!-- mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator -->
 <div class="code">
-<qrcode *ngIf="auth.isAdmin && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  <a href="/print/brevet/{{checkpoint?.brevet?.uid}}/checkpoint/{{checkpoint?.uid}}" target="_blank">
+    <qrcode *ngIf="auth.isAdmin && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  </a>
 </div>
 
 <app-login-prompt></app-login-prompt>

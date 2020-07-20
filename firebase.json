@@ -19,6 +19,13 @@
     ],
     "rewrites": [
       {
+        "source": "/hello",
+        "function": "helloWorld"
+      },
+      {
+        "source": "/print/**",
+        "function": "printCheckpoint"
+      },      {
         "source": "**",
         "destination": "/index.html"
       }
