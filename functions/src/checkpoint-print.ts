@@ -17,7 +17,8 @@ export default functions.https.onRequest((request, response) => {
     .collection('checkpoints').doc(checkpointUid)
     .get().then(doc => {
       const checkpoint = doc.data() || {brevet: {}};
-      response.setHeader('Content-disposition', 'inline; filename="hello.pdf"');
+      const filename = `checkpoint-${checkpointUid}.pdf`;
+      response.setHeader('Content-disposition', `inline; filename="${filename}"`);
       response.setHeader('Content-type', 'application/pdf');
 
       pdf.path('m243.37 183.71c3.6694-6.3397 5.7786-13.693 5.7786-21.543h-43.089z').fill('even-odd');
