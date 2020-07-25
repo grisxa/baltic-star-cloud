@@ -38,8 +38,10 @@ export default functions.https.onRequest((request, response) => {
       pdf.font('default').text('веломарафонский клуб', 265, 170);
 
       pdf.fontSize(30);
-      pdf.font('default').text('Бревет ' + checkpoint.brevet.name, 80, 220);
-      pdf.font('default').text(checkpoint.displayName, 80, 300);
+      pdf.font('default').text('Бревет ' + checkpoint.brevet.name,
+        50, 220, {width: 550});
+      pdf.font('default').text(checkpoint.displayName,
+        50, 300, {width: 550});
       pdf.fontSize(20);
       const startDate = checkpoint.brevet.startDate.toDate();
       const displayDate = `${startDate.getDate()}.` +
@@ -51,7 +53,7 @@ export default functions.https.onRequest((request, response) => {
     })
     .then(image => {
       pdf.image(image, 30, 360, {width: 350, height: 350});
-      pdf.image(image, 400, 390, {width: 160, height: 160});
+      pdf.image(image, 380, 380, {width: 180, height: 180});
       pdf.image(image, 360, 580, {width: 100, height: 100});
       pdf.image(image, 465, 630, {width: 100, height: 100});
       pdf.pipe(response);
