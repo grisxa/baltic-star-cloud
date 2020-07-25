@@ -25,7 +25,8 @@
       {
         "source": "/print/**",
         "function": "printCheckpoint"
-      },      {
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

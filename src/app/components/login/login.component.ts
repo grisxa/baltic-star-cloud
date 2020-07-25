@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {AuthProvider} from 'ngx-auth-firebaseui';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {FirebaseUISignInFailure} from 'firebaseui-angular';
 
 @Component({
   selector: 'app-login',
@@ -8,14 +8,13 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  providers = AuthProvider;
 
   constructor(private snackBar: MatSnackBar) { }
 
-  onError(event) {
+  onError(event: FirebaseUISignInFailure) {
     console.error('= login error', event);
     if (!(event instanceof TypeError)) {
-      this.snackBar.open(`Ошибка входа. ${event.message}`,
+      this.snackBar.open(`Ошибка входа. ${event.code}`,
         'Закрыть', {duration: 5000});
     }
   }

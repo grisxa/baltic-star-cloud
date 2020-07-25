@@ -46,10 +46,10 @@ import {HttpClientModule} from '@angular/common/http';
 import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
 import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.component';
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
-import {NgxAuthFirebaseUIModule} from 'ngx-auth-firebaseui';
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
+import {FirebaseUIModule} from 'firebaseui-angular';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
@@ -114,10 +114,8 @@ const appRoutes: Routes = [
     ),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
-    NgxAuthFirebaseUIModule.forRoot(environment.firebase,
-      () => '[DEFAULT]',
-      environment.auth),
     AngularFireAuthModule,
+    FirebaseUIModule.forRoot(environment.auth),
     BrowserAnimationsModule,
     HttpClientModule,
     MatButtonModule,
