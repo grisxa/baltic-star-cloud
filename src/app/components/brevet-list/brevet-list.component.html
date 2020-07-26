@@ -5,5 +5,5 @@
   <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
 </mat-list>
 <app-add-button *ngIf="auth.isAdmin" (click)="addBrevet()"></app-add-button>
-<p><a title="Участники бреветов" [routerLink]="['/riders']">Список участников</a></p>
+<div class="row"><a title="Участники бреветов" [routerLink]="['/riders']">Список участников</a></div>
 <app-login-prompt></app-login-prompt>

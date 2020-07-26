@@ -8,7 +8,7 @@
     </ng-template>
   </app-editable>
 </h2>
-<p>Длина маршрута
+<div class="row">Длина маршрута
   <app-editable (update)="updateField('length')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.length}}</span>
@@ -17,8 +17,8 @@
       <input matInput [formControl]="formGroup?.get('length')" value="{{brevet?.length}}" size="5" type="number">
     </ng-template>
   </app-editable>
-  км</p>
-<div class="date-time-picker">Старт
+  км</div>
+<div class="row date-time-picker">Старт
   <app-editable (update)="updateField('startDate')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
@@ -29,7 +29,7 @@
   </app-editable>
 </div>
 
-<p>Маршрут
+<div class="row">Маршрут
   <app-editable (update)="updateMapUrl()">
     <ng-template appViewMode>
       <div *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin" class="url">{{brevet?.mapUrl}}</div>
@@ -40,7 +40,7 @@
     </ng-template>
   </app-editable>
   <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank" title="открыть"><mat-icon>launch</mat-icon></a>
-</p>
+</div>
 
 <div *ngIf="brevet?.mapUrl" class="plotaroutMap">
   <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
@@ -49,7 +49,7 @@
 </div>
 
 <h3 *ngIf="allowCheckIn">Самоотметка</h3>
-<p *ngIf="allowCheckIn">
+<div class="row" *ngIf="allowCheckIn">
   <button mat-raised-button (click)="startScanner()">
     <mat-icon>camera_alt</mat-icon>
     Сканировать
@@ -58,7 +58,7 @@
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
-</p>
+</div>
 
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>

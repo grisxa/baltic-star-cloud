@@ -1,5 +1,5 @@
 <h2>Бревет <span>{{checkpoint?.brevet?.name}}</span></h2>
-<p>Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</p>
+<div class="row">Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</div>
 <h3>
   <app-editable (update)="updateField('displayName')">
     <ng-template appViewMode>
@@ -28,7 +28,7 @@
     <mat-icon svgIcon="icon_qr"></mat-icon>
   </mat-button-toggle>
 </h3>
-<p>Дистанция:
+<div class="row">Дистанция:
   <app-editable (update)="updateField('distance')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.distance}}</span>
@@ -37,8 +37,8 @@
       <input matInput [formControl]="formGroup?.get('distance')" type="number" value="{{checkpoint?.distance}}" size="5">
     </ng-template>
   </app-editable>
-  км</p>
-<div class="coordinates">Координаты:
+  км</div>
+<div class="row coordinates">Координаты:
   <span>{{checkpoint?.coordinates?.latitude || 0 | number: '1.1-4'}},
     {{checkpoint?.coordinates?.longitude || 0 | number: '1.1-4'}}</span>
   <button mat-raised-button (click)="showMap()">
@@ -48,7 +48,7 @@
 </div>
 
 <h3>Отметки участников</h3>
-<div class="add-buttons">
+<div class="row add-buttons">
   <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
   <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
     <mat-icon>camera_alt</mat-icon>
