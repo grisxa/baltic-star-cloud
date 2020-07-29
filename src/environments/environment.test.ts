@@ -2,6 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import {firebase, firebaseui} from 'firebaseui-angular';
+
 export const environment = {
   production: false,
   firebase: {
@@ -15,14 +17,37 @@ export const environment = {
     measurementId: 'test'
   },
   auth: {
-    toastMessageOnAuthSuccess: false,
-    toastMessageOnAuthError: false,
-    passwordMaxLength: 15,
-    passwordMinLength: 6,
-    nameMaxLength: 50,
-    nameMinLength: 3,
-    guardProtectedRoutesUntilEmailIsVerified: true,
-    enableEmailVerification: true,
+    auth: {
+      signInFlow: 'popup',
+      signInOptions: [
+        {
+          scopes: [
+            'profile', 'email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+          ],
+          provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          customParameters: {
+            // Forces account selection even when one account is available.
+            prompt: 'select_account'
+          }
+        },
+        {
+          scopes: [
+            'public_profile',
+            'email'
+          ],
+          provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        },
+        {
+          requireDisplayName: true,
+          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
+        }
+      ],
+      // tosUrl: '/tos',
+      // privacyPolicyUrl: '/privacy',
+      credentialHelper: firebaseui.auth.CredentialHelper.NONE
+    } as firebaseui.auth.Config,
   },
   mapbox: {
     accessToken: 'test'
