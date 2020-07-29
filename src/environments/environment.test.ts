@@ -17,38 +17,36 @@ export const environment = {
     measurementId: 'test'
   },
   auth: {
-    auth: {
-      signInFlow: 'popup',
-      signInOptions: [
-        {
-          scopes: [
-            'profile', 'email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email'
-          ],
-          provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          customParameters: {
-            // Forces account selection even when one account is available.
-            prompt: 'select_account'
-          }
-        },
-        {
-          scopes: [
-            'public_profile',
-            'email'
-          ],
-          provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID
-        },
-        {
-          requireDisplayName: true,
-          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
+    signInFlow: 'popup',
+    signInOptions: [
+      {
+        scopes: [
+          'profile', 'email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email'
+        ],
+        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        customParameters: {
+          // Forces account selection even when one account is available.
+          prompt: 'select_account'
         }
-      ],
-      // tosUrl: '/tos',
-      // privacyPolicyUrl: '/privacy',
-      credentialHelper: firebaseui.auth.CredentialHelper.NONE
-    } as firebaseui.auth.Config,
-  },
+      },
+      {
+        scopes: [
+          'public_profile',
+          'email'
+        ],
+        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID
+      },
+      {
+        requireDisplayName: true,
+        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
+      }
+    ],
+    // tosUrl: '/tos',
+    // privacyPolicyUrl: '/privacy',
+    credentialHelper: firebaseui.auth.CredentialHelper.NONE
+  } as firebaseui.auth.Config,
   mapbox: {
     accessToken: 'test'
   },
