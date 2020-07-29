@@ -23,7 +23,6 @@
 
   .coordinates {
     padding: 0 5px;
-    margin-left: 5px;
   }
   .code {
     display: flex;
@@ -48,8 +47,7 @@
     }
   }
 
-  .add-buttons {
-    display: flex;
-    flex-direction: row;
+  ::ng-deep .mat-raised-button {
+    margin-left: 5px;
   }
 }

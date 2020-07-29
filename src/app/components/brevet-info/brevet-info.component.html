@@ -8,7 +8,7 @@
     </ng-template>
   </app-editable>
 </h2>
-<p>Длина маршрута
+<div class="row">Длина маршрута
   <app-editable (update)="updateField('length')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.length}}</span>
@@ -17,8 +17,8 @@
       <input matInput [formControl]="formGroup?.get('length')" value="{{brevet?.length}}" size="5" type="number">
     </ng-template>
   </app-editable>
-  км</p>
-<div class="date-time-picker">Старт
+  км</div>
+<div class="row date-time-picker">Старт
   <app-editable (update)="updateField('startDate')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
@@ -29,7 +29,7 @@
   </app-editable>
 </div>
 
-<p>Маршрут
+<div class="row">Маршрут
   <app-editable (update)="updateMapUrl()">
     <ng-template appViewMode>
       <div *ngIf="brevet?.mapUrl" [attr.data-editable]="auth.isAdmin" class="url">{{brevet?.mapUrl}}</div>
@@ -40,12 +40,24 @@
     </ng-template>
   </app-editable>
   <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank" title="открыть"><mat-icon>launch</mat-icon></a>
-</p>
+</div>
 
 <div *ngIf="brevet?.mapUrl" class="plotaroutMap">
   <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
   <button mat-raised-button *ngIf="showMap"  (click)="showMap=!showMap"><mat-icon>expand_less</mat-icon>Карта</button>
   <app-plotaroute-map *ngIf="mapId && showMap" [mapId]="mapId"></app-plotaroute-map>
+</div>
+
+<h3 *ngIf="allowCheckIn">Самоотметка</h3>
+<div class="row" *ngIf="allowCheckIn">
+  <button mat-raised-button (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
+    <mat-icon>my_location</mat-icon>
+    Координаты
+  </button>
 </div>
 
 <h3>Контрольные пункты</h3>
@@ -75,18 +87,6 @@
     [checkpoint]="checkpoints?.length > 1 && checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
 </mat-list>
 
-<h3 *ngIf="allowCheckIn">Самоотметка</h3>
-<p *ngIf="allowCheckIn">
-  <button mat-raised-button (click)="startScanner()">
-    <mat-icon>camera_alt</mat-icon>
-    Сканировать
-  </button>
-  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
-    <mat-icon>my_location</mat-icon>
-    Координаты
-  </button>
-</p>
-
 <h3>Отметки участников</h3>
 <div class="table-container">
   <table mat-table [dataSource]="progress">
@@ -98,7 +98,10 @@
       <th mat-header-cell *matHeaderCellDef class="mat-accent"
           [class]="columnTypes[column]"> {{columnNames[column]}} </th>
       <td mat-cell *matCellDef="let rider"
-          [class]="columnTypes[column]"> {{rider[column]?.toDate() | date:'HH:mm'}} </td>
+          [class]="columnTypes[column]">
+        <span title="{{rider[column]?.toDate() | date:'dd/MM/yy HH:mm'}}">
+          {{rider[column]?.toDate() | date:'HH:mm'}}</span>
+      </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
     <tr mat-row *matRowDef="let rider; columns: columnsToDisplay"></tr>

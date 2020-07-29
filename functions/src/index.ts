@@ -7,6 +7,7 @@ import DocumentReference = admin.firestore.DocumentReference;
 import DocumentData = admin.firestore.DocumentData;
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import checkpointPrint from './checkpoint-print';
 
 // import secret from './secret';
 
@@ -21,6 +22,8 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 */
+
+export const printCheckpoint = checkpointPrint;
 
 /*
 function makeSignature(text: string) {
@@ -93,6 +96,8 @@ interface Control {
   distance?: number;
   brevet: Brevet;
   copy?: boolean;
+  selfcheck?: boolean;
+  sleep?: boolean;
 }
 
 interface Rider {
@@ -267,6 +272,8 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
     return db.doc(`checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      selfcheck: data.selfcheck,
+      sleep: data.sleep,
       copy: true
     }, {merge: true})
       .then(() => console.log(`updated /checkpoints/ ${checkpointUid}`))
@@ -288,6 +295,8 @@ export const updateCheckpoint = functions.firestore.document('checkpoints/{check
     return db.doc(`brevets/${data.brevet.uid}/checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      selfcheck: data.selfcheck,
+      sleep: data.sleep,
       copy: true
     }, {merge: true})
       .then(() => console.log(`updated /checkpoints/ ${checkpointUid}`))

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from 'firebase/app';
 import {Observable, of, Subject} from 'rxjs';
@@ -9,10 +9,10 @@ import {Rider} from '../models/rider';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   // may be either a Google Auth user or an UID-mapped rider
-  user: User|Rider;
-  user$: Observable<User|Rider>;
+  user: Rider;
+  user$: Observable<Rider>;
   private unsubscribe$ = new Subject();
 
   constructor(public fireAuth: AngularFireAuth, storage: StorageService) {
@@ -21,19 +21,21 @@ export class AuthService {
       takeUntil(this.unsubscribe$),
       switchMap((user: User) => user ?
         storage.watchRider(user.uid).pipe(
-          switchMap((rider: Rider) => rider ? of(rider) : of(user))
-        ) : of(null))
+          switchMap((rider: Rider) => rider ?
+            of(Rider.fromDoc({...rider, auth: user} as Rider)) :
+            of(Rider.fromDoc({auth: user} as Rider))
+          )) :
+        of(null))
     );
-    this.user$.subscribe(user => {
-      // console.log('= user', user);
+    this.user$.subscribe((user: Rider) => {
       this.user = user;
       localStorage.setItem('user', JSON.stringify(this.user));
     });
   }
 
-  get hasCard(): boolean {
-    const user = JSON.parse(localStorage.getItem('user'));
-    return user && user.hasOwnProperty('owner');
+  // FIXME: when to destroy?
+  ngOnDestroy() {
+    this.unsubscribe$.next();
   }
 
   get isLoggedIn(): boolean {

@@ -26,7 +26,7 @@
     </ng-template>
   </app-editable>
 </h2>
-<p>Карточка №
+<div class="row">Карточка №
   <app-editable (update)="updateField('code')">
     <ng-template appViewMode>
       <span [attr.data-editable]="isEditable">{{rider?.code || '?'}}</span>
@@ -40,14 +40,14 @@
       </mat-form-field>
     </ng-template>
   </app-editable>
-</p>
+</div>
 <div class="code">
   <qrcode *ngIf="isEditable && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
   <ngx-barcode6 *ngIf="!isEditable || !url" [bc-format]="'CODE128'" [bc-value]="rider?.code || rider?.uid" [bc-display-value]="true"></ngx-barcode6>
 </div>
 
-<p *ngIf="!isEditable">Год рождения: {{(rider?.birthDate?.toDate() | date: 'yyyy') || '?'}}</p>
-<p *ngIf="isEditable">День рождения:
+<div class="row" *ngIf="!isEditable">Год рождения: {{(rider?.birthDate?.toDate() | date: 'yyyy') || '?'}}</div>
+<div class="row" *ngIf="isEditable">День рождения:
   <app-editable (update)="updateField('birthDate')">
     <ng-template appViewMode>
       <span [attr.data-editable]="isEditable">{{(rider?.birthDate?.toDate() | date: 'shortDate') || '?'}}</span>
@@ -62,8 +62,8 @@
       <mat-datepicker #picker></mat-datepicker>
     </ng-template>
   </app-editable>
-</p>
-<p>Откуда:
+</div>
+<div class="row">Откуда:
   <app-editable (update)="updateField('city')">
     <ng-template appViewMode>
       <span [attr.data-editable]="isEditable">{{rider?.city || '?'}}</span>
@@ -90,7 +90,7 @@
       </mat-form-field>
     </ng-template>
   </app-editable>
-</p>
+</div>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">

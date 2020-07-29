@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '~firebaseui/dist/firebaseui.css';
 
 html, body { height: 100%; }
 body {
@@ -32,12 +33,12 @@ h3 {
     font-weight: bold;
   }
 }
-p {
+div.row {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 0 5px;
-  margin-left: 5px;
+  margin: 5px;
 }
 span {
   margin: 0 5px;

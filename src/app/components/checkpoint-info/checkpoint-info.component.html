@@ -1,5 +1,5 @@
 <h2>Бревет <span>{{checkpoint?.brevet?.name}}</span></h2>
-<p>Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</p>
+<div class="row">Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</div>
 <h3>
   <app-editable (update)="updateField('displayName')">
     <ng-template appViewMode>
@@ -28,7 +28,7 @@
     <mat-icon svgIcon="icon_qr"></mat-icon>
   </mat-button-toggle>
 </h3>
-<p>Дистанция:
+<div class="row">Дистанция:
   <app-editable (update)="updateField('distance')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.distance}}</span>
@@ -37,8 +37,8 @@
       <input matInput [formControl]="formGroup?.get('distance')" type="number" value="{{checkpoint?.distance}}" size="5">
     </ng-template>
   </app-editable>
-  км</p>
-<div class="coordinates">Координаты:
+  км</div>
+<div class="row coordinates">Координаты:
   <span>{{checkpoint?.coordinates?.latitude || 0 | number: '1.1-4'}},
     {{checkpoint?.coordinates?.longitude || 0 | number: '1.1-4'}}</span>
   <button mat-raised-button (click)="showMap()">
@@ -48,6 +48,13 @@
 </div>
 
 <h3>Отметки участников</h3>
+<div class="row add-buttons">
+  <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
+  <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
+    <mat-icon>camera_alt</mat-icon>
+    Сканировать
+  </button>
+</div>
 <table mat-table [dataSource]="riders">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Имя </th>
@@ -66,13 +73,6 @@
 </table>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
-<div class="add-buttons">
-  <app-add-button *ngIf="auth.isAdmin" (click)="addBarcode()"></app-add-button>
-  <button mat-raised-button *ngIf="auth.isAdmin" (click)="startScanner()">
-    <mat-icon>camera_alt</mat-icon>
-    Сканировать
-  </button>
-</div>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
   <ng-container matColumnDef="time">
     <th mat-header-cell *matHeaderCellDef> Дата </th>
@@ -88,7 +88,9 @@
 </table>
 <!-- mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator -->
 <div class="code">
-<qrcode *ngIf="auth.isAdmin && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  <a href="/print/brevet/{{checkpoint?.brevet?.uid}}/checkpoint/{{checkpoint?.uid}}" target="_blank">
+    <qrcode *ngIf="auth.isAdmin && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+  </a>
 </div>
 
 <app-login-prompt></app-login-prompt>
