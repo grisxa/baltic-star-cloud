@@ -7,6 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {takeUntil} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-rider-list',
@@ -19,11 +20,13 @@ export class RiderListComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router,
               public auth: AuthService,
+              private titleService: Title,
               private storage: StorageService,
               private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Список участников');
     this.storage.watchRiders()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((riders: Rider[]) => {

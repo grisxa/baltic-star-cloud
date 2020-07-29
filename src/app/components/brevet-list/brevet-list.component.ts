@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import * as firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Title} from '@angular/platform-browser';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -21,11 +22,13 @@ export class BrevetListComponent implements OnInit {
 
   constructor(private router: Router,
               public auth: AuthService,
+              private titleService: Title,
               private storage: StorageService,
               private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Список бреветов');
     this.storage.listBrevets().subscribe(snapshot => {
       console.log('= brevets', snapshot.docs);
       const today = new Date();
