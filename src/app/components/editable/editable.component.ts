@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  OnDestroy,
   OnInit,
   Output,
   TemplateRef
@@ -21,7 +22,7 @@ import {takeUntil} from 'rxjs/operators';
     <ng-container *ngTemplateOutlet="currentView"></ng-container>`,
   styleUrls: ['./editable.component.scss']
 })
-export class EditableComponent implements  OnInit {
+export class EditableComponent implements  OnInit, OnDestroy {
   @Output() update = new EventEmitter<boolean>();
   @ContentChild(ViewModeDirective, {static: true}) viewModeTemplate: ViewModeDirective;
   @ContentChild(EditModeDirective, {static: false}) editModeTemplate: EditModeDirective;
@@ -54,6 +55,10 @@ export class EditableComponent implements  OnInit {
           }
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
   }
 
   /**

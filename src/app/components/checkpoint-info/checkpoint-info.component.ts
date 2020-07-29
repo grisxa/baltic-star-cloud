@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
 
@@ -25,7 +25,7 @@ import {Title} from '@angular/platform-browser';
   templateUrl: './checkpoint-info.component.html',
   styleUrls: ['./checkpoint-info.component.scss']
 })
-export class CheckpointInfoComponent implements OnInit {
+export class CheckpointInfoComponent implements OnInit, OnDestroy {
   private unsubscribe$ = new Subject();
   private checkpoint$: Observable<Checkpoint>;
 
@@ -98,6 +98,10 @@ export class CheckpointInfoComponent implements OnInit {
         this.formGroup.get('sleep').setValue(checkpoint.sleep);
         this.formGroup.get('selfcheck').setValue(checkpoint.selfcheck);
       });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
   }
 
   updateField(field: string) {
