@@ -1,5 +1,5 @@
 <h3>Список участников бреветов велоклуба "Балтийская звезда"</h3>
-<app-add-button *ngIf="auth.isAdmin || !auth.user.hasCard" (click)="addRider()"></app-add-button>
+<app-add-button *ngIf="auth.isAdmin || !auth.user?.hasCard" (click)="addRider()"></app-add-button>
 <mat-list>
   <mat-list-item *ngFor="let rider of (riders$ | async)">
     <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteRider(rider?.uid)">
