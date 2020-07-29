@@ -48,7 +48,7 @@ import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
-import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
+import {canActivate, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 import {FirebaseUIModule} from 'firebaseui-angular';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
@@ -68,13 +68,14 @@ const appRoutes: Routes = [
   {
     path: 'checkpoint/:uid/addbarcode',
     component: AddBarcodeComponent,
-    canActivate: [AngularFireAuthGuard]
+    ...canActivate(() => redirectUnauthorizedTo(['login']))
   },
   {path: 'login', component: LoginComponent},
+  {path: 'login/:info', component: LoginComponent},
   {
     path: 'after-login',
     component: AfterLoginComponent,
-    canActivate: [AngularFireAuthGuard]
+    ...canActivate(() => redirectUnauthorizedTo(['login']))
   },
   {path: '**', redirectTo: 'brevets'},
 ];
