@@ -52,7 +52,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
     });
     this.route.paramMap.subscribe(params => {
       const riderUid = params.get('uid');
-      this.rider$ = this.storage.getRider(riderUid);
+      this.rider$ = this.storage.watchRider(riderUid);
       this.url = window.location.origin + '/r/' + riderUid;
       this.storage.watchBarcodes('riders', riderUid)
         .subscribe((codes: Barcode[]) => {
@@ -64,8 +64,8 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
     this.rider$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(rider => {
-        this.titleService.setTitle(`${rider.firstName} ${rider.lastName}`);
-        this.rider = rider;
+        this.titleService.setTitle(rider.displayName);
+        this.rider = Rider.fromDoc(rider);
         console.log('= rider found', rider);
         this.formGroup.get('firstName').setValue(rider.firstName);
         this.formGroup.get('lastName').setValue(rider.lastName);
@@ -110,7 +110,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
       console.log(`= update ${field} with ${control.value}`);
       if (field === 'firstName' || field === 'lastName') {
-        this.rider.displayName = `${this.rider.firstName} ${this.rider.lastName}`;
+        this.rider.updateDisplayName();
       }
       this.storage.updateRider(this.rider)
         .then(() => {

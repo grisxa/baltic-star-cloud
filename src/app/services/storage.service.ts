@@ -148,16 +148,17 @@ export class StorageService {
   }
 
   createRider(rider: Rider) {
+    // avoid storing User auth (managed by firebase)
+    const {auth, ...doc} = rider;
     const docPromise: Promise<void> = rider.uid ?
+      this.firestore.collection('riders')
+        .doc<Rider>(rider.uid)
+        .set(doc as Rider, {merge: true}) :
       this.firestore.collection<Rider>('riders')
-        .doc(rider.uid)
-        .set({...rider}, {merge: true}) :
-      this.firestore.collection<Rider>('riders')
-        .add({...rider})
+        .add(doc as Rider)
         .then(docRef => {
-          rider.uid = docRef.id;
-          console.log('= storage rider', rider);
-          return docRef.update({...rider});
+          doc.uid = docRef.id;
+          return docRef.update(doc);
         });
     return docPromise
       .then(() => {
@@ -176,11 +177,13 @@ export class StorageService {
   }
 
   deleteRider(uid: string): Promise<void> {
-    return this.firestore.collection('riders').doc(uid).delete();
+    return this.firestore.collection('riders').doc<Rider>(uid).delete();
   }
   updateRider(rider: Rider) {
+    // avoid storing User auth (managed by firebase)
+    const {auth, ...doc} = rider;
     return this.firestore.collection('riders')
-      .doc(rider.uid).update(rider);
+      .doc<Rider>(rider.uid).update(doc);
   }
 
   listBrevets() {
@@ -205,12 +208,12 @@ export class StorageService {
   */
 
   watchRider(uid: string) {
-    return this.firestore.collection('riders').doc(uid).valueChanges();
+    return this.firestore.collection('riders').doc<Rider>(uid).valueChanges();
   }
 
   watchRiders() {
     return this.firestore
-      .collection('riders', ref => ref.where('hidden', '==', false)
+      .collection<Rider>('riders', ref => ref.where('hidden', '==', false)
         .orderBy('lastName'))
       .valueChanges();
   }

@@ -4,7 +4,7 @@ import {AuthService} from '../../services/auth.service';
 import {Rider} from '../../models/rider';
 import {StorageService} from '../../services/storage.service';
 import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {first, takeUntil} from 'rxjs/operators';
 
 @Component({
   template: ''
@@ -18,14 +18,24 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe(user => {
+    const info = localStorage.getItem('info');
+    localStorage.removeItem('info');
+
+    this.auth.user$.pipe(takeUntil(this.unsubscribe$), first())
+      .subscribe((user: Rider) => {
         // create a card for the new account and redirect to it
-        if (user && !this.auth.hasCard) {
-          const uid = this.auth.user.uid;
-          const rider = new Rider(uid, uid, this.auth.user.displayName);
-          this.storage.createRider(rider).then(newUid => {
+        if (user && !user.hasCard) {
+          user.owner = user.uid;
+          user.updateInfo(info);
+          this.storage.createRider(user).then(newUid => {
             this.router.navigate(['rider', newUid]);
+          });
+
+        } else if (user && info) {
+          // update existing user
+          user.updateInfo(info);
+          this.storage.updateRider(user).then(() => {
+            this.router.navigate(['rider', user.uid]);
           });
 
         } else {
