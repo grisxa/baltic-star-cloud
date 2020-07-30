@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import {DomSanitizer} from '@angular/platform-browser';
 })
 export class AppComponent {
   constructor(private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer) {
+              private domSanitizer: DomSanitizer,
+              public router: Router) {
     this.matIconRegistry
       .addSvgIcon(
         'icon_bed',
