@@ -1,4 +1,5 @@
 import * as firebase from 'firebase/app';
+import {Buffer} from 'buffer';
 import Timestamp = firebase.firestore.Timestamp;
 import User = firebase.User;
 
@@ -46,9 +47,11 @@ export class Rider {
     return Object.assign(rider, doc);
   }
 
-  updateInfo(info) {
+  updateInfo(encoded: string) {
+    const info = this.decodeInfo(encoded);
+
     if (info) {
-      const {firstName, lastName, birthDate, code, city, country} = JSON.parse(info);
+      const {firstName, lastName, birthDate, code, city, country} = info;
 
       this.firstName = firstName || this.firstName;
       this.lastName = lastName || this.lastName;
@@ -58,6 +61,17 @@ export class Rider {
       this.birthDate = birthDate ? Timestamp.fromMillis(birthDate * 1000) : this.birthDate;
       this.updateDisplayName();
     }
+  }
+
+  decodeInfo(encoded: string) {
+    let info;
+    try {
+      const bytes = Buffer.from(encoded, 'base64');
+      info = JSON.parse(bytes.toString('utf-8'));
+    } catch (error) {
+      console.error('Base64/JSON parsing error', error.message);
+    }
+    return info;
   }
 
   updateDisplayName() {

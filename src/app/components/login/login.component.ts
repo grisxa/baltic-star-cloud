@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult} from 'firebaseui-angular';
 import {AuthService} from '../../services/auth.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
@@ -21,10 +21,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const info = params.get('info');
-      if (info) {
-        localStorage.setItem('info', info);
+    this.route.url.subscribe((paths: UrlSegment[]) => {
+      if (paths && paths.length) {
+        localStorage.setItem('info', paths.join('/'));
       }
     });
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))

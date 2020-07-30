@@ -70,8 +70,10 @@ const appRoutes: Routes = [
     component: AddBarcodeComponent,
     ...canActivate(() => redirectUnauthorizedTo(['login']))
   },
-  {path: 'login', component: LoginComponent},
-  {path: 'login/:info', component: LoginComponent},
+  {
+    path: 'login',
+    children: [{path: '**', component: LoginComponent}]
+  },
   {
     path: 'after-login',
     component: AfterLoginComponent,
