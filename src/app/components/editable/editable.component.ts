@@ -71,6 +71,7 @@ export class EditableComponent implements  OnInit, OnDestroy {
     const target = event.composedPath();
 
     if (this.editMode.getValue() === true &&
+      target.length &&
       !target.includes(this.host.nativeElement) &&
       !target.map((item: HTMLElement) => item.tagName).includes('MAT-DATEPICKER-CONTENT')) {
 
@@ -86,7 +87,7 @@ export class EditableComponent implements  OnInit, OnDestroy {
    */
   @HostListener('click', ['$event'])
   public hostClick(event: MouseEvent) {
-    const target = event.composedPath();
+    // const target = event.composedPath();
 
     if (this.editMode.getValue() === false) {
       this.editMode.next(true);
@@ -95,7 +96,7 @@ export class EditableComponent implements  OnInit, OnDestroy {
 
   @HostListener('keyup', ['$event'])
   public hostKeyUp(event: KeyboardEvent) {
-    const target = event.composedPath();
+    // const target = event.composedPath();
 
     if (this.editMode.getValue() === true) {
       if (event.key === 'Enter') {
