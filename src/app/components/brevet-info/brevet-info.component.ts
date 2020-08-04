@@ -278,7 +278,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       .then((position: Position) => this.storage.listCloseCheckpoints(position))
       // get the checkpoint info + delta distance to the current point
       .then(snapshot => snapshot.docs
-        .map((doc): Checkpoint => Object.assign({}, doc.data(), {delta: doc.distance})))
+        .map((doc): Checkpoint => Object.assign({} as Checkpoint, doc.data(), {delta: doc.distance})))
       // skip checkpoints not in the brevet
       .then(checkpoints => this.storage
         .filterCheckpoints(this.brevet.uid, checkpoints).toPromise())
