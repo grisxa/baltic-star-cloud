@@ -9,7 +9,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
     useExisting: forwardRef(() => DateTimePickerComponent),
     multi: true}],
   templateUrl: './date-time-picker.component.html',
-  styleUrls: ['./date-time-picker.component.css']
+  styleUrls: ['./date-time-picker.component.scss']
 })
 
 export class DateTimePickerComponent implements OnInit, ControlValueAccessor {

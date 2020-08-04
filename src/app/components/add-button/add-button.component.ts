@@ -8,7 +8,7 @@ import {AuthService} from '../../services/auth.service';
       <mat-icon>add</mat-icon>
       Добавить
     </button>`,
-  styleUrls: ['./add-button.component.css']
+  styleUrls: ['./add-button.component.scss']
 })
 export class AddButtonComponent {
   constructor(public auth: AuthService) {
