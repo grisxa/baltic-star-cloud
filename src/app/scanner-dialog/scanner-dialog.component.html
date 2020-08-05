@@ -1,6 +1,28 @@
 <zxing-scanner
+  [autostart]="false"
+  [torch]="torchEnabled"
+  [(device)]="currentDevice"
   [formats]="acceptedFormats"
+  (camerasFound)="onCamerasFound($event)"
+  (torchCompatible)="onTorchCompatible($event)"
   (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
+
 <mat-dialog-actions>
+  <mat-form-field appearance="standard">
+    <mat-label>Выберите камеру</mat-label>
+    <mat-select [(value)]="currentDeviceId"
+                (selectionChange)="onDeviceSelectChange(currentDeviceId)">
+      <mat-option *ngFor="let device of availableDevices"
+                  [value]="device.deviceId">{{device.label}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-button-toggle *ngIf="torchAvailable$ | async"
+    appearance="legacy"
+    title="Вспышка"
+    [checked]="torchEnabled"
+    (change)="torchEnabled = !torchEnabled">
+    <div class="torch"><mat-icon>brightness_high</mat-icon>Вспышка</div>
+  </mat-button-toggle>
+
   <button mat-raised-button mat-dialog-close>Закрыть</button>
 </mat-dialog-actions>

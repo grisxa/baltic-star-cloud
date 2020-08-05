@@ -1,0 +1,17 @@
+:host {
+  mat-dialog-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  button {
+    margin: 5px;
+  }
+  .torch {
+    line-height: 36px;
+    .mat-icon {
+      vertical-align: middle;
+      margin: 0 5px;
+    }
+  }
+}

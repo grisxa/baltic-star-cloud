@@ -3,18 +3,63 @@ import {Barcode} from '../models/barcode';
 import {BarcodeFormat} from '@zxing/library';
 import {ToneService} from '../services/tone.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {BehaviorSubject} from 'rxjs';
+import {SettingService} from '../services/setting.service';
 
 @Component({
   selector: 'app-scanner-dialog',
   templateUrl: './scanner-dialog.component.html',
-  styleUrls: ['./scanner-dialog.component.css']
+  styleUrls: ['./scanner-dialog.component.scss']
 })
 export class ScannerDialogComponent {
   onSuccess = new EventEmitter<Barcode>();
   lastCode: string;
   acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
 
-  constructor(private toneService: ToneService, private snackBar: MatSnackBar) {
+  hasDevices: boolean;
+  hasPermission: boolean;
+
+  availableDevices: MediaDeviceInfo[];
+  currentDevice: MediaDeviceInfo = null;
+  currentDeviceId = '';
+
+  torchEnabled = false;
+  torchAvailable$ = new BehaviorSubject<boolean>(false);
+
+  constructor(
+    private toneService: ToneService,
+    private settings: SettingService,
+    private snackBar: MatSnackBar) {
+  }
+
+  onHasPermission(allowed: boolean) {
+    this.hasPermission = allowed;
+  }
+
+  onCamerasFound(devices: MediaDeviceInfo[]): void {
+    this.availableDevices = devices;
+    this.hasDevices = Boolean(devices && devices.length);
+
+    const selected = this.settings.getValue('camera_id');
+    if (selected) {
+      const device = devices.find(x => x.deviceId === selected);
+      this.currentDevice = device || null;
+      this.currentDeviceId = selected;
+    }
+  }
+
+  onDeviceSelectChange(selected: string) {
+    const device = this.availableDevices.find(x => x.deviceId === selected);
+    this.currentDevice = device || null;
+    this.settings.setValue('camera_id', selected);
+  }
+
+  onTorchCompatible(isCompatible: boolean): void {
+    this.torchAvailable$.next(isCompatible || false);
+  }
+
+  toggleTorch(): void {
+    this.torchEnabled = !this.torchEnabled;
   }
 
   scanSuccessHandler(code: string) {
