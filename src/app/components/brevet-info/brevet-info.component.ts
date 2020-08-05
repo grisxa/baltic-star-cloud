@@ -245,7 +245,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   startScanner() {
     const dialogRef = this.dialog.open(ScannerDialogComponent, {
-      width: '75vw'
+      maxWidth: '90vw',
+      maxHeight: '90vh'
     });
     // track every code coming from the scanner
     dialogRef.componentInstance.onSuccess

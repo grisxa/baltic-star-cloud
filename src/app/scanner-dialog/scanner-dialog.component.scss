@@ -1,8 +1,27 @@
 :host {
+  @media (min-aspect-ratio: 1/1) {
+    zxing-scanner::ng-deep {
+      width: calc(90vmin - 48px);
+    }
+  }
+  @media (max-aspect-ratio: 1/1) {
+    zxing-scanner::ng-deep {
+      height: calc(90vmin - 48px);
+    }
+  }
+
   mat-dialog-actions {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+/*
+    @media (max-aspect-ratio: 1/1) {
+      background-color: green;
+    }
+    @media (min-aspect-ratio: 1/1) {
+      background-color: red;
+    }
+*/
   }
   button {
     margin: 5px;
