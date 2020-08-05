@@ -40,7 +40,8 @@ export default functions.https.onRequest((request, response) => {
       pdf.fontSize(30);
       pdf.font('default').text('Бревет ' + checkpoint.brevet.name,
         50, 220, {width: 550});
-      pdf.font('default').text(checkpoint.displayName,
+      pdf.font('default').text(checkpoint.displayName + ': ' +
+        checkpoint.distance + ' км',
         50, 300, {width: 550});
       pdf.fontSize(20);
       const startDate = checkpoint.brevet.startDate.toDate();
