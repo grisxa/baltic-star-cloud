@@ -3,7 +3,6 @@ import {Barcode} from '../models/barcode';
 import {BarcodeFormat} from '@zxing/library';
 import {ToneService} from '../services/tone.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {BehaviorSubject} from 'rxjs';
 import {SettingService} from '../services/setting.service';
 
 @Component({
@@ -14,17 +13,11 @@ import {SettingService} from '../services/setting.service';
 export class ScannerDialogComponent {
   onSuccess = new EventEmitter<Barcode>();
   lastCode: string;
-  acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
+  acceptedFormats: BarcodeFormat[] = [];
 
-  hasDevices: boolean;
-  hasPermission: boolean;
-
-  availableDevices: MediaDeviceInfo[];
+  availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo = null;
   currentDeviceId = '';
-
-  torchEnabled = false;
-  torchAvailable$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private toneService: ToneService,
@@ -32,34 +25,23 @@ export class ScannerDialogComponent {
     private snackBar: MatSnackBar) {
   }
 
-  onHasPermission(allowed: boolean) {
-    this.hasPermission = allowed;
+  setCamera(id: string) {
+    const device = this.availableDevices.find(camera => camera.deviceId === id);
+    this.currentDevice = device || null;
+    this.acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
-    this.hasDevices = Boolean(devices && devices.length);
 
-    const selected = this.settings.getValue('camera_id');
-    if (selected) {
-      const device = devices.find(x => x.deviceId === selected);
-      this.currentDevice = device || null;
-      this.currentDeviceId = selected;
-    }
+    const selected = this.settings.getValue('camera_id') || devices[0].deviceId;
+    this.currentDeviceId = selected;
+    this.setCamera(selected);
   }
 
   onDeviceSelectChange(selected: string) {
-    const device = this.availableDevices.find(x => x.deviceId === selected);
-    this.currentDevice = device || null;
+    this.setCamera(selected);
     this.settings.setValue('camera_id', selected);
-  }
-
-  onTorchCompatible(isCompatible: boolean): void {
-    this.torchAvailable$.next(isCompatible || false);
-  }
-
-  toggleTorch(): void {
-    this.torchEnabled = !this.torchEnabled;
   }
 
   scanSuccessHandler(code: string) {
