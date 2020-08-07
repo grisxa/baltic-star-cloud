@@ -4,6 +4,7 @@ import {BarcodeFormat} from '@zxing/library';
 import {ToneService} from '../services/tone.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {SettingService} from '../services/setting.service';
+import {cutOffUrl, findRearCamera} from './scanner-utils';
 
 @Component({
   selector: 'app-scanner-dialog',
@@ -34,7 +35,7 @@ export class ScannerDialogComponent {
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
 
-    const selected = this.settings.getValue('camera_id') || devices[0].deviceId;
+    const selected = this.settings.getValue('camera_id') || findRearCamera(devices);
     this.currentDeviceId = selected;
     this.setCamera(selected);
   }
@@ -52,11 +53,7 @@ export class ScannerDialogComponent {
     const barcode = new Barcode();
     const codeIndex = code.lastIndexOf('/');
 
-    if (codeIndex !== -1) {
-      barcode.code = code.substr(codeIndex + 1);
-    } else {
-      barcode.code = code;
-    }
+    barcode.code = cutOffUrl(code);
     if (!barcode.code) {
       return;
     }
