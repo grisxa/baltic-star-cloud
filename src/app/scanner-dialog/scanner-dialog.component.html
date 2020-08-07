@@ -1,5 +1,6 @@
 <zxing-scanner
   [autostart]="false"
+  [autofocusEnabled]="true"
   [(device)]="currentDevice"
   [formats]="acceptedFormats"
   (camerasFound)="onCamerasFound($event)"
