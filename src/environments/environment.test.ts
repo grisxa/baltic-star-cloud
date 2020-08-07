@@ -17,7 +17,7 @@ export const environment = {
     measurementId: 'test'
   },
   auth: {
-    signInFlow: 'popup',
+    signInFlow: 'redirect',
     signInOptions: [
       {
         scopes: [
