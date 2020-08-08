@@ -52,7 +52,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.titleService.setTitle('Контрольный пункт');
     this.riders.sort = new MatSort();
-    this.riders.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
+    this.riders.sort.sort({id: 'in', start: 'asc', disableClear: true});
     this.barcodes.paginator = this.paginator;
     this.formGroup = new FormGroup({
       displayName: new FormControl('', Validators.required),
