@@ -5,7 +5,7 @@ export function findRearCamera(devices: MediaDeviceInfo[]): string {
 
   // check for keywords
   const found = devices
-    .find(camera => camera.label.search(/(rear|back)/i) !== -1);
+    .find(camera => camera.label.search(/(rear|back|\b2\b)/i) !== -1);
   if (found) {
     return found.deviceId;
   }
