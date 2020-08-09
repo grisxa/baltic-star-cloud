@@ -4,6 +4,13 @@
 <div class="row">Дистанция <span>{{(checkpoint$ | async)?.distance}}</span> км</div>
 <app-date-time-picker [formControl]="dateControl"></app-date-time-picker>
 
-<div class="row"><input matInput type="text" placeholder="код" [formControl]="codeControl" size="15"/></div>
+<div class="row">
+  <input matInput #code
+         [formControl]="codeControl"
+         type="text"
+         autofocus
+         placeholder="код"
+         size="15"/>
+</div>
 <button mat-raised-button (click)="onCancel()">Отменить</button>
 <button mat-raised-button (click)="onSave()">Сохранить</button>

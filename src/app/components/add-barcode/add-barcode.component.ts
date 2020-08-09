@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../../services/storage.service';
@@ -9,6 +9,7 @@ import {FormControl, Validators} from '@angular/forms';
 import * as firebase from 'firebase/app';
 import {Barcode} from '../../models/barcode';
 import Timestamp = firebase.firestore.Timestamp;
+import {MatInput} from '@angular/material/input';
 
 @Component({
   selector: 'app-add-barcode',
@@ -16,6 +17,8 @@ import Timestamp = firebase.firestore.Timestamp;
   styleUrls: ['./add-barcode.component.css']
 })
 export class AddBarcodeComponent implements OnInit {
+  @ViewChild(MatInput) code: MatInput;
+
   checkpoint$: Observable<Checkpoint>;
   private checkpoint: Checkpoint;
   codeControl: FormControl;
@@ -26,6 +29,8 @@ export class AddBarcodeComponent implements OnInit {
   }
 
   ngOnInit() {
+    setTimeout(() => this.code.focus());
+
     this.barcode = new Barcode();
     console.log('= init', this.barcode);
     this.codeControl = new FormControl(this.barcode.code, Validators.required);
