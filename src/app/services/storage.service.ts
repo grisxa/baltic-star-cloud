@@ -162,8 +162,8 @@ export class StorageService {
         });
     return docPromise
       .then(() => {
-        console.log('= document saved', rider.uid);
-        return rider.uid;
+        console.log('= document saved', doc.uid);
+        return doc.uid;
       })
       .catch(error => {
         console.error('Error adding document: ', error);
