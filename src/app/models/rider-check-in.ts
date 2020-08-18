@@ -3,6 +3,7 @@ import Timestamp = firebase.firestore.Timestamp;
 
 export class RiderCheckIn {
   uid: string;
+  code?: string;
   name: string;
   lastName?: string;
 

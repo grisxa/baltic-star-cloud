@@ -36,7 +36,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
   riders = new MatTableDataSource<RiderCheckIn>();
-  riderColumnsToDisplay = ['name', 'in', 'out'];
+  riderColumnsToDisplay = ['code', 'name', 'in', 'out'];
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
