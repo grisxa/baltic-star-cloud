@@ -5,6 +5,7 @@
     <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteRider(rider?.uid)">
       <mat-icon>delete_forever</mat-icon>
     </button>
+    {{rider.code || '?'}} &nbsp;
     <a title="{{rider.displayName}}" [routerLink]="['/rider', rider.uid]">{{rider.displayName}}</a>,
     {{(rider.birthDate?.toDate() | date: 'yyyy г.') || '?'}}, {{rider.city || '?'}}, {{rider.country || '?'}}
   </mat-list-item>
