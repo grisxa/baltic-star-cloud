@@ -226,7 +226,16 @@ export class StorageService {
   }
 
   watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
-    return this.firestore
+    return this.firestore.collection<Rider>('riders').get().pipe(
+      map(snapshot => snapshot.docs),
+      map(docs => docs.map(doc => doc.data())),
+      map((riders: Rider[]) => {
+        const dictionary = {};
+        riders.forEach(rider => dictionary[rider.uid] = rider.code);
+        return dictionary;
+      }),
+      tap(data => console.log('riders', data)),
+      mergeMap(dictionary => this.firestore
       .collection('checkpoints').doc(checkpointUid)
       .valueChanges().pipe(
         tap(data => console.log('checkpoint change', data)),
@@ -236,8 +245,11 @@ export class StorageService {
           .collection('brevets').doc(checkpoint.brevet.uid)
           .collection('checkpoints').doc(checkpoint.uid)
           .collection('riders')
-          .valueChanges()
-        ));
+          .valueChanges().pipe(
+            map((riders: RiderCheckIn[]) => riders.map(rider => Object
+              .assign(rider, { code: dictionary[rider.uid] })))
+          )
+        ))));
   }
 
   watchCheckpoints(brevetUid: string) {
