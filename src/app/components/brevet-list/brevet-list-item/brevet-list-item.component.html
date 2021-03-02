@@ -1,0 +1,7 @@
+<mat-list-item>
+  <span>{{brevet?.startDate | date}}</span>
+  <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">
+    {{brevet?.name}}
+  </a>
+  <span>({{brevet?.length}} км)</span>
+</mat-list-item>

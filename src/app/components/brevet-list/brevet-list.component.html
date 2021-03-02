@@ -1,0 +1,5 @@
+<h2 i18n="Page title">Upcoming brevets</h2>
+<mat-list *ngIf="newBrevets.length > 0; else elseBlock">
+  <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
+</mat-list>
+<ng-template #elseBlock i18n="No brevets">Nothing has been planned.</ng-template>
