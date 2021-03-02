@@ -30,7 +30,9 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "statsJson": true,
-            "localize": true,
+            "localize": [
+              "en-US"
+            ],
             "i18nMissingTranslation": "warning",
             "assets": [
               "src/favicon.ico",
@@ -44,6 +46,11 @@
             "scripts": []
           },
           "configurations": {
+            "ru": {
+              "localize": [
+                "ru"
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -59,6 +66,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "statsJson": false,
+              "localize": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -82,6 +90,9 @@
             "browserTarget": "brevet-online:build"
           },
           "configurations": {
+            "ru": {
+              "browserTarget": "brevet-online:build:ru"
+            },
             "production": {
               "browserTarget": "brevet-online:build:production"
             }
@@ -90,7 +101,26 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "brevet-online:build"
+            "browserTarget": "brevet-online:build",
+            "outputPath": "src/locale"
+          }
+        },
+        "xliffmerge": {
+          "builder": "@ngx-i18nsupport/tooling:xliffmerge",
+          "options": {
+            "xliffmergeOptions": {
+              "i18nFormat": "xlf",
+              "srcDir": "src/locale",
+              "genDir": "src/locale",
+              "verbose": true,
+              "removeUnusedIds": false,
+              "beautifyOutput": false,
+              "preserveOrder": true,
+              "defaultLanguage": "en-US",
+              "languages": [
+                "ru"
+              ]
+            }
           }
         },
         "test": {

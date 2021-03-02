@@ -1,46 +1,69 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="ru">
     <body>
-      <trans-unit id="5056131870883423261" datatype="html">
+      <trans-unit id="1014003081110408010" datatype="html">
         <source>Brevet list</source>
-        <target>Список бреветов</target>
+        <target state="translated">Список бреветов</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">9</context>
         </context-group>
-        <note priority="1" from="description">Page title</note>
+        <note priority="1" from="description">Button with a home icon</note>
+        <note priority="1" from="meaning">title</note>
       </trans-unit>
-      <trans-unit id="8112781479155762152" datatype="html">
+      <trans-unit id="6694493449453087729" datatype="html">
         <source>Brevet list button</source>
-        <target>Кнопка списка бреветов</target>
+        <target state="translated">Кнопка списка бреветов</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <note priority="1" from="description">Button label</note>
+        <note priority="1" from="description">Button with a home icon</note>
+        <note priority="1" from="meaning">label</note>
       </trans-unit>
-      <trans-unit id="7371450637277405672" datatype="html">
+      <trans-unit id="5437198107780758427" datatype="html">
+        <source>Brevet list</source>
+        <target state="translated">Список бреветов</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Link to the brevet list</note>
+        <note priority="1" from="meaning">link</note>
+      </trans-unit>
+      <trans-unit id="2703963383906935873" datatype="html">
         <source>Upcoming brevets</source>
-        <target>Предстоящие бреветы</target>
+        <target state="translated">Предстоящие бреветы</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <note priority="1" from="description">Page title</note>
+        <note priority="1" from="description">Planned events</note>
+        <note priority="1" from="meaning">header</note>
       </trans-unit>
       <trans-unit id="7199982199847985558" datatype="html">
         <source>Nothing has been planned.</source>
-        <target>Ничего не запланировано.</target>
+        <target state="translated">Ничего не запланировано.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <note priority="1" from="description">No brevets</note>
+        <note priority="1" from="description">No brevets message</note>
+      </trans-unit>
+      <trans-unit id="5345465234990075359" datatype="html">
+        <source>Language</source>
+        <target state="translated">Язык</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/language-selector/language-selector.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">Language selector</note>
+        <note priority="1" from="meaning">label</note>
       </trans-unit>
     </body>
   </file>

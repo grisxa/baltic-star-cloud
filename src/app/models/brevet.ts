@@ -1,8 +1,8 @@
 export interface BrevetOptions {
-  name: string,
-  uid: string,
-  length: number,
-  startDate: Date
+  name: string;
+  uid: string;
+  length: number;
+  startDate: Date;
 }
 
 export class Brevet {

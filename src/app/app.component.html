@@ -1,10 +1,13 @@
 <div class="home">
   <button mat-icon-button routerLink="/brevets"
-          i18n-title="Page title" title="Brevet list"
-          i18n-aria-label="Button label"
+          i18n-title="title|Button with a home icon" title="Brevet list"
+          i18n-aria-label="label|Button with a home icon"
           aria-label="Brevet list button">
     <mat-icon>home</mat-icon>
   </button>
-  <a routerLink="/brevets" i18n-title="Page title" title="Brevet list">Brevet list</a>
+  <a routerLink="/brevets"
+     i18n-title="title|Link to the brevet list" title="Brevet list"
+     i18n="link|Link to the brevet list">Brevet list</a>
 </div>
 <router-outlet></router-outlet>
+<app-language-selector></app-language-selector>
