@@ -18,9 +18,9 @@ describe('Application scope', () => {
     expect(await page.getHomeIconText()).toEqual('home');
   });
 
-  it('should use English language by default', async () => {
+  it('should miss a default language', async () => {
     await page.navigateTo();
-    expect(await page.getLanguageSelectorText()).toEqual('English');
+    expect(await page.getLanguageSelectorText()).toEqual('');
   });
 
   afterEach(async () => {

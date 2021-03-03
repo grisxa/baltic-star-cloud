@@ -1,6 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {MatSelectModule} from '@angular/material/select';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {AppRoutingModule} from '../../app-routing.module';
 
-import { LanguageSelectorComponent } from './language-selector.component';
+import {LanguageSelectorComponent} from './language-selector.component';
 
 describe('LanguageSelectorComponent', () => {
   let component: LanguageSelectorComponent;
@@ -8,9 +12,14 @@ describe('LanguageSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LanguageSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [LanguageSelectorComponent],
+      imports: [
+        AppRoutingModule,
+        FormsModule,
+        MatSelectModule,
+        NoopAnimationsModule,
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

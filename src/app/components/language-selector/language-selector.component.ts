@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, isDevMode, OnInit} from '@angular/core';
 
 interface Language {
   code: string;
@@ -19,16 +19,28 @@ export class LanguageSelectorComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.siteLocale = window.location.pathname.split('/')[1];
-    this.siteLanguage = this.languageList.find(
-      (language) => language.code === this.siteLocale
-    )?.label;
+    this.extractLocale(window.location.pathname);
     if (!this.siteLanguage) {
       this.onChange(this.languageList[0].code);
     }
   }
 
+  private extractLocale(pathname: string) {
+    this.siteLocale = pathname.split('/')[1];
+    this.siteLanguage = this.languageList.find(
+      (language) => language.code === this.siteLocale
+    )?.label;
+  }
+
   onChange(newLocale: string) {
-    window.location.href = `/${newLocale}/`;
+    if (isDevMode()) {
+      return;
+    }
+    const languageCodes = this.languageList.map((language: Language) => language.code);
+    const paths = window.location.pathname.split('/').filter((part: string) => {
+      return part !== '' && !languageCodes.includes(part);
+    });
+
+    window.location.href = `/${newLocale}/` + paths.join('/');
   }
 }

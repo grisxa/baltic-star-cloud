@@ -1,6 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatListModule} from '@angular/material/list';
 
-import { BrevetListComponent } from './brevet-list.component';
+import {AppRoutingModule} from '../../app-routing.module';
+import {BrevetListItemComponent} from './brevet-list-item/brevet-list-item.component';
+import {BrevetListComponent} from './brevet-list.component';
 
 describe('BrevetListComponent', () => {
   let component: BrevetListComponent;
@@ -8,9 +11,12 @@ describe('BrevetListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BrevetListComponent ]
-    })
-    .compileComponents();
+      declarations: [BrevetListComponent, BrevetListItemComponent],
+      imports: [
+        AppRoutingModule,
+        MatListModule,
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
