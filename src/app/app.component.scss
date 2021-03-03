@@ -1,4 +1,8 @@
 :host {
+  .root-container {
+    max-width: 30rem;
+  }
+
   .home {
     display: flex;
     flex-direction: row;
