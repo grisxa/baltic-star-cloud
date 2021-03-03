@@ -6,11 +6,11 @@
         <source>Brevet list</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">3</context>
+          <context context-type="linenumber">4</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">title</note>
@@ -19,7 +19,7 @@
         <source>Brevet list button</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">6</context>
         </context-group>
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">label</note>
@@ -28,7 +28,7 @@
         <source>Brevet list</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">11</context>
         </context-group>
         <note priority="1" from="description">Link to the brevet list</note>
         <note priority="1" from="meaning">link</note>
@@ -60,8 +60,8 @@
         <note priority="1" from="description">Collapse</note>
         <note priority="1" from="meaning">command</note>
       </trans-unit>
-      <trans-unit id="2703963383906935873" datatype="html">
-        <source>Upcoming brevets</source>
+      <trans-unit id="6066495633434379489" datatype="html">
+        <source>Upcoming events</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
           <context context-type="linenumber">1</context>
@@ -73,14 +73,15 @@
         <source>Nothing has been planned.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">6</context>
         </context-group>
         <note priority="1" from="description">No brevets message</note>
       </trans-unit>
       <trans-unit id="5345465234990075359" datatype="html">
         <source>Language</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/language-selector/language-selector.component.html</context>
+          <context context-type="sourcefile">src/app/components/language-selector/language-selector.component.html
+          </context>
           <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">Language selector</note>

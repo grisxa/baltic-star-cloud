@@ -1,4 +1,4 @@
-<h2 i18n="header|Planned events">Upcoming brevets</h2>
+<h2 i18n="header|Planned events">Upcoming events</h2>
 <mat-list *ngIf="newBrevets.length > 0; else elseBlock">
   <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
 </mat-list>
