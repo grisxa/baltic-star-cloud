@@ -36,6 +36,36 @@
         <note priority="1" from="description">Link to the brevet list</note>
         <note priority="1" from="meaning">link</note>
       </trans-unit>
+      <trans-unit id="3992056897224026671" datatype="html">
+        <source>Past events</source>
+        <target state="translated">Прошедшие бреветы</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <note priority="1" from="description">Past event list</note>
+        <note priority="1" from="meaning">title</note>
+      </trans-unit>
+      <trans-unit id="2645072778415990659" datatype="html">
+        <source>Expand</source>
+        <target state="translated">Развернуть</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">Expand</note>
+        <note priority="1" from="meaning">command</note>
+      </trans-unit>
+      <trans-unit id="563071276270986054" datatype="html">
+        <source>Collapse</source>
+        <target state="translated">Свернуть</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">Collapse</note>
+        <note priority="1" from="meaning">command</note>
+      </trans-unit>
       <trans-unit id="2703963383906935873" datatype="html">
         <source>Upcoming brevets</source>
         <target state="translated">Предстоящие бреветы</target>

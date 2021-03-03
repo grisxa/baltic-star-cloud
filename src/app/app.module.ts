@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {MatExpansionModule} from '@angular/material/expansion';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatSelectModule} from '@angular/material/select';
@@ -10,6 +11,7 @@ import {environment} from '../environments/environment';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {BrevetArchiveComponent} from './components/brevet-archive/brevet-archive.component';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
 import {BrevetListComponent} from './components/brevet-list/brevet-list.component';
 import {LanguageSelectorComponent} from './components/language-selector/language-selector.component';
@@ -17,15 +19,17 @@ import {LanguageSelectorComponent} from './components/language-selector/language
 @NgModule({
   declarations: [
     AppComponent,
+    BrevetArchiveComponent,
     BrevetListComponent,
     BrevetListItemComponent,
-    LanguageSelectorComponent
+    LanguageSelectorComponent,
   ],
   imports: [
     AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
+    MatExpansionModule,
     MatIconModule,
     MatListModule,
     MatSelectModule,

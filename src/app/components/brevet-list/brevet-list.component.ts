@@ -5,7 +5,8 @@ const WEEK_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
 
 @Component({
   selector: 'app-brevet-list',
-  templateUrl: './brevet-list.component.html'
+  templateUrl: './brevet-list.component.html',
+  styleUrls: ['./brevet-list.component.scss']
 })
 export class BrevetListComponent implements OnInit {
   oldBrevets: Brevet[] = [

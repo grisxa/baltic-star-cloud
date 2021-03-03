@@ -1,5 +1,9 @@
 :host {
-  span {
-    padding: 0 5px;
+  span.date {
+    min-width: 8rem;
+  }
+
+  span.length {
+    padding-left: 5px;
   }
 }

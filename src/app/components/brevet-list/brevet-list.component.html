@@ -2,4 +2,7 @@
 <mat-list *ngIf="newBrevets.length > 0; else elseBlock">
   <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
 </mat-list>
-<ng-template #elseBlock i18n="No brevets message">Nothing has been planned.</ng-template>
+<ng-template #elseBlock>
+  <span class="empty" i18n="No brevets message">Nothing has been planned.</span>
+</ng-template>
+<app-brevet-archive *ngIf="oldBrevets.length > 0" [brevets]="oldBrevets"></app-brevet-archive>

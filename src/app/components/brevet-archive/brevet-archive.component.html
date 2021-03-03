@@ -1,0 +1,12 @@
+<mat-expansion-panel (opened)="panelOpenState = true"
+                     (closed)="panelOpenState = false">
+  <mat-expansion-panel-header>
+    <mat-panel-title i18n="title|Past event list">Past events</mat-panel-title>
+    <mat-panel-description *ngIf="!panelOpenState" i18n="command|Expand">Expand</mat-panel-description>
+    <mat-panel-description *ngIf="panelOpenState" i18n="command|Collapse">Collapse</mat-panel-description>
+  </mat-expansion-panel-header>
+  <mat-list>
+    <app-brevet-list-item *ngFor="let brevet of brevets"
+                          [brevet]="brevet"></app-brevet-list-item>
+  </mat-list>
+</mat-expansion-panel>
