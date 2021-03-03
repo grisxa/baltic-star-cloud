@@ -5,7 +5,16 @@ export class AppPage {
     return browser.get(browser.baseUrl);
   }
 
-  async getTitleText(): Promise<string> {
-    return element(by.css('app-root .content span')).getText();
+  async getHomeIconText(): Promise<string> {
+    return element(by.css('app-root .home mat-icon')).getText();
   }
+
+  async getHomeLinkText(): Promise<string> {
+    return element(by.css('app-root .home a')).getText();
+  }
+
+  async getLanguageSelectorText(): Promise<string> {
+    return element(by.css('app-root app-language-selector .mat-select-value')).getText();
+  }
+
 }

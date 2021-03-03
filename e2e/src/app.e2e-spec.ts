@@ -1,16 +1,26 @@
 import {browser, logging} from 'protractor';
 import {AppPage} from './app.po';
 
-describe('workspace-project App', () => {
+describe('Application scope', () => {
   let page: AppPage;
 
   beforeEach(() => {
     page = new AppPage();
   });
 
-  it('should display welcome message', async () => {
+  it('should display home link', async () => {
     await page.navigateTo();
-    expect(await page.getTitleText()).toEqual('brevet-online app is running!');
+    expect(await page.getHomeLinkText()).toEqual('Brevet list');
+  });
+
+  it('should display home icon', async () => {
+    await page.navigateTo();
+    expect(await page.getHomeIconText()).toEqual('home');
+  });
+
+  it('should use English language by default', async () => {
+    await page.navigateTo();
+    expect(await page.getLanguageSelectorText()).toEqual('English');
   });
 
   afterEach(async () => {
