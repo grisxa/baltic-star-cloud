@@ -1,7 +1,9 @@
 <mat-list-item>
-  <span class="date">{{brevet?.startDate | date}}</span>
-  <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">
-    {{brevet?.name}}
-  </a>
-  <span class="length">({{brevet?.length}} км)</span>
+  <div [class]="isOnline() ? 'brevet online' : 'brevet'">
+    <span class="date">{{brevet?.startDate | date}}</span>
+    <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">
+      {{brevet?.name}}
+    </a>
+    <span class="length">({{brevet?.length}} км)</span>
+  </div>
 </mat-list-item>
