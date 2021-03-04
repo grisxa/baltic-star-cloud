@@ -1,5 +1,5 @@
 <mat-list-item>
-  <div [class]="isOnline() ? 'brevet online' : 'brevet'">
+  <div [class]="brevet?.isOnline() ? 'brevet online' : 'brevet'">
     <span class="date">{{brevet?.startDate | date}}</span>
     <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">
       {{brevet?.name}}
