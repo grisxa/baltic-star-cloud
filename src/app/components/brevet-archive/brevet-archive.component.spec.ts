@@ -1,6 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatListModule} from '@angular/material/list';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-import { BrevetArchiveComponent } from './brevet-archive.component';
+import {BrevetArchiveComponent} from './brevet-archive.component';
 
 describe('BrevetArchiveComponent', () => {
   let component: BrevetArchiveComponent;
@@ -8,9 +11,14 @@ describe('BrevetArchiveComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BrevetArchiveComponent ]
+      declarations: [BrevetArchiveComponent],
+      imports: [
+        MatExpansionModule,
+        MatListModule,
+        NoopAnimationsModule,
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -13,6 +13,9 @@ export class BrevetListItemComponent {
   @Input() brevet: Brevet;
 
   isOnline(): boolean {
+    if (!this.brevet) {
+      return false;
+    }
     const now = Date.now();
     const endDate = this.brevet.endDate ||
       new Date(this.brevet.startDate.getTime() + HOURS_100_MILLISECONDS);
