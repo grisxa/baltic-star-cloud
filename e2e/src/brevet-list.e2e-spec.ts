@@ -10,7 +10,7 @@ describe('Brevet list scope', () => {
 
   it('should display upcoming brevets header', async () => {
     await page.navigateTo();
-    expect(await page.getHeaderText()).toEqual('Upcoming brevets');
+    expect(await page.getHeaderText()).toEqual('Upcoming events');
   });
 
   afterEach(async () => {
