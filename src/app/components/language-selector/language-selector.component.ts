@@ -18,29 +18,33 @@ export class LanguageSelectorComponent implements OnInit {
     {code: 'ru', label: 'Русский'},
   ];
 
+  getLocation = () => window.location.pathname;
+
+  // in the development mode redirection is unavailable
+  setLocation = (path: string) => !isDevMode() ? window.location.href = path : '';
+
   ngOnInit(): void {
-    this.extractLocale(window.location.pathname);
+    this.extractLocale(this.getLocation());
     if (!this.siteLanguage) {
       this.onChange(this.languageList[0].code);
     }
   }
 
-  private extractLocale(pathname: string) {
-    this.siteLocale = pathname.split('/')[1];
-    this.siteLanguage = this.languageList.find(
-      (language) => language.code === this.siteLocale
-    )?.label;
+  extractLocale(pathname: string) {
+    const locale = pathname.split('/')[1];
+    const match = this.languageList.find((language) => language.code === locale);
+    this.siteLocale = match ? locale : undefined;
+    this.siteLanguage = match ? match.label : undefined;
+  }
+
+  localizedSuffix(pathname: string): string[] {
+    const languageCodes = this.languageList.map((language: Language) => language.code);
+    return pathname.split('/').filter((part: string) => {
+      return part !== '' && !languageCodes.includes(part);
+    });
   }
 
   onChange(newLocale: string) {
-    if (isDevMode()) {
-      return;
-    }
-    const languageCodes = this.languageList.map((language: Language) => language.code);
-    const paths = window.location.pathname.split('/').filter((part: string) => {
-      return part !== '' && !languageCodes.includes(part);
-    });
-
-    window.location.href = `/${newLocale}/` + paths.join('/');
+    this.setLocation(`/${newLocale}/` + this.localizedSuffix(this.getLocation()).join('/'));
   }
 }
