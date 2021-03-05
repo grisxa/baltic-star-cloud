@@ -23,6 +23,10 @@
     "@angular/platform-browser-dynamic": "~11.2.1",
     "@angular/router": "~11.2.1",
     "@angular/service-worker": "~11.2.1",
+    "core-js": "^3.9.1",
+    "cross-fetch": "^3.0.6",
+    "globalthis": "^1.0.2",
+    "proxy-polyfill": "^0.3.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"
