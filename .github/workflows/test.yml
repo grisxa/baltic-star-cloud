@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: npm ci and npm test
+      - name: npm ci and npm run test-headless
         run: |
           npm ci
-          npm test
+          npm run test-headless
