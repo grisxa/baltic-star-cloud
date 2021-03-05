@@ -1,0 +1,25 @@
+{
+  "hosting": {
+    "site": "beta-brevet-online",
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/en-US/**",
+        "destination": "/en-US/index.html"
+      },
+      {
+        "source": "/ru/**",
+        "destination": "/ru/index.html"
+      },
+      {
+        "source": "**",
+        "destination": "/en-US/index.html"
+      }
+    ]
+  }
+}
