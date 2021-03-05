@@ -45,11 +45,11 @@ describe('Brevet', () => {
       expect(brevet.isOnline()).toBeFalse();
     });
 
-    it('skip old brevets', () => {
+    it('skip new brevets', () => {
       const brevet = new Brevet('test', {
         uid: '1',
         length: 200,
-        startDate: new Date('2021-01-01T00:00:00')
+        startDate: new Date(1609500000000)
       } as BrevetOptions);
       expect(brevet.isOnline()).toBeFalse();
     });
@@ -58,7 +58,7 @@ describe('Brevet', () => {
       const brevet = new Brevet('test', {
         uid: '1',
         length: 200,
-        startDate: new Date('2020-12-31T23:00:00')
+        startDate: new Date(1609400000000)
       } as BrevetOptions);
       expect(brevet.isOnline()).toBeTrue();
       expect(Date.now).toHaveBeenCalled();
@@ -68,8 +68,8 @@ describe('Brevet', () => {
       const brevet = new Brevet('test', {
         uid: '1',
         length: 200,
-        startDate: new Date('2020-12-31T23:00:00'),
-        endDate: new Date('2020-12-31T23:55:00'),
+        startDate: new Date(1609400000000),
+        endDate: new Date(1609430000000),
       } as BrevetOptions);
       expect(brevet.isOnline()).toBeFalsy();
       expect(Date.now).toHaveBeenCalled();
@@ -79,8 +79,8 @@ describe('Brevet', () => {
       const brevet = new Brevet('test', {
         uid: '1',
         length: 200,
-        startDate: new Date('2020-12-31T23:00:00'),
-        endDate: new Date('2021-01-01T03:00:00'),
+        startDate: new Date(1609000000000),
+        endDate: new Date(1609500000000),
       } as BrevetOptions);
       expect(brevet.isOnline()).toBeTrue();
       expect(Date.now).toHaveBeenCalled();
