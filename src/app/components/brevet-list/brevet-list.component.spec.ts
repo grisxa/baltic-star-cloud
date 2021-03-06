@@ -3,11 +3,21 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatListModule} from '@angular/material/list';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {of} from 'rxjs';
 
 import {AppRoutingModule} from '../../app-routing.module';
+import {Brevet, BrevetOptions} from '../../models/brevet';
+import {CloudFirestoreService} from '../../services/storage/cloud-firestore.service';
 import {BrevetArchiveComponent} from '../brevet-archive/brevet-archive.component';
 import {BrevetListItemComponent} from './brevet-list-item/brevet-list-item.component';
 import {BrevetListComponent} from './brevet-list.component';
+
+class MockStorageService {
+  listBrevets() {
+    return of([]);
+  }
+}
+
 
 describe('BrevetListComponent', () => {
   let component: BrevetListComponent;
@@ -22,12 +32,40 @@ describe('BrevetListComponent', () => {
         MatListModule,
         NoopAnimationsModule,
       ],
+      providers: [
+        {provide: CloudFirestoreService, useClass: MockStorageService},
+      ],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BrevetListComponent);
     component = fixture.componentInstance;
+    component.oldBrevets = [
+      new Brevet('Кургальский', {
+        uid: '4',
+        length: 206,
+        startDate: new Date('2021-02-13T05:13:00')
+      } as BrevetOptions),
+    ];
+    component.newBrevets = [
+      new Brevet('Пушкинский', {
+        uid: '1',
+        length: 200,
+        startDate: new Date('2021-06-19T06:00:00')
+      } as BrevetOptions),
+      new Brevet('Онего', {
+        uid: '2',
+        length: 600,
+        startDate: new Date('2021-06-26T05:00:00')
+      } as BrevetOptions),
+      new Brevet('Военный', {
+        uid: '3',
+        length: 402,
+        startDate: new Date('2021-07-03T05:00:00')
+      } as BrevetOptions),
+    ];
+
     fixture.detectChanges();
   });
 

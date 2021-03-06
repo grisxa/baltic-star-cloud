@@ -3,7 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebase: {
+    apiKey: 'test',
+    authDomain: 'baltic-star-cloud.web.app',
+    databaseURL: 'https://baltic-star-cloud.firebaseio.com',
+    projectId: 'baltic-star-cloud',
+    storageBucket: 'baltic-star-cloud.appspot.com',
+    messagingSenderId: '1',
+    appId: 'test',
+    measurementId: 'test'
+  },
 };
 
 /*
