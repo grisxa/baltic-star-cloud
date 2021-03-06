@@ -14,7 +14,29 @@ import {BrevetListComponent} from './brevet-list.component';
 
 class MockStorageService {
   listBrevets() {
-    return of([]);
+    return of([
+      new Brevet('Горьковский', {
+        uid: '4',
+        length: 200,
+        startDate: new Date('2020-09-26T06:00:00')
+      } as BrevetOptions),
+      new Brevet('Пушкинский', {
+        uid: '1',
+        length: 200,
+        startDate: new Date('2021-06-19T06:00:00'),
+        endDate: new Date('2021-06-19T19:30:00')
+      } as BrevetOptions),
+      new Brevet('Онего', {
+        uid: '2',
+        length: 600,
+        startDate: new Date('2021-06-26T05:00:00')
+      } as BrevetOptions),
+      new Brevet('Военный', {
+        uid: '3',
+        length: 402,
+        startDate: new Date('2021-07-03T05:00:00')
+      } as BrevetOptions),
+    ]);
   }
 }
 
@@ -39,33 +61,11 @@ describe('BrevetListComponent', () => {
   });
 
   beforeEach(() => {
+    // the New Year of 2021
+    spyOn(Date, 'now').and.returnValue(1609448400000);
+
     fixture = TestBed.createComponent(BrevetListComponent);
     component = fixture.componentInstance;
-    component.oldBrevets = [
-      new Brevet('Кургальский', {
-        uid: '4',
-        length: 206,
-        startDate: new Date('2021-02-13T05:13:00')
-      } as BrevetOptions),
-    ];
-    component.newBrevets = [
-      new Brevet('Пушкинский', {
-        uid: '1',
-        length: 200,
-        startDate: new Date('2021-06-19T06:00:00')
-      } as BrevetOptions),
-      new Brevet('Онего', {
-        uid: '2',
-        length: 600,
-        startDate: new Date('2021-06-26T05:00:00')
-      } as BrevetOptions),
-      new Brevet('Военный', {
-        uid: '3',
-        length: 402,
-        startDate: new Date('2021-07-03T05:00:00')
-      } as BrevetOptions),
-    ];
-
     fixture.detectChanges();
   });
 
