@@ -16,11 +16,8 @@ export class Brevet {
   mapUrl?: string;
 
   constructor(name: string, options: BrevetOptions) {
-    this.uid = options.uid;
+    Object.assign(this, options);
     this.name = name;
-    this.length = options.length;
-    this.startDate = options.startDate;
-    this.endDate = options.endDate;
   }
 
   isOnline(): boolean {
