@@ -16,6 +16,17 @@ interface BrevetDocument {
   length: number;
   startDate: Timestamp;
   endDate?: Timestamp;
+  checkpoints?: CheckpointDocument[];
+}
+
+interface CheckpointDocument {
+  uid: string;
+  name: string;
+  distance: number;
+}
+
+export interface BrevetListDocument {
+  brevets: BrevetDocument[];
 }
 
 @Injectable({
@@ -26,14 +37,19 @@ export class CloudFirestoreService implements StorageBackend {
   constructor(private firestore: AngularFirestore) {
   }
 
+  getBrevetListDocument(): Observable<BrevetListDocument> {
+    return this.firestore.doc<BrevetListDocument>(`/brevets${SUFFIX}/list`).get().pipe(
+      // extract data from the snapshot
+      map(document => document.data())
+    );
+  }
+
   /**
    * Connect to the back-end and return a list of brevets
    * (as an Observable).
    */
   listBrevets(): Observable<Brevet[]> {
-    return this.firestore.doc(`/brevets${SUFFIX}/list`).get().pipe(
-      // extract data from the snapshot
-      map(document => document.data()),
+    return this.getBrevetListDocument().pipe(
       // collect a prepared list of brevets
       map(data => !!data && data.hasOwnProperty('brevets') ? data['brevets'] : []),
       // convert documents to objects
