@@ -8,12 +8,12 @@
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">title</note>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">4</context>
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6694493449453087729" datatype="html">
@@ -22,8 +22,8 @@
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">label</note>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5437198107780758427" datatype="html">
@@ -32,49 +32,49 @@
         <note priority="1" from="description">Link to the brevet list</note>
         <note priority="1" from="meaning">link</note>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="sourcefile">src/app/app.component.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3992056897224026671" datatype="html">
         <source>Past events</source>
         <target state="translated">Прошедшие бреветы</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
-          <context context-type="linenumber">4</context>
-        </context-group>
         <note priority="1" from="description">Past event list</note>
         <note priority="1" from="meaning">title</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2645072778415990659" datatype="html">
         <source>Expand</source>
         <target state="translated">Развернуть</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
         <note priority="1" from="description">Expand</note>
         <note priority="1" from="meaning">command</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="563071276270986054" datatype="html">
         <source>Collapse</source>
         <target state="translated">Свернуть</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.html</context>
-          <context context-type="linenumber">6</context>
-        </context-group>
         <note priority="1" from="description">Collapse</note>
         <note priority="1" from="meaning">command</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="6066495633434379489" datatype="html">
         <source>Upcoming events</source>
         <target state="new">Предстоящие бреветы</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
         <note priority="1" from="description">Planned events</note>
         <note priority="1" from="meaning">header</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2703963383906935873" datatype="html">
         <source>Upcoming brevets</source>
@@ -91,20 +91,30 @@
         <target state="translated">Ничего не запланировано.</target>
         <note priority="1" from="description">No brevets message</note>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5345465234990075359" datatype="html">
         <source>Language</source>
         <target state="translated">Язык</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/language-selector/language-selector.component.html
-          </context>
-          <context context-type="linenumber">2</context>
-        </context-group>
         <note priority="1" from="description">Language selector</note>
         <note priority="1" from="meaning">label</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/language-selector/language-selector.component.ts
+          </context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="720746095189107015" datatype="html">
+        <source>Loading...</source>
+        <target state="translated">Загрузка...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/loading-plug/loading-plug.component.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <note priority="1" from="description">Data loading in progress</note>
+        <note priority="1" from="meaning">message</note>
       </trans-unit>
     </body>
   </file>

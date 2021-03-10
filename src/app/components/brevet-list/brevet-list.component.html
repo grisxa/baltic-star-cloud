@@ -1,8 +1,11 @@
 <h2 i18n="header|Planned events">Upcoming events</h2>
-<mat-list *ngIf="newBrevets.length > 0; else elseBlock">
-  <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
-</mat-list>
-<ng-template #elseBlock>
-  <p class="empty" i18n="No brevets message">Nothing has been planned.</p>
+<app-loading-plug *ngIf="loading; else readyBlock"></app-loading-plug>
+<ng-template #readyBlock>
+  <mat-list *ngIf="newBrevets.length > 0; else emptyBlock">
+    <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
+  </mat-list>
+  <ng-template #emptyBlock>
+    <p class="empty" i18n="No brevets message">Nothing has been planned.</p>
+  </ng-template>
+  <app-brevet-archive *ngIf="oldBrevets.length > 0" [brevets]="oldBrevets"></app-brevet-archive>
 </ng-template>
-<app-brevet-archive *ngIf="oldBrevets.length > 0" [brevets]="oldBrevets"></app-brevet-archive>
