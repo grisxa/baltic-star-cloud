@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 import {Brevet} from './brevet';
 
-export abstract class StorageBackend {
+export interface StorageBackend {
 
-  abstract listBrevets(): Observable<Brevet[]> ;
+  listBrevets: () => Observable<Brevet[]>;
 }
