@@ -1,3 +1,5 @@
+import {Checkpoint} from './checkpoint';
+
 export interface BrevetOptions {
   name: string;
   uid: string;
@@ -14,6 +16,7 @@ export class Brevet {
   startDate: Date;
   endDate?: Date;
   mapUrl?: string;
+  checkpoints?: Checkpoint[];
 
   constructor(name: string, options: BrevetOptions) {
     Object.assign(this, options);
