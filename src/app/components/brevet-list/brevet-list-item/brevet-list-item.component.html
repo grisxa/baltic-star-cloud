@@ -1,9 +1,13 @@
 <mat-list-item>
-  <div [class]="brevet?.isOnline() ? 'brevet online' : 'brevet'">
+  <div mat-line [class]="brevet?.isOnline() ? 'brevet online' : 'brevet'">
     <span class="date">{{brevet?.startDate | date}}</span>
     <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">
       {{brevet?.name}}
     </a>
     <span class="length">({{brevet?.length}} км)</span>
+  </div>
+  <div mat-line class="brevet">
+    <span class="date">{{brevet?.startDate | date: "HH:MM"}}</span>
+    <span *ngIf="!!brevet?.checkpoints">{{brevet?.checkpoints[0]?.name}}</span>
   </div>
 </mat-list-item>
