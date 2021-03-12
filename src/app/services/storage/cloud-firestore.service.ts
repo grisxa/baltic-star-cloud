@@ -4,8 +4,10 @@ import firebase from 'firebase/app';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Brevet} from '../../models/brevet';
+import {Checkpoint} from '../../models/checkpoint';
 
 import {StorageBackend} from '../../models/storage-backend';
+import {Waypoint} from '../../models/waypoint';
 import Timestamp = firebase.firestore.Timestamp;
 
 const SUFFIX = '.beta';
@@ -58,6 +60,10 @@ export class CloudFirestoreService implements StorageBackend {
         // convert Timestamp to Date
         startDate: doc.startDate.toDate(),
         endDate: doc.endDate?.toDate(),
+        checkpoints: doc.checkpoints.map(checkpoint => new Checkpoint({
+          name: checkpoint.name,
+          distance: checkpoint.distance
+        } as Waypoint)),
       })))
     );
   }

@@ -6,6 +6,7 @@ export interface BrevetOptions {
   length: number;
   startDate: Date;
   endDate: Date;
+  checkpoints?: Checkpoint[];
 }
 const HOURS_100_MILLISECONDS = 100*60*60*1000;
 
