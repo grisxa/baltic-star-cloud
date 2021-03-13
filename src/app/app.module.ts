@@ -19,6 +19,7 @@ import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item
 import {BrevetListComponent} from './components/brevet-list/brevet-list.component';
 import {LanguageSelectorComponent} from './components/language-selector/language-selector.component';
 import {LoadingPlugComponent} from './components/loading-plug/loading-plug.component';
+import {NotFoundPlugComponent} from './components/not-found-plug/not-found-plug.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {LoadingPlugComponent} from './components/loading-plug/loading-plug.compo
     BrevetListItemComponent,
     LanguageSelectorComponent,
     LoadingPlugComponent,
+    NotFoundPlugComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
