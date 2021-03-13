@@ -15,6 +15,8 @@ import {environment} from '../environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrevetArchiveComponent} from './components/brevet-archive/brevet-archive.component';
+import {BrevetInfoComponent} from './components/brevet-info/brevet-info.component';
+import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-list-item/checkpoint-list-item.component';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
 import {BrevetListComponent} from './components/brevet-list/brevet-list.component';
 import {LanguageSelectorComponent} from './components/language-selector/language-selector.component';
@@ -25,8 +27,10 @@ import {NotFoundPlugComponent} from './components/not-found-plug/not-found-plug.
   declarations: [
     AppComponent,
     BrevetArchiveComponent,
+    BrevetInfoComponent,
     BrevetListComponent,
     BrevetListItemComponent,
+    CheckpointListItemComponent,
     LanguageSelectorComponent,
     LoadingPlugComponent,
     NotFoundPlugComponent,

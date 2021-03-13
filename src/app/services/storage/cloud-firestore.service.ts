@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
 import firebase from 'firebase/app';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {merge, Observable, Subject} from 'rxjs';
+import {map, takeUntil, tap} from 'rxjs/operators';
 import {Brevet} from '../../models/brevet';
 import {Checkpoint} from '../../models/checkpoint';
 
@@ -46,6 +46,14 @@ export class CloudFirestoreService implements StorageBackend {
     );
   }
 
+  getBrevetDocument(uid: string = 'none'): Observable<Brevet> {
+    return this.firestore.collection<Brevet>(`brevets${SUFFIX}`)
+      .doc(uid).get().pipe(
+        // extract data from the snapshot
+        map(document => document.data())
+      );
+  }
+
   /**
    * Connect to the back-end and return a list of brevets
    * (as an Observable).
@@ -65,6 +73,20 @@ export class CloudFirestoreService implements StorageBackend {
           distance: checkpoint.distance
         } as Waypoint)),
       })))
+    );
+  }
+
+  getBrevet(uid: string = 'none'): Observable<Brevet> {
+    const done$ = new Subject();
+    return merge(
+      this.listBrevets()
+        .pipe(
+          // skip the list if the main document has already arrived
+          takeUntil(done$),
+          // otherwise report short info from the brevet list
+          map(brevets => brevets.find(item => item.uid === uid))),
+      // stop watching once the document has been received
+      this.getBrevetDocument(uid).pipe(tap(() => done$.next()))
     );
   }
 }

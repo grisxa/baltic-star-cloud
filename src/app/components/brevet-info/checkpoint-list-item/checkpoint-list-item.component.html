@@ -1,0 +1,10 @@
+<mat-list-item *ngIf="checkpoint">
+  <a [title]="checkpoint.name" [routerLink]="['/brevet', checkpoint?.brevet?.uid || 'none', 'checkpoint', checkpoint?.uid || 'none']">{{checkpoint?.name}}</a>,
+  {{checkpoint.distance}} <span i18n="units|Kilometers, short">km</span>
+  <mat-icon *ngIf="checkpoint.sleep" class="checkpoint-type-icon"
+            i18n-title="icon|Sleeping"
+            title="Sleeping" svgIcon="icon_bed"></mat-icon>
+  <mat-icon *ngIf="checkpoint?.selfCheck" class="checkpoint-type-icon"
+            i18n-title="icon|Selfcheck"
+            title="Selfcheck" svgIcon="icon_qr"></mat-icon>
+</mat-list-item>

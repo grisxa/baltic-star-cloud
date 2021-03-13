@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+
+  span {
+    padding-left: 0.2em;
+  }
+
+  a .mat-icon {
+    margin-top: -2px;
+  }
+
+  .url {
+    max-width: calc(30rem - 10ch - 24px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 0.2em;
+  }
+}
