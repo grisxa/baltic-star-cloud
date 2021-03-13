@@ -22,13 +22,16 @@ export class LanguageSelectorComponent implements OnInit {
   /**
    * A getter of the location's pathname
    */
+
   getLocation = () => window.location.pathname;
 
   /**
    * A setter of location's href (effectively redirects to the new address).
    * Disabled in the development mode due to redirection is unavailable.
+   *
    * @param path The new pathname
    */
+
   setLocation = (path: string) => !isDevMode() ? window.location.href = path : '';
 
   ngOnInit(): void {
@@ -40,8 +43,10 @@ export class LanguageSelectorComponent implements OnInit {
 
   /**
    * Guess a locale based on the pathname like /en-US/page
+   *
    * @param pathname The path to examine
    */
+
   extractLocale(pathname: string) {
     const locale = pathname.split('/')[1];
     const match = this.languageList.find((language) => language.code === locale);
@@ -51,18 +56,18 @@ export class LanguageSelectorComponent implements OnInit {
 
   /**
    * Extract a suffix from the pathname when a locale is at the beginning.
+   *
    * @param pathname The path to examine
    */
   localizedSuffix(pathname: string): string[] {
     const languageCodes = this.languageList.map((language: Language) => language.code);
-    return pathname.split('/').filter((part: string) => {
-      return part !== '' && !languageCodes.includes(part);
-    });
+    return pathname.split('/').filter((part: string) => part !== '' && !languageCodes.includes(part));
   }
 
   /**
    * Locale change callback: switch to /ru/path or similar.
    * Uses a suffix of the current path like /en-US/rest.
+   *
    * @param newLocale A language code
    */
   onChange(newLocale: string) {

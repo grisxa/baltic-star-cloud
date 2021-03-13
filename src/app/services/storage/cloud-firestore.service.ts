@@ -61,7 +61,7 @@ export class CloudFirestoreService implements StorageBackend {
   listBrevets(): Observable<Brevet[]> {
     return this.getBrevetListDocument().pipe(
       // collect a prepared list of brevets
-      map(data => !!data && data.hasOwnProperty('brevets') ? data['brevets'] : []),
+      map(data => !!data && data.hasOwnProperty('brevets') ? data.brevets : []),
       // convert documents to objects
       map((docs: BrevetDocument[]) => docs.map(doc => new Brevet(doc.name, {
         ...doc,

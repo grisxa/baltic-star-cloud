@@ -26,47 +26,47 @@ describe('CloudFirestoreService', () => {
   describe('brevet list', () => {
     it('should return a valid document', (done) => {
       const fixture: BrevetListDocument = {
-        'brevets': [
+        brevets: [
           {
-            'length': 202,
-            'uid': '7LsUWNa6x8UcyYeImkIA',
-            'startDate': new Timestamp(1582441260, 0),
-            'checkpoints': [
+            length: 202,
+            uid: '7LsUWNa6x8UcyYeImkIA',
+            startDate: new Timestamp(1582441260, 0),
+            checkpoints: [
               {
-                'uid': 'L1CH43VC6Bjhbm14BHDU',
-                'distance': 0,
-                'name': 'Старт: Зеленогорск'
+                uid: 'L1CH43VC6Bjhbm14BHDU',
+                distance: 0,
+                name: 'Старт: Зеленогорск'
               }
             ],
-            'name': 'Выборгский'
+            name: 'Выборгский'
           },
           {
-            'checkpoints': [
+            checkpoints: [
               {
-                'distance': 0,
-                'name': 'Старт: Стрельна',
-                'uid': 'TReXUTFaTvNeq6dTpqGA'
+                distance: 0,
+                name: 'Старт: Стрельна',
+                uid: 'TReXUTFaTvNeq6dTpqGA'
               }
             ],
-            'endDate': new Timestamp(1583787540, 0),
-            'length': 201,
-            'name': 'Волосовский',
-            'uid': 'X4sfDNGJr0JaqTZLZtMf',
-            'startDate': new Timestamp(1583560800, 0),
+            endDate: new Timestamp(1583787540, 0),
+            length: 201,
+            name: 'Волосовский',
+            uid: 'X4sfDNGJr0JaqTZLZtMf',
+            startDate: new Timestamp(1583560800, 0),
           },
           {
-            'startDate': new Timestamp(1615009800, 0),
-            'endDate': new Timestamp(1615058400, 0),
-            'checkpoints': [
+            startDate: new Timestamp(1615009800, 0),
+            endDate: new Timestamp(1615058400, 0),
+            checkpoints: [
               {
-                'distance': 0,
-                'name': 'Старт: Рощино',
-                'uid': 'yAbUSXugUh9Idi9Hrboc'
+                distance: 0,
+                name: 'Старт: Рощино',
+                uid: 'yAbUSXugUh9Idi9Hrboc'
               }
             ],
-            'length': 204,
-            'uid': 'de5iR7gIfdCR8s87PW6O',
-            'name': 'Волоярвинский'
+            length: 204,
+            uid: 'de5iR7gIfdCR8s87PW6O',
+            name: 'Волоярвинский'
           }
         ]
       };
