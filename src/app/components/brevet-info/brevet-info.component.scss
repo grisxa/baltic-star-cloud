@@ -12,7 +12,7 @@
   }
 
   .url {
-    max-width: calc(30rem - 10ch - 24px);
+    max-width: calc(100% - 10ch - 24px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

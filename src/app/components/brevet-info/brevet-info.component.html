@@ -13,10 +13,12 @@
     </div>
     <div class="row" *ngIf="brevet?.mapUrl">
       <span i18n="text|Track link">Track link</span>
-      <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank"
-         title="open" i18n-title="title|Open link">
-        <div class="url">{{brevet?.mapUrl}}</div>
-      </a>
+      <div class="url">
+        <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank"
+           title="open" i18n-title="title|Open link">
+          {{brevet?.mapUrl}}
+        </a>
+      </div>
       <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank"
          title="open" i18n-title="title|Open link">
         <mat-icon>launch</mat-icon>
