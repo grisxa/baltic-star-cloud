@@ -1,4 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {Brevet} from '../../models/brevet';
 import {Loading} from '../../models/loading';
 import {CloudFirestoreService} from '../../services/storage/cloud-firestore.service';
@@ -10,9 +12,11 @@ const WEEK_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
   templateUrl: './brevet-list.component.html',
   styleUrls: ['./brevet-list.component.scss']
 })
-export class BrevetListComponent extends Loading implements OnInit {
+export class BrevetListComponent extends Loading implements OnInit, OnDestroy {
   oldBrevets: Brevet[] = [];
   newBrevets: Brevet[] = [];
+
+  private unsubscribe$ = new Subject();
 
   constructor(private storage: CloudFirestoreService) {
     super();
@@ -21,7 +25,7 @@ export class BrevetListComponent extends Loading implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     const now = Date.now();
-    this.storage.listBrevets()
+    this.storage.listBrevets().pipe(takeUntil(this.unsubscribe$))
       .subscribe((brevets: Brevet[]) => {
         brevets.forEach(brevet => {
           // the old brevet either has finished
@@ -37,5 +41,10 @@ export class BrevetListComponent extends Loading implements OnInit {
         });
         this.loading = false;
       });
+  }
+
+  // release watchers
+  ngOnDestroy() {
+    this.unsubscribe$.next();
   }
 }
