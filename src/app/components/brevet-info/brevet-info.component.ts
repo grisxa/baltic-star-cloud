@@ -31,7 +31,6 @@ export class BrevetInfoComponent extends Loading implements OnInit, OnDestroy {
       this.brevet$
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(brevet => {
-          console.log('= brevet', brevet);
           this.brevet = brevet;
           this.loading = false;
         });
