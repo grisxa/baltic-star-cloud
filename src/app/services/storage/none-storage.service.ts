@@ -8,4 +8,5 @@ import {StorageBackend} from '../../models/storage-backend';
 })
 export class NoneStorageService implements StorageBackend {
   listBrevets = (): Observable<Brevet[]> => of([]);
+  getBrevet = (): Observable<Brevet> => of({} as Brevet);
 }
