@@ -16,7 +16,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @Input() value: Date;
   timeControl: FormControl;
   dateControl: FormControl;
-  onChange: (value: Date) => {};
+  onChange: (value: Date) => void;
 
   // TODO: fix input height
   ngOnInit() {
