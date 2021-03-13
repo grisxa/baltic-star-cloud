@@ -4,6 +4,8 @@ import firebase from 'firebase/app';
 import {of} from 'rxjs';
 import {delay} from 'rxjs/operators';
 import {environment} from '../../../environments/environment';
+import {Brevet} from '../../models/brevet';
+import {Checkpoint} from '../../models/checkpoint';
 
 import {BrevetDocument, BrevetListDocument, CloudFirestoreService} from './cloud-firestore.service';
 import Timestamp = firebase.firestore.Timestamp;
@@ -22,6 +24,47 @@ describe('CloudFirestoreService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('brevet inflator', () => {
+    it('should load empty document', () => {
+      const expected = {
+        startDate: undefined,
+        endDate: undefined,
+        checkpoints: undefined,
+        name: undefined
+      } as Brevet;
+      const brevet = service.inflateBrevet({} as BrevetDocument);
+      expect(Object.assign({}, brevet)).toEqual(expected);
+    });
+
+    it('should copy the name', () => {
+      const brevet = service.inflateBrevet({name: 'test'} as BrevetDocument);
+      expect(brevet.name).toEqual('test');
+    });
+
+    it('should convert Timestamp', () => {
+      const brevet = service.inflateBrevet({
+        startDate: new Timestamp(0, 0),
+        endDate: new Timestamp(1609448400, 0),
+      } as BrevetDocument);
+      expect(brevet.startDate).toEqual(new Date('1970-01-01'));
+      expect(brevet.endDate).toEqual(new Date('2021-01-01T00:00:00'));
+    });
+
+    it('should inflate checkpoints as well', () => {
+      const expected = [
+        {name: 'cp1', distance: 1, coordinates: {latitude: 0, longitude: 0}} as Checkpoint,
+        {name: 'cp2', distance: 2, coordinates: {latitude: 0, longitude: 0}} as Checkpoint
+      ];
+      const brevet = service.inflateBrevet({
+        checkpoints: [
+          {name: 'cp1', distance: 1},
+          {name: 'cp2', distance: 2},
+        ]
+      } as BrevetDocument);
+      expect(brevet.checkpoints.map(cp => Object.assign({}, cp))).toEqual(expected);
+    });
   });
 
   describe('brevet list', () => {

@@ -61,7 +61,7 @@ export class CloudFirestoreService implements StorageBackend {
    * @private
    */
 
-  private inflateBrevet(doc: BrevetDocument): Brevet {
+  inflateBrevet(doc: BrevetDocument): Brevet {
     return new Brevet(doc.name, {
       ...doc,
       // convert Timestamp to Date
