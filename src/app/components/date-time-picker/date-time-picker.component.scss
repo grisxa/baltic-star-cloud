@@ -1,0 +1,25 @@
+:host {
+  .mat-form-field {
+    width: 100%;
+    max-width: calc(100% - 0.5rem);
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  ::ng-deep .mat-icon-button {
+    margin-bottom: -8px;
+  }
+
+  input {
+    color: initial;
+    text-decoration: initial;
+    text-decoration-style: initial;
+    text-decoration-line: initial;
+    text-decoration-color: black;
+  }
+}
+

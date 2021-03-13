@@ -1,0 +1,10 @@
+<mat-form-field appearance="standard">
+  <mat-label i18n="label|Brevet start date">Start date</mat-label>
+  <div class="input-group">
+    <input matInput id="time" [formControl]="timeControl" type="time" (change)="setTime($event)">
+    <input matInput id="date" [formControl]="dateControl" [matDatepicker]="picker" (dateChange)="setDate($event)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </div>
+  <mat-hint i18n="hint|Input time hint">When to start</mat-hint>
+</mat-form-field>
