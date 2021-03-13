@@ -48,8 +48,8 @@ describe('CloudFirestoreService', () => {
         startDate: new Timestamp(0, 0),
         endDate: new Timestamp(1609448400, 0),
       } as BrevetDocument);
-      expect(brevet.startDate).toEqual(new Date('1970-01-01'));
-      expect(brevet.endDate).toEqual(new Date('2021-01-01T00:00:00'));
+      expect(brevet.startDate).toEqual(new Date('1970-01-01 00:00:00 GMT'));
+      expect(brevet.endDate).toEqual(new Date('2021-01-01 00:00:00 GMT+03'));
     });
 
     it('should inflate checkpoints as well', () => {

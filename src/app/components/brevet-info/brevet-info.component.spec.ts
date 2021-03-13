@@ -13,7 +13,7 @@ class MockStorageService {
     return of(new Brevet('Горьковский', {
       uid: '4',
       length: 200,
-      startDate: new Date('2020-09-26T06:00:00')
+      startDate: new Date('2020-09-26 06:00:00 GMT')
     } as BrevetOptions));
   }
 }

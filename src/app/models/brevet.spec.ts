@@ -14,7 +14,7 @@ describe('Brevet', () => {
     expect(new Brevet('test', {
       uid: '1',
       length: 200,
-      startDate: new Date('2021-06-19T06:00:00')
+      startDate: new Date('2021-06-19 06:00:00 GMT')
     } as BrevetOptions)).toBeTruthy();
   });
 
@@ -34,7 +34,7 @@ describe('Brevet', () => {
   });
 
   it('should copy startDate option', () => {
-    const date = new Date('2021-06-19T06:00:00');
+    const date = new Date('2021-06-19 06:00:00 GMT');
     const brevet = new Brevet('', {startDate: date} as BrevetOptions);
     expect(brevet.startDate).toEqual(date);
   });

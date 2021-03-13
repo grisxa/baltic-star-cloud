@@ -18,23 +18,23 @@ class MockStorageService {
       new Brevet('Горьковский', {
         uid: '4',
         length: 200,
-        startDate: new Date('2020-09-26T06:00:00')
+        startDate: new Date('2020-09-26 06:00:00 GMT')
       } as BrevetOptions),
       new Brevet('Пушкинский', {
         uid: '1',
         length: 200,
-        startDate: new Date('2021-06-19T06:00:00'),
-        endDate: new Date('2021-06-19T19:30:00')
+        startDate: new Date('2021-06-19 06:00:00 GMT'),
+        endDate: new Date('2021-06-19 19:30:00 GMT')
       } as BrevetOptions),
       new Brevet('Онего', {
         uid: '2',
         length: 600,
-        startDate: new Date('2021-06-26T05:00:00')
+        startDate: new Date('2021-06-26 05:00:00 GMT')
       } as BrevetOptions),
       new Brevet('Военный', {
         uid: '3',
         length: 402,
-        startDate: new Date('2021-07-03T05:00:00')
+        startDate: new Date('2021-07-03 05:00:00 GMT')
       } as BrevetOptions),
     ]);
   }
