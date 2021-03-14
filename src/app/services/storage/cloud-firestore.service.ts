@@ -75,6 +75,15 @@ export class CloudFirestoreService implements StorageBackend {
     });
   }
 
+  deflateBrevet(brevet: Brevet): BrevetDocument {
+    return {
+      ...brevet,
+      startDate: Timestamp.fromDate(brevet.startDate),
+      endDate: brevet.endDate ? Timestamp.fromDate(brevet.endDate) : null,
+      checkpoints: brevet.checkpoints?.map(cp => ({...cp})) || null
+    } as BrevetDocument;
+  }
+
   /**
    * Connect to the back-end and return a list of brevets
    * (as an Observable).
@@ -113,5 +122,11 @@ export class CloudFirestoreService implements StorageBackend {
         map(doc => this.inflateBrevet(doc))
       )
     );
+  }
+
+  updateBrevet(brevet: Brevet): Promise<void> {
+    return this.firestore.collection<BrevetDocument>(`brevets${SUFFIX}`)
+      // TODO: document with the uid may be missing
+      .doc(brevet.uid).update(this.deflateBrevet(brevet));
   }
 }

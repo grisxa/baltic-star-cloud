@@ -2,7 +2,15 @@
 <app-loading-plug *ngIf="loading else readyBlock"></app-loading-plug>
 <ng-template #readyBlock>
   <ng-container *ngIf="brevet else notFound">
-    <h3>{{brevet?.name}}</h3>
+    <h3>{{brevet?.name}}
+      <button mat-icon-button routerLink="edit"
+              i18n-title="title|Button with a edit icon" title="Edit brevet settings"
+              i18n-aria-label="label|Button to switch to editing"
+              aria-label="Edit button">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+    </h3>
     <div class="row">
       <span i18n="text|Route length">Route length</span>
       <span>{{brevet?.length}}</span>

@@ -1,13 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatIconModule} from '@angular/material/icon';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
 import {Observable, of} from 'rxjs';
 import {Brevet, BrevetOptions} from '../../models/brevet';
 import {CloudFirestoreService} from '../../services/storage/cloud-firestore.service';
+import {DateTimePickerComponent} from '../date-time-picker/date-time-picker.component';
 import {LoadingPlugComponent} from '../loading-plug/loading-plug.component';
 
-import {BrevetInfoComponent} from './brevet-info.component';
+import {BrevetEditComponent} from './brevet-edit.component';
 
 class MockStorageService {
   getBrevet(uid: string): Observable<Brevet> {
@@ -19,16 +26,22 @@ class MockStorageService {
   }
 }
 
-describe('BrevetInfoComponent', () => {
-  let component: BrevetInfoComponent;
-  let fixture: ComponentFixture<BrevetInfoComponent>;
+describe('BrevetEditComponent', () => {
+  let component: BrevetEditComponent;
+  let fixture: ComponentFixture<BrevetEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BrevetInfoComponent,LoadingPlugComponent],
+      declarations: [BrevetEditComponent, LoadingPlugComponent, DateTimePickerComponent],
       imports: [
-        MatIconModule,
+        MatDatepickerModule,
+        MatFormFieldModule,
+        MatInputModule,
         MatListModule,
+        MatNativeDateModule,
+        MatSnackBarModule,
+        NoopAnimationsModule,
+        ReactiveFormsModule,
         RouterTestingModule,
       ],
       providers: [
@@ -38,16 +51,12 @@ describe('BrevetInfoComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BrevetInfoComponent);
+    fixture = TestBed.createComponent(BrevetEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load a mocked Brevet object', () => {
-    expect(component.brevet.uid).toEqual('4');
   });
 });

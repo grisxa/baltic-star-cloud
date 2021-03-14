@@ -1,0 +1,36 @@
+<h2 i18n="header|Brevet settings">Brevet settings</h2>
+<app-loading-plug *ngIf="loading else readyBlock"></app-loading-plug>
+<ng-template #readyBlock>
+  <ng-container *ngIf="brevet else notFound">
+    <form [formGroup]="brevetForm">
+      <mat-form-field appearance="standard">
+        <mat-label i18n="label|Event name">Event name</mat-label>
+        <input matInput placeholder="Name" i18n-placeholder="hint|Input name"
+               formControlName="name">
+        <mat-hint i18n="hint|Input name hint">Give a name to the event</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label i18n="text|Route length">Route length</mat-label>
+        <input matInput placeholder="Length" i18n-placeholder="hint|Input length"
+               formControlName="length">
+        <mat-hint i18n="hint|Input length hint">How long is the route</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label i18n="text|Track link">Track link</mat-label>
+        <input matInput placeholder="https://plotaroute.com/route/66"
+               formControlName="mapUrl">
+        <mat-hint i18n="hint|Map URL">URL of a mapping service</mat-hint>
+      </mat-form-field>
+      <app-date-time-picker formControlName="startDate"></app-date-time-picker>
+      <div class="buttons">
+        <button mat-raised-button i18n="button|Cancel" (click)="onCancel()">Cancel</button>
+        <button mat-raised-button i18n="button|Save" (click)="onSubmit()"
+                [disabled]="!brevetForm.valid || !formDirty">Save
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</ng-template>
+<ng-template #notFound>
+  <app-not-found-plug></app-not-found-plug>
+</ng-template>
