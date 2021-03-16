@@ -18,6 +18,9 @@ service cloud.firestore {
                    && resource.data.uid == document
     }
 
+    match /misc.beta/brevetList {
+      allow read;
+    }
     match /brevets.beta/{brevet} {
       allow read;
     }
