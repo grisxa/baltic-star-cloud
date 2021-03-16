@@ -13,6 +13,10 @@
     ],
     "rewrites": [
       {
+        "source": "/hello",
+        "function": "helloWorld"
+      },
+      {
         "source": "/en-US/**",
         "destination": "/en-US/index.html"
       },
@@ -25,6 +29,9 @@
         "destination": "/en-US/index.html"
       }
     ]
+  },
+  "functions": {
+    "source": "../brevet-online-functions"
   },
   "emulators": {
     "functions": {
