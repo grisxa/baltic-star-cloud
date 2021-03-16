@@ -40,7 +40,7 @@ export class CloudFirestoreService implements StorageBackend {
   }
 
   getBrevetListDocument(): Observable<BrevetListDocument> {
-    return this.firestore.doc<BrevetListDocument>(`/brevets${SUFFIX}/list`).get().pipe(
+    return this.firestore.doc<BrevetListDocument>(`/misc${SUFFIX}/brevetList`).get().pipe(
       // extract data from the snapshot
       map(document => document.data())
     );
