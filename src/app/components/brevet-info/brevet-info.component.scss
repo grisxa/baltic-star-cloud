@@ -1,7 +1,9 @@
 :host {
   display: flex;
   flex-direction: column;
-  margin-left: 1rem;
+  h3, .row {
+    margin-left: 1rem;
+  }
 
   span {
     padding-left: 0.2em;

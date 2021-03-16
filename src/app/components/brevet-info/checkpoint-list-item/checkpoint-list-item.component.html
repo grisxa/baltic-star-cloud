@@ -1,6 +1,10 @@
-<mat-list-item *ngIf="checkpoint">
-  <a [title]="checkpoint.name" [routerLink]="['/brevet', checkpoint?.brevet?.uid || 'none', 'checkpoint', checkpoint?.uid || 'none']">{{checkpoint?.name}}</a>,
-  {{checkpoint.distance}} <span i18n="units|Kilometers, short">km</span>
+<mat-list-item *ngIf="checkpoint"
+    [routerLink]="['/brevet', checkpoint?.brevet?.uid, 'checkpoint', checkpoint?.uid]"
+    title="More information on checkpoint {{checkpoint?.name}}"
+    i18n-title="title|More information by the link">
+  <mat-icon matListIcon>place</mat-icon>
+  {{checkpoint?.name}}, {{checkpoint.distance}}
+  <span i18n="units|Kilometers, short">km</span>
   <mat-icon *ngIf="checkpoint.sleep" class="checkpoint-type-icon"
             i18n-title="icon|Sleeping"
             title="Sleeping" svgIcon="icon_bed"></mat-icon>
