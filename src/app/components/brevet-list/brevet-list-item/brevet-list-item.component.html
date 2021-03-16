@@ -1,10 +1,11 @@
-<mat-list-item [class]="brevet?.isOnline() ? 'brevet-list-item online' : 'brevet-list-item'">
+<mat-list-item [routerLink]="['/brevet', brevet?.uid]"
+  title="More information on event {{brevet?.name}}"
+  i18n-title="title|More information by the link"
+  [class]="brevet?.isOnline() ? 'brevet-list-item online' : 'brevet-list-item'">
   <mat-icon matListIcon>directions_bike</mat-icon>
   <div mat-line class="brevet">
     <span>{{brevet?.startDate | date}}</span>
-    <div>
-      <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">{{brevet?.name}}</a>,
-      {{brevet?.length}}
+    <div>{{brevet?.name}}, {{brevet?.length}}
       <span i18n="units|Kilometers, short">km</span></div>
   </div>
   <div mat-line class="brevet">
