@@ -1,3 +1,4 @@
+import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {AngularFireModule} from '@angular/fire';
 import {USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/auth';
@@ -10,7 +11,6 @@ import {MatSelectModule} from '@angular/material/select';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ServiceWorkerModule} from '@angular/service-worker';
-
 import {environment} from '../environments/environment';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -43,6 +43,7 @@ import {NotFoundPlugComponent} from './components/not-found-plug/not-found-plug.
     BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     MatExpansionModule,
     MatIconModule,
     MatListModule,

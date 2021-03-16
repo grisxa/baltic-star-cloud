@@ -13,6 +13,7 @@ import {CloudFirestoreService} from '../../services/storage/cloud-firestore.serv
 })
 export class BrevetInfoComponent extends Loading implements OnInit, OnDestroy {
   brevet: Brevet;
+  checkpointsOpenState = false;
 
   private unsubscribe$ = new Subject();
   private brevet$: Observable<Brevet>;
