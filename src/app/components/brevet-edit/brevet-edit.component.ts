@@ -51,11 +51,11 @@ export class BrevetEditComponent extends Loading implements OnInit, OnDestroy {
         .subscribe(brevet => {
           this.brevet = brevet;
           this.loading = false;
-          this.brevetForm.get('name').setValue(brevet.name);
-          this.brevetForm.get('length').setValue(brevet.length);
-          this.brevetForm.get('mapUrl').setValue(brevet.mapUrl);
+          this.brevetForm.get('name').setValue(brevet?.name);
+          this.brevetForm.get('length').setValue(brevet?.length);
+          this.brevetForm.get('mapUrl').setValue(brevet?.mapUrl);
           // it's safer to have a fallback
-          this.brevetForm.get('startDate').setValue(brevet.startDate || new Date());
+          this.brevetForm.get('startDate').setValue(brevet?.startDate || new Date());
           // initial values have been loaded
           this.formDirty = false;
         });
