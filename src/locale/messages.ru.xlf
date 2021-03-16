@@ -9,11 +9,11 @@
         <note priority="1" from="meaning">title</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6694493449453087729" datatype="html">
@@ -23,7 +23,7 @@
         <note priority="1" from="meaning">label</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5437198107780758427" datatype="html">
@@ -33,7 +33,7 @@
         <note priority="1" from="meaning">link</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3992056897224026671" datatype="html">
@@ -55,6 +55,10 @@
           <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
           <context context-type="linenumber">13</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="563071276270986054" datatype="html">
         <source>Collapse</source>
@@ -64,6 +68,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
           <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9184688758862358532" datatype="html">
@@ -83,7 +91,7 @@
         <note priority="1" from="meaning">text</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2085309604853656205" datatype="html">
@@ -93,13 +101,13 @@
         <note priority="1" from="meaning">units</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">
-            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
           </context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -115,7 +123,7 @@
         <note priority="1" from="meaning">text</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8552656200568418902" datatype="html">
@@ -125,7 +133,7 @@
         <note priority="1" from="meaning">header</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="104989645788376794" datatype="html">
@@ -135,7 +143,7 @@
         <note priority="1" from="meaning">text</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">118</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8922567123192187838" datatype="html">
@@ -145,12 +153,22 @@
         <note priority="1" from="meaning">title</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">146</context>
+          <context context-type="linenumber">46</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="5904539971174228141" datatype="html">
+        <source>Intermediate checkpoints</source>
+        <target state="translated">Промежуточные пункты</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Intermediate checkpoint list</note>
+        <note priority="1" from="meaning">title</note>
       </trans-unit>
       <trans-unit id="8329874796615588879" datatype="html">
         <source>Sleeping</source>
@@ -159,9 +177,9 @@
         <note priority="1" from="meaning">icon</note>
         <context-group purpose="location">
           <context context-type="sourcefile">
-            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
           </context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3225155434700207498" datatype="html">
@@ -171,10 +189,26 @@
         <note priority="1" from="meaning">icon</note>
         <context-group purpose="location">
           <context context-type="sourcefile">
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
+          </context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1080135379843957716" datatype="html">
+        <source>More information on checkpoint
+          <x id="INTERPOLATION" equiv-text="{{checkpoint?.name}}"/>
+        </source>
+        <target state="translated">Подробнее про контрольный пункт
+          <x id="INTERPOLATION" equiv-text="{{checkpoint?.name}}"/>
+        </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
             src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
           </context>
           <context context-type="linenumber">18</context>
         </context-group>
+        <note priority="1" from="description">More information by the link</note>
+        <note priority="1" from="meaning">title</note>
       </trans-unit>
       <trans-unit id="2850913554903391280" datatype="html">
         <source>More information on event
@@ -183,14 +217,14 @@
         <target state="translated">Подробнее про бревет
           <x id="INTERPOLATION" equiv-text="{{brevet?.name}}"/>
         </target>
+        <note priority="1" from="description">More information by the link</note>
+        <note priority="1" from="meaning">title</note>
         <context-group purpose="location">
           <context context-type="sourcefile">
             src/app/components/brevet-list/brevet-list-item/brevet-list-item.component.ts
           </context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <note priority="1" from="description">More information by the link</note>
-        <note priority="1" from="meaning">title</note>
       </trans-unit>
       <trans-unit id="6066495633434379489" datatype="html">
         <source>Upcoming events</source>
@@ -199,7 +233,7 @@
         <note priority="1" from="meaning">header</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2703963383906935873" datatype="html">
@@ -218,7 +252,7 @@
         <note priority="1" from="description">No brevets message</note>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5345465234990075359" datatype="html">

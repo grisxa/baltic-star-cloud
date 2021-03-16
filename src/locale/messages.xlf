@@ -6,11 +6,11 @@
         <source>Brevet list</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">title</note>
@@ -19,7 +19,7 @@
         <source>Brevet list button</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Button with a home icon</note>
         <note priority="1" from="meaning">label</note>
@@ -28,7 +28,7 @@
         <source>Brevet list</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Link to the brevet list</note>
         <note priority="1" from="meaning">link</note>
@@ -48,6 +48,10 @@
           <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
           <context context-type="linenumber">13</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
         <note priority="1" from="description">Expand</note>
         <note priority="1" from="meaning">command</note>
       </trans-unit>
@@ -57,6 +61,10 @@
           <context context-type="sourcefile">src/app/components/brevet-archive/brevet-archive.component.ts</context>
           <context context-type="linenumber">13</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
         <note priority="1" from="description">Collapse</note>
         <note priority="1" from="meaning">command</note>
       </trans-unit>
@@ -64,7 +72,7 @@
         <source>Brevet description</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">36,48</context>
+          <context context-type="linenumber">36,46</context>
         </context-group>
         <note priority="1" from="description">Brevet description</note>
         <note priority="1" from="meaning">header</note>
@@ -73,7 +81,7 @@
         <source>Route length</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">58,60</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">Route length</note>
         <note priority="1" from="meaning">text</note>
@@ -82,13 +90,13 @@
         <source>km</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">
-            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
           </context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -103,7 +111,7 @@
         <source>Start</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">84,90</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">Start date and time</note>
         <note priority="1" from="meaning">text</note>
@@ -112,7 +120,7 @@
         <source>Control points</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">104,107</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">Control points</note>
         <note priority="1" from="meaning">header</note>
@@ -121,7 +129,7 @@
         <source>Track link</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">118,122</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">Track link</note>
         <note priority="1" from="meaning">text</note>
@@ -130,22 +138,31 @@
         <source>open</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">132,134</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
-          <context context-type="linenumber">146,147</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">Open link</note>
+        <note priority="1" from="meaning">title</note>
+      </trans-unit>
+      <trans-unit id="5904539971174228141" datatype="html">
+        <source>Intermediate checkpoints</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/brevet-info/brevet-info.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Intermediate checkpoint list</note>
         <note priority="1" from="meaning">title</note>
       </trans-unit>
       <trans-unit id="8329874796615588879" datatype="html">
         <source>Sleeping</source>
         <context-group purpose="location">
           <context context-type="sourcefile">
-            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
           </context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">Sleeping</note>
         <note priority="1" from="meaning">icon</note>
@@ -154,12 +171,25 @@
         <source>Selfcheck</source>
         <context-group purpose="location">
           <context context-type="sourcefile">
+            src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.html
+          </context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <note priority="1" from="description">Selfcheck</note>
+        <note priority="1" from="meaning">icon</note>
+      </trans-unit>
+      <trans-unit id="1080135379843957716" datatype="html">
+        <source>More information on checkpoint
+          <x id="INTERPOLATION" equiv-text="{{checkpoint?.name}}"/>
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
             src/app/components/brevet-info/checkpoint-list-item/checkpoint-list-item.component.ts
           </context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <note priority="1" from="description">Selfcheck</note>
-        <note priority="1" from="meaning">icon</note>
+        <note priority="1" from="description">More information by the link</note>
+        <note priority="1" from="meaning">title</note>
       </trans-unit>
       <trans-unit id="2850913554903391280" datatype="html">
         <source>More information on event
@@ -178,7 +208,7 @@
         <source>Upcoming events</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
-          <context context-type="linenumber">34,36</context>
+          <context context-type="linenumber">33,36</context>
         </context-group>
         <note priority="1" from="description">Planned events</note>
         <note priority="1" from="meaning">header</note>
@@ -187,7 +217,7 @@
         <source>Nothing has been planned.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/brevet-list/brevet-list.component.ts</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <note priority="1" from="description">No brevets message</note>
       </trans-unit>
