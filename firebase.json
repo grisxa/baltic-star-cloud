@@ -4,7 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "site": "beta-brevet-online",
+    "site": "admin-brevet-online",
     "public": "dist",
     "ignore": [
       "firebase.json",
