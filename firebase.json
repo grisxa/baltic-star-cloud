@@ -13,6 +13,10 @@
     ],
     "rewrites": [
       {
+        "source": "/hello",
+        "function": "helloWorld"
+      },
+      {
         "source": "/en-US/**",
         "destination": "/en-US/index.html"
       },
@@ -25,5 +29,22 @@
         "destination": "/en-US/index.html"
       }
     ]
+  },
+  "functions": {
+    "source": "../brevet-online-functions"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "auth": {
+      "port": 9099
+    },
+    "hosting": {
+      "port": 5000
+    }
   }
 }

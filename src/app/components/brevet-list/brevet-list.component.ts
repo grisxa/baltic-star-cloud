@@ -31,7 +31,7 @@ export class BrevetListComponent extends Loading implements OnInit, OnDestroy {
           // the old brevet either has finished
           // or started a week ago (and thus has finished as well)
           if (brevet.endDate?.valueOf() < now ||
-            brevet.startDate.valueOf() < now - WEEK_MILLISECONDS) {
+            brevet.startDate?.valueOf() < now - WEEK_MILLISECONDS) {
             // order from recent to older
             this.oldBrevets.unshift(brevet);
           } else {

@@ -1,6 +1,6 @@
-<mat-list-item class="brevet-list-item">
+<mat-list-item [class]="brevet?.isOnline() ? 'brevet-list-item online' : 'brevet-list-item'">
   <mat-icon matListIcon>directions_bike</mat-icon>
-  <div mat-line [class]="brevet?.isOnline() ? 'brevet online' : 'brevet'">
+  <div mat-line class="brevet">
     <span>{{brevet?.startDate | date}}</span>
     <div>
       <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">{{brevet?.name}}</a>,
@@ -8,7 +8,7 @@
       <span i18n="units|Kilometers, short">km</span></div>
   </div>
   <div mat-line class="brevet">
-    <span class="date">{{brevet?.startDate | date: "HH:MM"}}</span>
+    <span class="date">{{brevet?.startDate | date: "HH:mm"}}</span>
     <span *ngIf="!!brevet?.checkpoints">{{brevet?.checkpoints[0]?.name}}</span>
   </div>
 </mat-list-item>

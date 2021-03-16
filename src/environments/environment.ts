@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  useEmulators: true,
   firebase: {
     apiKey: 'test',
     authDomain: 'baltic-star-cloud.web.app',
