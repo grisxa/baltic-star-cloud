@@ -29,12 +29,6 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'brevet-online'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('brevet-online');
-  });
-
   it('should render root link', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();

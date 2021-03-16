@@ -36,6 +36,6 @@ describe('CheckpointListItemComponent', () => {
     fixture.detectChanges();
     const link = fixture.debugElement
       .query(By.css('mat-list-item'));
-    expect(link.nativeElement.innerText).toEqual('test, 1 km');
+    expect(link.nativeElement.innerText).toEqual(`place\ntest, 1 km`);
   });
 });
