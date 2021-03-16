@@ -1,6 +1,6 @@
-<mat-list-item class="brevet-list-item">
+<mat-list-item [class]="brevet?.isOnline() ? 'brevet-list-item online' : 'brevet-list-item'">
   <mat-icon matListIcon>directions_bike</mat-icon>
-  <div mat-line [class]="brevet?.isOnline() ? 'brevet online' : 'brevet'">
+  <div mat-line class="brevet">
     <span>{{brevet?.startDate | date}}</span>
     <div>
       <a [title]="brevet?.name" [routerLink]="['/brevet', brevet?.uid]">{{brevet?.name}}</a>,
