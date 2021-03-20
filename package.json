@@ -65,7 +65,17 @@
     "parserOptions": {
       "ecmaVersion": 2020
     },
-    "rules": {},
+    "rules": {
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "linebreak-style": "off",
+      "object-curly-spacing": "off",
+      "object-curly-newline": "off",
+      "lines-between-class-members": "off",
+      "no-console": "off"
+    },
     "overrides": [
       {
         "files": [
