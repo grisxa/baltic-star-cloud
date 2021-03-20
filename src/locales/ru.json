@@ -1,0 +1,38 @@
+{
+  "default": {
+    "App": {
+      "brevetList": "Список бреветов"
+    },
+    "BrevetList": {
+      "title": "Предстоящие бреветы"
+    },
+    "BrevetListItem": {
+      "length": "{length} км",
+      "link": "Подробнее про бревет {name}"
+    },
+    "BrevetArchive": {
+      "title": "Прошедшие бреветы"
+    },
+    "BrevetInfo": {
+      "title": "Описание бревета",
+      "length": "Длина маршрута {length} км",
+      "start": "Старт в {time} {date}",
+      "link": "Ссылка на трек",
+      "hint": "открыть",
+      "controls": "Контрольные пункты",
+      "intermediate": "Промежуточные пункты"
+    },
+    "CheckpointListItem": {
+      "distance": "{distance} км",
+      "link": "Подробнее про контрольный пункт {name}",
+      "sleeping": "Спальный",
+      "selfCheck": "Самоотметка"
+    },
+    "LocaleSwitcher": {
+      "language": "Язык"
+    },
+    "NotFoundPlug": {
+      "title": "Не найдено"
+    }
+  }
+}
