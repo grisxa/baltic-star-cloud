@@ -1,34 +1,54 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    Element button: <el-button>el-button</el-button>
-    <router-view/>
-  </div>
+  <el-container class="app-container">
+    <el-header class="home">
+      <el-button routerLink="/brevets"
+                 :title="$t('App.brevetList')" type="text">
+        <i class="el-icon-s-home"></i>
+      </el-button>
+      <router-link to="/brevets">{{ $t('App.brevetList') }}</router-link>
+    </el-header>
+    <el-main>
+      <router-view/>
+    </el-main>
+    <el-footer>
+      <app-locale-switcher></app-locale-switcher>
+    </el-footer>
+  </el-container>
 </template>
+<script lang="ts">
+import LocaleSwitcher from '@/components/LocaleSwitcher.vue';
+import {Component, Vue} from 'vue-property-decorator';
+
+@Component({
+  components: {
+    LocaleSwitcher,
+  },
+})
+export default class App extends Vue {
+}
+</script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-#nav {
-  padding: 30px;
+.app-container {
+  max-width: 30rem;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.home {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  button {
+    padding-top: 8px;
+    padding-right: 0.2em;
   }
+}
+
+i {
+  font-size: 24px;
 }
 </style>
