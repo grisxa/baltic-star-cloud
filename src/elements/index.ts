@@ -1,10 +1,36 @@
+import {
+  Button,
+  Col,
+  Collapse,
+  CollapseItem,
+  Container,
+  Footer,
+  Header,
+  Icon,
+  Loading,
+  Main,
+  Option,
+  Row,
+  Select,
+} from 'element-ui';
 import Vue from 'vue';
-import { Button } from 'element-ui';
-import lang from 'element-ui/lib/locale/lang/en';
-import locale from 'element-ui/lib/locale';
 
-locale.use(lang);
+const elements = [
+  Button,
+  Icon,
+  Collapse,
+  CollapseItem,
+  Loading,
+  Container,
+  Header,
+  Main,
+  Footer,
+  Col,
+  Row,
+  Select,
+  Option,
+];
 
-Vue.use(Button);
+elements.forEach((element) => Vue.use(element));
 
-export default [Button];
+export default elements;

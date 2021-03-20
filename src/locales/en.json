@@ -1,3 +1,38 @@
 {
-  "message": "hello i18n !!"
+  "default": {
+    "App": {
+      "brevetList": "Brevet list"
+    },
+    "BrevetList": {
+      "title": "Upcoming events"
+    },
+    "BrevetListItem": {
+      "length": "{length} km",
+      "link": "More information on event {name}"
+    },
+    "BrevetArchive": {
+      "title": "Past events"
+    },
+    "BrevetInfo": {
+      "title": "Brevet description",
+      "length": "Route length {length} km",
+      "start": "Start at {time} on {date}",
+      "link": "Track link",
+      "hint": "open",
+      "controls": "Control points",
+      "intermediate": "Intermediate checkpoints"
+    },
+    "CheckpointListItem": {
+      "distance": "{distance} km",
+      "link": "More information on checkpoint {name}",
+      "sleeping": "Sleeping",
+      "selfCheck": "SelfCheck"
+    },
+    "LocaleSwitcher": {
+      "language": "Language"
+    },
+    "NotFoundPlug": {
+      "title": "Not found"
+    }
+  }
 }
