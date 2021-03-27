@@ -40,9 +40,6 @@ export class LocationService {
     reject(message);
   }
 
-  constructor() {
-  }
-
   isLocationAvailable(): boolean {
     return !!navigator.geolocation;
   }

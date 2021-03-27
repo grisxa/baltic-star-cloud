@@ -31,8 +31,7 @@ import Timestamp = firebase.firestore.Timestamp;
   styleUrls: ['./brevet-info.component.scss']
 })
 export class BrevetInfoComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject();
-  private brevet$: Observable<Brevet>;
+  @ViewChild(MatTable) table: MatTable<RiderCheckIn>;
 
   brevet: Brevet;
   mapId?: number;
@@ -42,13 +41,15 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[] = [];
 
-  @ViewChild(MatTable) table: MatTable<RiderCheckIn>;
   // FIXME: consider pre-defined
   // dynamic column names like cp, cp3 (no pre-defined count)
   progress = new MatTableDataSource<RiderCheckIn>();
   columnsToDisplay = ['name'];
   columnNames: {[key: string]: string} = {name: 'Имя'};
   columnTypes: {[key: string]: string} = {name: ''};
+
+  private unsubscribe$ = new Subject();
+  private brevet$: Observable<Brevet>;
 
   constructor(private route: ActivatedRoute,
               private router: Router,

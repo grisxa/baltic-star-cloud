@@ -26,8 +26,7 @@ import GeoPoint = firebase.firestore.GeoPoint;
   styleUrls: ['./checkpoint-info.component.scss']
 })
 export class CheckpointInfoComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject();
-  private checkpoint$: Observable<Checkpoint>;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
   checkpoint: Checkpoint;
   url: string;
@@ -38,7 +37,8 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   riders = new MatTableDataSource<RiderCheckIn>();
   riderColumnsToDisplay = ['code', 'name', 'in', 'out'];
 
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  private unsubscribe$ = new Subject();
+  private checkpoint$: Observable<Checkpoint>;
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,

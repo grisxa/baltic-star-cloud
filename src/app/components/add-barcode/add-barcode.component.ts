@@ -24,11 +24,11 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
   @ViewChild(MatInput) code: MatInput;
 
   checkpoint$: Observable<Checkpoint>;
-  private checkpoint: Checkpoint;
   codeControl: FormControl;
   dateControl: FormControl;
-  private barcode: Barcode;
   readonly unsubscribe$ = new Subject();
+  private checkpoint: Checkpoint;
+  private barcode: Barcode;
 
   constructor(private route: ActivatedRoute,
               private location: Location,

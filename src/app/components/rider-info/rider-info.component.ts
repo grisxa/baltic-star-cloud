@@ -23,15 +23,15 @@ import Timestamp = firebase.firestore.Timestamp;
   styleUrls: ['./rider-info.component.scss']
 })
 export class RiderInfoComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject();
-  private rider$: Observable<Rider>;
-
   rider: Rider;
   url: string;
   formGroup: FormGroup;
 
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
+
+  private unsubscribe$ = new Subject();
+  private rider$: Observable<Rider>;
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,

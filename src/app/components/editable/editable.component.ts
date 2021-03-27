@@ -32,37 +32,6 @@ export class EditableComponent implements OnInit, OnDestroy {
   constructor(public host: ElementRef, private changeDetectorRef: ChangeDetectorRef) {
   }
 
-  ngOnInit() {
-    if (this.viewModeTemplate) {
-      this.currentView = this.viewModeTemplate.template;
-    }
-    this.editMode.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((switchToEdit: boolean) => {
-        if (!switchToEdit || this.editModeTemplate === undefined) {
-          if (this.viewModeTemplate) {
-            this.currentView = this.viewModeTemplate.template;
-          }
-        } else {
-          this.currentView = this.editModeTemplate.template;
-          try {
-            this.changeDetectorRef.detectChanges();
-          } catch (error) {
-            console.warn('change detection has failed', error.message);
-          }
-
-          // auto-focusing
-          const element: HTMLElement = this.host.nativeElement.querySelector('input:not(:focus)');
-          if (element) {
-            element.focus();
-          }
-        }
-      });
-  }
-
-  ngOnDestroy() {
-    this.unsubscribe$.next();
-  }
-
   /**
    * Global (outside) click handler to switch edit mode off
    *
@@ -113,5 +82,36 @@ export class EditableComponent implements OnInit, OnDestroy {
 
       this.editMode.next(false);
     }
+  }
+
+  ngOnInit() {
+    if (this.viewModeTemplate) {
+      this.currentView = this.viewModeTemplate.template;
+    }
+    this.editMode.pipe(takeUntil(this.unsubscribe$))
+      .subscribe((switchToEdit: boolean) => {
+        if (!switchToEdit || this.editModeTemplate === undefined) {
+          if (this.viewModeTemplate) {
+            this.currentView = this.viewModeTemplate.template;
+          }
+        } else {
+          this.currentView = this.editModeTemplate.template;
+          try {
+            this.changeDetectorRef.detectChanges();
+          } catch (error) {
+            console.warn('change detection has failed', error.message);
+          }
+
+          // auto-focusing
+          const element: HTMLElement = this.host.nativeElement.querySelector('input:not(:focus)');
+          if (element) {
+            element.focus();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
   }
 }
