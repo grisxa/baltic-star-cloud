@@ -1,11 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {Observable, of, Subject} from 'rxjs';
-import {filter, switchMap, takeUntil} from 'rxjs/operators';
-import firebase from 'firebase/app';
+import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
 import {Rider} from '../models/rider';
-import {isNotNullOrUndefined} from '../utils';
+import {switchMap, takeUntil} from 'rxjs/operators';
+import firebase from 'firebase';
 import User = firebase.User;
 
 @Injectable({
@@ -13,29 +12,30 @@ import User = firebase.User;
 })
 export class AuthService implements OnDestroy {
   // may be either a Google Auth user or an UID-mapped rider
-  user?: Rider;
-  user$: Observable<Rider>;
+  user?: Rider | null;
+  user$ = new Subject<Rider | null>();
   readonly unsubscribe$ = new Subject();
 
   constructor(public fireAuth: AngularFireAuth, storage: StorageService) {
     localStorage.setItem('user', '');
-    this.user$ = this.fireAuth.authState.pipe(
+    this.fireAuth.authState.pipe(
       takeUntil(this.unsubscribe$),
-      filter(isNotNullOrUndefined),
-      switchMap((user: User) => user ?
+      switchMap((user: User | null) => user ?
         storage.watchRider(user.uid).pipe(
-          filter(isNotNullOrUndefined),
           switchMap((rider: Rider) => rider ?
             of(Rider.fromDoc({...rider, auth: user} as Rider)) :
             of(Rider.fromDoc({auth: user} as Rider))
-          )) :
-        of(null)),
-      filter(isNotNullOrUndefined)
-    );
-    this.user$.subscribe((user: Rider) => {
-      this.user = user;
-      localStorage.setItem('user', JSON.stringify(this.user));
-    });
+          )) : of(null)))
+      .subscribe(
+        user => {
+          this.user$.next(user);
+        }
+      );
+    this.user$.pipe(takeUntil(this.unsubscribe$))
+      .subscribe(user => {
+        this.user = user;
+        localStorage.setItem('user', JSON.stringify(this.user));
+      });
   }
 
   // FIXME: when to destroy?
@@ -44,17 +44,23 @@ export class AuthService implements OnDestroy {
   }
 
   get isLoggedIn(): boolean {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user !== null;
+    if (this.user === undefined) {
+      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+    }
+    return this.user !== null;
   }
 
   get isAdmin(): boolean {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user !== null && user.admin;
+    if (this.user === undefined) {
+      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+    }
+    // console.log('=isAdmin', user, user !== null && user.admin);
+    return this.user !== null && !!this.user?.admin;
   }
 
   async logout() {
-    await this.fireAuth.signOut();
     localStorage.removeItem('user');
+    this.user$.next(null);
+    await this.fireAuth.signOut();
   }
 }
