@@ -16,17 +16,17 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @Input() value?: Date;
   timeControl: FormControl;
   dateControl: FormControl;
-  onChange: (value: Date) => void;
+  onChange?: (value: Date) => void;
 
   constructor() {
     console.log('= constructor');
+    this.dateControl = new FormControl(this.value ? this.formatInputDate(this.value) : '', Validators.required);
+    this.timeControl = new FormControl(this.value ? this.formatInputTime(this.value) : '', Validators.required);
   }
 
   // TODO: fix input height
   ngOnInit() {
     console.log('=init value', this.value);
-    this.dateControl = new FormControl(this.value ? this.formatInputDate(this.value) : '', Validators.required);
-    this.timeControl = new FormControl(this.value ? this.formatInputTime(this.value) : '', Validators.required);
   }
 
   writeValue(date: Date) {
@@ -68,13 +68,6 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     }
     console.log('=sec', date.getTime() / 1000);
     return date.toISOString();
-/*
-    const day = '0' + date.getDate();
-    const month = '0' + date.getMinutes();
-    const year = date.getFullYear();
-    // console.log(`= format to ${year}-${month}-${day}`);
-    return year + '-' + month.slice(-2) + '-' + day.slice(-2);
-*/
   }
 
   setDate(event: MatDatepickerInputEvent<unknown>) {

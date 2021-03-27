@@ -13,7 +13,7 @@ import {cutOffUrl, findRearCamera} from './scanner-utils';
 })
 export class ScannerDialogComponent {
   onSuccess = new EventEmitter<Barcode>();
-  lastCode: string;
+  lastCode?: string;
   acceptedFormats: BarcodeFormat[] = [];
 
   availableDevices: MediaDeviceInfo[] = [];

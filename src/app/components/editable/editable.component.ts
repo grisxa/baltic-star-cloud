@@ -22,12 +22,12 @@ import {takeUntil} from 'rxjs/operators';
 })
 export class EditableComponent implements OnInit, OnDestroy {
   @Output() update = new EventEmitter<boolean>();
-  @ContentChild(ViewModeDirective, {static: true}) viewModeTemplate: ViewModeDirective;
-  @ContentChild(EditModeDirective, {static: false}) editModeTemplate: EditModeDirective;
+  @ContentChild(ViewModeDirective, {static: true}) viewModeTemplate?: ViewModeDirective;
+  @ContentChild(EditModeDirective, {static: false}) editModeTemplate?: EditModeDirective;
 
   unsubscribe$ = new Subject();
   editMode = new BehaviorSubject<boolean>(false);
-  currentView: TemplateRef<any>;
+  currentView: TemplateRef<any> | null = null;
 
   constructor(public host: ElementRef, private changeDetectorRef: ChangeDetectorRef) {
   }

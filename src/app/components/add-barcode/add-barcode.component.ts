@@ -3,7 +3,7 @@ import {Location} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {StorageService} from '../../services/storage.service';
 import {AuthService} from '../../services/auth.service';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {Checkpoint} from '../../models/checkpoint';
 import {FormControl, Validators} from '@angular/forms';
 import firebase from 'firebase/app';
@@ -21,25 +21,19 @@ import Timestamp = firebase.firestore.Timestamp;
   templateUrl: './add-barcode.component.html'
 })
 export class AddBarcodeComponent implements OnInit, OnDestroy {
-  @ViewChild(MatInput) code: MatInput;
+  @ViewChild(MatInput) code?: MatInput;
 
-  checkpoint$: Observable<Checkpoint>;
+  checkpoint$: Observable<Checkpoint> = of({} as Checkpoint);
   codeControl: FormControl;
   dateControl: FormControl;
   readonly unsubscribe$ = new Subject();
-  private checkpoint: Checkpoint;
-  private barcode: Barcode;
+  readonly barcode: Barcode = new Barcode();
+  private checkpoint?: Checkpoint;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private storage: StorageService,
               public auth: AuthService) {
-    this.barcode = new Barcode();
-  }
-
-  ngOnInit() {
-    // go to the code input field
-    setTimeout(() => this.code.focus());
 
     console.log('= init', this.barcode);
     // connect the form to a barcode object
@@ -48,6 +42,11 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
     this.dateControl = new FormControl(this.barcode.time.toDate(), Validators.required);
     this.dateControl.valueChanges
       .subscribe((date: Date) => this.barcode.time = Timestamp.fromDate(date));
+  }
+
+  ngOnInit() {
+    // go to the code input field
+    setTimeout(() => this.code?.focus());
 
     // connect to possible checkpoint info updates
     this.route.paramMap.subscribe(params => {

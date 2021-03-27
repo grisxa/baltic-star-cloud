@@ -257,7 +257,7 @@ export class StorageService {
         map(docs => docs.map(doc => doc.data())),
         map((riders: Rider[]) => {
           const dictionary: { [key: string]: string } = {};
-          riders.forEach(rider => dictionary[rider.uid] = rider.code);
+          riders.forEach(rider => dictionary[rider.uid] = rider.code || '');
           return dictionary;
         }),
         tap(data => console.log('riders', data)),

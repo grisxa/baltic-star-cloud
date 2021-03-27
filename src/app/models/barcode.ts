@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
 
 export class Barcode {
-  uid: string;
+  uid?: string;
   time: Timestamp;
   code: string;
   message: string;

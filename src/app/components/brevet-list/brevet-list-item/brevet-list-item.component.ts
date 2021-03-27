@@ -9,7 +9,7 @@ import {Brevet} from '../../../models/brevet';
   templateUrl: './brevet-list-item.component.html'
 })
 export class BrevetListItemComponent implements OnInit {
-  @Input() brevet: Brevet;
+  @Input() brevet?: Brevet;
 
   constructor(public auth: AuthService,
               private storage: StorageService,

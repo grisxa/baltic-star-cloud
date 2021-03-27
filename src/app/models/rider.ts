@@ -12,16 +12,16 @@ export class Rider {
 
   displayName: string;
   uid: string;
-  code: string;
+  code?: string;
 
   hidden = false;
-  admin: boolean;
+  admin = false;
 
   firstName: string;
   lastName: string;
-  birthDate: Timestamp;
-  city: string;
-  country: string;
+  birthDate?: Timestamp;
+  city?: string;
+  country?: string;
 
   constructor(owner: string, uid: string, displayName?: string) {
     this.owner = owner;

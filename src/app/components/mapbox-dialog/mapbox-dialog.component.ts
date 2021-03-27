@@ -16,19 +16,18 @@ import LngLat = mapboxgl.LngLat;
 })
 export class MapboxDialogComponent implements OnInit {
   formGroup: FormGroup;
-  map: mapboxgl.Map;
-  marker: mapboxgl.Marker;
+  map?: mapboxgl.Map;
+  marker?: mapboxgl.Marker;
   private defaultCenter = new GeoPoint(59.95, 30.317);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: GeoPoint, public auth: AuthService) {
-  }
-
-  ngOnInit(): void {
     this.formGroup = new FormGroup({
       latitude: new FormControl('', [Validators.required, Validators.pattern('[-0-9,.]+')]),
       longitude: new FormControl('', [Validators.required, Validators.pattern('[-0-9,.]+')])
     });
+  }
 
+  ngOnInit(): void {
     if (!this.data || !this.data.latitude || !this.data.longitude) {
       this.data = this.defaultCenter;
     }
@@ -36,7 +35,7 @@ export class MapboxDialogComponent implements OnInit {
     this.formGroup.controls.latitude?.setValue(this.data.latitude);
     this.formGroup.controls.longitude?.setValue(this.data.longitude);
     this.formGroup.valueChanges
-      .subscribe(position => this.marker.setLngLat([position.longitude, position.latitude]));
+      .subscribe(position => this.marker?.setLngLat([position.longitude, position.latitude]));
 
     const center = new LngLat(this.data.longitude, this.data.latitude);
 
@@ -56,8 +55,8 @@ export class MapboxDialogComponent implements OnInit {
   }
 
   onDragEnd() {
-    const lngLat = this.marker.getLngLat();
-    this.formGroup.controls.latitude?.setValue(lngLat.lat);
-    this.formGroup.controls.longitude?.setValue(lngLat.lng);
+    const lngLat = this.marker?.getLngLat();
+    this.formGroup.controls.latitude?.setValue(lngLat?.lat);
+    this.formGroup.controls.longitude?.setValue(lngLat?.lng);
   }
 }

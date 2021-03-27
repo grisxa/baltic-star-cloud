@@ -15,8 +15,6 @@
     "module": "esnext",
     // FIXME
     "skipLibCheck": true,
-    // FIXME
-    "strictPropertyInitialization": false,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",

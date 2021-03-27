@@ -6,7 +6,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
 import firebase from 'firebase/app';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 
@@ -23,15 +23,15 @@ import Timestamp = firebase.firestore.Timestamp;
   styleUrls: ['./rider-info.component.scss']
 })
 export class RiderInfoComponent implements OnInit, OnDestroy {
-  rider: Rider;
-  url: string;
+  rider?: Rider;
+  url?: string;
   formGroup: FormGroup;
 
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
 
   private unsubscribe$ = new Subject();
-  private rider$: Observable<Rider>;
+  private rider$: Observable<Rider> = of({} as Rider);
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,
@@ -39,10 +39,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               private storage: StorageService,
               private snackBar: MatSnackBar) {
-  }
-
-  ngOnInit() {
-    this.titleService.setTitle('Участник');
     this.formGroup = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
@@ -52,6 +48,10 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       signed: new FormControl(false, Validators.required),
       birthDate: new FormControl(new Date(), Validators.required)
     });
+  }
+
+  ngOnInit() {
+    this.titleService.setTitle('Участник');
     this.route.paramMap.subscribe(params => {
       const riderUid = params.get('uid');
       if (!riderUid) {
@@ -125,7 +125,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       }
       this.storage.updateRider(this.rider)
         .then(() => {
-          console.log(`= updated rider ${this.rider.uid}`);
+          console.log(`= updated rider ${this.rider?.uid}`);
         })
         .catch(error => {
           console.error('rider update has failed', error);

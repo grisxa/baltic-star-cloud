@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
-import {Checkpoint} from '../../models/checkpoint';
+import {Observable, of, Subject} from 'rxjs';
+import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
 import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
@@ -26,10 +26,10 @@ import GeoPoint = firebase.firestore.GeoPoint;
   styleUrls: ['./checkpoint-info.component.scss']
 })
 export class CheckpointInfoComponent implements OnInit, OnDestroy {
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatPaginator, {static: true}) paginator?: MatPaginator;
 
-  checkpoint: Checkpoint;
-  url: string;
+  checkpoint?: Checkpoint;
+  url?: string;
   formGroup: FormGroup;
 
   barcodes = new MatTableDataSource<Barcode>();
@@ -38,7 +38,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   riderColumnsToDisplay = ['code', 'name', 'in', 'out'];
 
   private unsubscribe$ = new Subject();
-  private checkpoint$: Observable<Checkpoint>;
+  private checkpoint$: Observable<Checkpoint> = of({} as Checkpoint);
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,
@@ -47,19 +47,19 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
               private storage: StorageService,
               public auth: AuthService,
               private snackBar: MatSnackBar) {
-  }
-
-  ngOnInit() {
-    this.titleService.setTitle('Контрольный пункт');
-    this.riders.sort = new MatSort();
-    this.riders.sort.sort({id: 'in', start: 'asc', disableClear: true});
-    this.barcodes.paginator = this.paginator;
     this.formGroup = new FormGroup({
       displayName: new FormControl('', Validators.required),
       distance: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]),
       sleep: new FormControl('', Validators.required),
       selfcheck: new FormControl('', Validators.required),
     });
+  }
+
+  ngOnInit() {
+    this.titleService.setTitle('Контрольный пункт');
+    this.riders.sort = new MatSort();
+    this.riders.sort.sort({id: 'in', start: 'asc', disableClear: true});
+    this.barcodes.paginator = this.paginator || null;
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('brevetUid');
       const checkpointUid = params.get('checkpointUid');
@@ -119,7 +119,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
       this.checkpoint[field] = control.value;
       this.storage.updateCheckpoint(this.checkpoint)
          .then(() => {
-          console.log(`= updated checkpoint ${this.checkpoint.uid}`);
+          console.log(`= updated checkpoint ${this.checkpoint?.uid}`);
         })
         .catch(error => {
           console.error('checkpoint update has failed', error);
@@ -143,7 +143,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   }
   addBarcode() {
     console.log('= add barcode');
-    this.router.navigate(['checkpoint', this.checkpoint.uid, 'addbarcode']);
+    this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode']);
   }
 
   startScanner(): void {
@@ -153,6 +153,10 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
     dialogRef.componentInstance.onSuccess.pipe(
       takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => {
+        if (!this.checkpoint) {
+          console.error('No checkpoint defined');
+          return;
+        }
         this.storage.createBarcode('checkpoints',
           this.checkpoint.uid, barcode, this.auth.user?.uid)
           .then(uid => console.log('= barcode created', uid))
@@ -167,15 +171,19 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
   showMap(): void {
     const dialogRef = this.dialog.open(MapboxDialogComponent, {
       width: '75vw',
-      data: this.checkpoint.coordinates
+      data: this.checkpoint?.coordinates
     });
     dialogRef.afterClosed()
       .subscribe(data => {
+        if (!this.checkpoint) {
+          console.error('No checkpoint defined');
+          return;
+        }
         if (data && data.latitude && data.longitude) {
           this.checkpoint.coordinates = new GeoPoint(data.latitude, data.longitude);
           this.storage.updateCheckpoint(this.checkpoint)
             .then(() => {
-              console.log(`= updated checkpoint ${this.checkpoint.uid}`);
+              console.log(`= updated checkpoint ${this.checkpoint?.uid}`);
             })
             .catch(error => {
               console.error('checkpoint update has failed', error);
