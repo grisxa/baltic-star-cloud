@@ -13,7 +13,7 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 })
 
 export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
-  @Input() value: Date;
+  @Input() value?: Date;
   timeControl: FormControl;
   dateControl: FormControl;
   onChange: (value: Date) => void;
@@ -81,7 +81,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     console.log('= set date', this.dateControl.value);
     if (this.dateControl.valid) {
       console.log('= date valid', this.dateControl.value, this.value);
-      const date = new Date(this.value);
+      const date = this.value ? new Date(this.value) : new Date();
       date.setDate(this.dateControl.value.getDate());
       date.setMonth(this.dateControl.value.getMonth());
       date.setFullYear(this.dateControl.value.getFullYear());
@@ -93,7 +93,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   setTime(event: Event) {
     event.stopPropagation();
     if (this.timeControl.valid) {
-      const date = new Date(this.value);
+      const date = this.value ? new Date(this.value) : new Date();
       // split time input of HH:mm
       const [hours, mins]: number[] = this.timeControl.value
         .split(':').map((v: string) => parseInt(v, 10));

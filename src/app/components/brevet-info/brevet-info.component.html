@@ -25,7 +25,8 @@
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate?.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <app-date-time-picker formControlName="startDate" [value]="brevet?.startDate?.toDate()" name="startDate"></app-date-time-picker>
+      <app-date-time-picker [value]="brevet?.startDate?.toDate()"
+                            formControlName="startDate" name="startDate"></app-date-time-picker>
     </ng-template>
   </app-editable>
 </div>
@@ -85,7 +86,7 @@
     <app-checkpoint-list-item *ngFor="let checkpoint of checkpoints?.slice(1, -1)"
                               [checkpoint]="checkpoint"></app-checkpoint-list-item>
   </ng-container>
-  <app-checkpoint-list-item *ngIf="!!checkpoints && checkpoints?.length > 1"
+  <app-checkpoint-list-item *ngIf="!!checkpoints && checkpoints.length > 1"
     [checkpoint]="checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
 </mat-list>
 
