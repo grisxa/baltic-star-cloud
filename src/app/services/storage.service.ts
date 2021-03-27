@@ -1,17 +1,18 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreDocument, QueryDocumentSnapshot} from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/firestore';
 import {Brevet} from '../models/brevet';
-import {Checkpoint} from '../models/checkpoint';
+import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
 import {Rider} from '../models/rider';
 import {Barcode} from '../models/barcode';
 import {filter, map, mergeMap, tap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
-
+import {Observable} from 'rxjs';
+import {isNotNullOrUndefined} from '../utils';
 import GeoPoint = firebase.firestore.GeoPoint;
 import QuerySnapshot = firebase.firestore.QuerySnapshot;
-import {of} from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,13 @@ export class StorageService {
       .initializeApp(firebase.firestore())
       .collection('checkpoints');
 
+  }
+
+
+  listBrevets() {
+    return this.firestore
+      .collection<Brevet>('brevets', ref => ref.orderBy('startDate'))
+      .get();
   }
 
   createBrevet(brevet: Brevet) {
@@ -44,38 +52,48 @@ export class StorageService {
 
   getBrevet(uid: string) {
     console.log('= search brevet', uid);
-    return this.firestore.collection('brevets').doc<Brevet>(uid || 'none')
-      .valueChanges();
+    return this.firestore
+      .collection<Brevet>('brevets')
+      .doc(uid)
+      .valueChanges().pipe(
+        filter(isNotNullOrUndefined)
+      );
   }
 
   deleteBrevet(brevetUid: string): Promise<void> {
     return this.firestore
-      .collection('brevets').doc(brevetUid).delete();
+      .collection<Brevet>('brevets')
+      .doc(brevetUid)
+      .delete();
   }
+
   updateBrevet(brevet: Brevet) {
-    return this.firestore.collection('brevets')
-      .doc(brevet.uid).update(brevet);
+    return this.firestore
+      .collection<Brevet>('brevets')
+      .doc(brevet.uid)
+      .update(brevet);
   }
 
   hasCheckpoint(brevetUid: string, checkpointUid: string) {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints').doc(checkpointUid)
+      .collection<Brevet>('brevets').doc(brevetUid)
+      .collection<Checkpoint>('checkpoints').doc(checkpointUid)
       .get().toPromise()
       .then(doc => doc.exists);
   }
 
-  filterCheckpoints(brevetUid: string, checkpoins: Checkpoint[]) {
+  filterCheckpoints(brevetUid: string, checkpoints: Checkpoint[]) {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints').get()
-      .pipe(map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
+      .collection<Brevet>('brevets').doc(brevetUid)
+      .collection<Checkpoint>('checkpoints').get()
+      .pipe(
+        map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
         map(docs => docs.map(doc => doc.data())
-          .filter(checkpoint => checkpoins.map(cp => cp.uid).includes(checkpoint.uid)))
+          .filter(checkpoint => checkpoints.map(cp => cp.uid).includes(checkpoint.uid)))
       );
   }
 
-  listCloseCheckpoints(position: Position) {
+  listCloseCheckpoints(position: GeolocationPosition) {
     return this.geoCheckpoints
       .near({
         center: new GeoPoint(position.coords.latitude, position.coords.longitude),
@@ -87,8 +105,11 @@ export class StorageService {
     const {uid, name, length} = brevet;
     console.log('= create checkpoint', brevet, checkpoint);
     return this.firestore
-      .collection('brevets').doc(brevet.uid)
-      .collection('checkpoints').add({...checkpoint, brevet: {uid, name, length}})
+      .collection<Brevet>('brevets').doc(brevet.uid)
+      .collection<Checkpoint>('checkpoints').add({
+        ...checkpoint,
+        brevet: {uid, name, length}
+      } as Checkpoint)
       .then(docRef => {
         checkpoint.uid = docRef.id;
         docRef.update({uid: docRef.id});
@@ -109,33 +130,47 @@ export class StorageService {
   getCheckpoint(checkpointUid: string) {
     console.log('= search checkpoint', checkpointUid);
     return this.firestore
-      .collection('checkpoints').doc<Checkpoint>(checkpointUid || 'none')
-      .valueChanges();
+      .collection<Checkpoint>('checkpoints')
+      .doc(checkpointUid)
+      .valueChanges().pipe(
+        filter(isNotNullOrUndefined)
+      );
   }
 
   deleteCheckpoint(brevetUid: string, checkpointUid: string): Promise<void> {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints').doc(checkpointUid).delete();
+      .collection<Brevet>('brevets').doc(brevetUid)
+      .collection<Checkpoint>('checkpoints')
+      .doc(checkpointUid)
+      .delete();
   }
+
   updateCheckpoint(checkpoint: Checkpoint) {
     return this.geoCheckpoints.doc(checkpoint.uid)
       .update({...checkpoint, copy: false});
   }
-  getBarcodeRoot(checkpointUid: string): AngularFirestoreDocument<Checkpoint> {
+
+  getBarcodeRoot(checkpointUid: string): Observable<Checkpoint> {
     console.log('= search checkpoint', checkpointUid);
     return this.firestore
-      .collection('checkpoints').doc<Checkpoint>(checkpointUid || 'none');
+      .collection<Checkpoint>('checkpoints')
+      .doc(checkpointUid)
+      .valueChanges().pipe(
+        filter(isNotNullOrUndefined)
+      );
   }
 
   createBarcode(root: 'checkpoints' | 'riders',
-                controlUid: string,
+                controlUid: string = NONE_CHECKPOINT,
                 barcode: Barcode,
-                authUid: string) {
+                authUid?: string) {
     console.log('= save barcode', barcode);
+    if (!authUid) {
+      return Promise.reject('No authentication string');
+    }
     return this.firestore
-      .collection(root).doc(controlUid)
-      .collection('barcodes').add({
+      .collection<Checkpoint | Rider>(root).doc(controlUid)
+      .collection<Barcode>('barcodes').add({
         ...barcode,
         control: controlUid,
         owner: authUid
@@ -151,10 +186,12 @@ export class StorageService {
     // avoid storing User auth (managed by firebase)
     const {auth, ...doc} = rider;
     const docPromise: Promise<void> = rider.uid ?
-      this.firestore.collection('riders')
-        .doc<Rider>(rider.uid)
+      this.firestore
+        .collection<Rider>('riders')
+        .doc(rider.uid)
         .set(doc as Rider, {merge: true}) :
-      this.firestore.collection<Rider>('riders')
+      this.firestore
+        .collection<Rider>('riders')
         .add(doc as Rider)
         .then(docRef => {
           doc.uid = docRef.id;
@@ -170,107 +207,106 @@ export class StorageService {
       });
   }
 
-  getRider(uid: string) {
-    console.log('= search rider', uid);
-    return this.firestore.collection('riders').doc<Rider>(uid || 'none')
-      .valueChanges();
+  deleteRider(uid: string): Promise<void> {
+    return this.firestore
+      .collection<Rider>('riders')
+      .doc(uid)
+      .delete();
   }
 
-  deleteRider(uid: string): Promise<void> {
-    return this.firestore.collection('riders').doc<Rider>(uid).delete();
-  }
   updateRider(rider: Rider) {
     // avoid storing User auth (managed by firebase)
     const {auth, ...doc} = rider;
-    return this.firestore.collection('riders')
-      .doc<Rider>(rider.uid).update(doc);
-  }
-
-  listBrevets() {
-    return this.firestore.collection('brevets', ref => ref.orderBy('startDate')).get();
-  }
-
-  /*
-  listCheckpoints(brevetUid: string) {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints', ref => ref.orderBy('distance'))
-      .get();
+      .collection<Rider>('riders')
+      .doc(rider.uid)
+      .update(doc);
   }
-  */
-
-  /*
-  listRiders() {
-    return this.firestore
-      .collection('riders', ref => ref.where('hidden', '==', false).orderBy('lastName'))
-      .get();
-  }
-  */
 
   watchRider(uid: string) {
-    return this.firestore.collection('riders').doc<Rider>(uid).valueChanges();
+    return this.firestore
+      .collection<Rider>('riders')
+      .doc(uid)
+      .valueChanges().pipe(
+        filter(isNotNullOrUndefined)
+      );
   }
 
   watchRiders() {
     return this.firestore
-      .collection<Rider>('riders', ref => ref.where('hidden', '==', false)
-        .orderBy('lastName'))
+      .collection<Rider>('riders',
+        ref => ref.where('hidden', '==', false)
+          .orderBy('lastName'))
       .valueChanges();
   }
 
   watchBarcodes(root: 'checkpoints' | 'riders', checkpointUid: string) {
     return this.firestore
-      .collection(root).doc(checkpointUid)
-      .collection('barcodes', ref => ref.orderBy('time', 'desc'))
+      .collection<Checkpoint | Rider>(root)
+      .doc(checkpointUid)
+      .collection<Barcode>('barcodes',
+        ref => ref.orderBy('time', 'desc'))
       .valueChanges();
   }
 
   watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
-    return this.firestore.collection<Rider>('riders').get().pipe(
-      map(snapshot => snapshot.docs),
-      map(docs => docs.map(doc => doc.data())),
-      map((riders: Rider[]) => {
-        const dictionary = {};
-        riders.forEach(rider => dictionary[rider.uid] = rider.code);
-        return dictionary;
-      }),
-      tap(data => console.log('riders', data)),
-      mergeMap(dictionary => this.firestore
-      .collection('checkpoints').doc(checkpointUid)
-      .valueChanges().pipe(
-        tap(data => console.log('checkpoint change', data)),
-        // skip deleted checkpoints
-        filter(Boolean),
-        mergeMap((checkpoint: Checkpoint) => this.firestore
-          .collection('brevets').doc(checkpoint.brevet.uid)
-          .collection('checkpoints').doc(checkpoint.uid)
-          .collection('riders')
+    return this.firestore
+      .collection<Rider>('riders')
+      .get().pipe(
+        map(snapshot => snapshot.docs),
+        map(docs => docs.map(doc => doc.data())),
+        map((riders: Rider[]) => {
+          const dictionary: { [key: string]: string } = {};
+          riders.forEach(rider => dictionary[rider.uid] = rider.code);
+          return dictionary;
+        }),
+        tap(data => console.log('riders', data)),
+        mergeMap(dictionary => this.firestore
+          .collection<Checkpoint>('checkpoints')
+          .doc(checkpointUid)
           .valueChanges().pipe(
-            map((riders: RiderCheckIn[]) => riders.map(rider => Object
-              .assign(rider, { code: dictionary[rider.uid] })))
-          )
-        ))));
+            // tap(data => console.log('checkpoint change', data)),
+            // skip deleted checkpoints
+            filter(isNotNullOrUndefined),
+            mergeMap((checkpoint: Checkpoint) => this.firestore
+              .collection<Brevet>('brevets')
+              .doc(checkpoint.brevet?.uid)
+              .collection<Checkpoint>('checkpoints')
+              .doc(checkpoint.uid)
+              .collection<RiderCheckIn>('riders')
+              .valueChanges().pipe(
+                map((riders: RiderCheckIn[]) => riders
+                  .map(rider => Object.assign(rider, {code: dictionary[rider.uid]}))
+                )
+              )
+            ))));
   }
 
   watchCheckpoints(brevetUid: string) {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints', ref => ref.orderBy('distance'))
+      .collection<Brevet>('brevets')
+      .doc(brevetUid)
+      .collection<Checkpoint>('checkpoints',
+        ref => ref.orderBy('distance'))
       .valueChanges();
   }
 
   watchBrevetProgress(brevetUid: string) {
     return this.firestore
-      .collection('brevets').doc(brevetUid)
-      .collection('checkpoints', ref => ref.orderBy('distance'))
+      .collection<Brevet>('brevets')
+      .doc(brevetUid)
+      .collection<Checkpoint>('checkpoints',
+        ref => ref.orderBy('distance'))
       .valueChanges().pipe(
         // tap(data => console.log('checkpoints change', data)),
         mergeMap((checkpoints: Checkpoint[]) => checkpoints),
         filter((checkpoint: Checkpoint) => !!checkpoint.uid),
         mergeMap((checkpoint: Checkpoint) => this.firestore
-          .collection('brevets').doc(brevetUid)
-          .collection('checkpoints').doc(checkpoint.uid)
-          .collection('riders')
+          .collection<Brevet>('brevets')
+          .doc(brevetUid)
+          .collection<Checkpoint>('checkpoints')
+          .doc(checkpoint.uid)
+          .collection<RiderCheckIn>('riders')
           .valueChanges().pipe(
             // tap(data => console.log('riders change', data)),
             map((riders: RiderCheckIn[]) => ({

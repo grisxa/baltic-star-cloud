@@ -1,15 +1,17 @@
 import {Brevet} from './brevet';
 import {RiderCheckIn} from './rider-check-in';
 import {RoutePoint} from './route-point';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 
 import GeoPoint = firebase.firestore.GeoPoint;
 import Timestamp = firebase.firestore.Timestamp;
 
+export const NONE_CHECKPOINT = 'none';
+
 export class Checkpoint {
   // TODO: switch to name
-  displayName: string;
-  uid: string;
+  displayName?: string;
+  uid = NONE_CHECKPOINT;
   // to the start by track
   distance?: number;
   coordinates?: GeoPoint;
@@ -35,11 +37,13 @@ export class Checkpoint {
   /**
    * Tests if the checkpoint is active based on a timestamp given.
    * A brevet the checkpoint is assigned to must have startDate-endDate range covering the timestamp.
+   *
    * @param time - current {@link Timestamp}
    */
+
   isOnline(time: Timestamp): boolean {
-    console.log('=compare dates', this.brevet.startDate, time, this.brevet.endDate);
-    return (!this.brevet.startDate || this.brevet.startDate <= time)
-      && (!this.brevet.endDate || this.brevet.endDate >= time);
+    console.log('= compare dates', this.brevet?.startDate, time, this.brevet?.endDate);
+    return (!this.brevet?.startDate || this.brevet.startDate <= time)
+      && (!this.brevet?.endDate || this.brevet.endDate >= time);
   }
 }

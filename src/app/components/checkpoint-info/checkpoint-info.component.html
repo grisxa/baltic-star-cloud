@@ -1,12 +1,13 @@
 <h2>Бревет <span>{{checkpoint?.brevet?.name}}</span></h2>
 <div class="row">Длина маршрута <span>{{checkpoint?.brevet?.length}}</span> км</div>
+<form [formGroup]="formGroup">
 <h3>
   <app-editable (update)="updateField('displayName')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.displayName}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <input matInput [formControl]="formGroup?.get('displayName')" value="{{checkpoint?.displayName}}" size="15">
+      <input matInput formControlName="displayName" value="{{checkpoint?.displayName}}" size="15">
     </ng-template>
   </app-editable>
 
@@ -34,7 +35,7 @@
       <span [attr.data-editable]="auth.isAdmin">{{checkpoint?.distance}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <input matInput [formControl]="formGroup?.get('distance')" type="number" value="{{checkpoint?.distance}}" size="5">
+      <input matInput formControlName="distance" type="number" value="{{checkpoint?.distance}}" size="5">
     </ng-template>
   </app-editable>
   км</div>
@@ -46,6 +47,7 @@
     Карта
   </button>
 </div>
+</form>
 
 <h3>Отметки участников</h3>
 <div class="row add-buttons">

@@ -1,14 +1,18 @@
+import {PlotaroutePoint} from './plotaroute-point';
+
 export class RoutePoint {
-  lat: number;
-  lng: number;
+  lat = 0;
+  lng = 0;
   distance = 0;
-  name: string;
+  name?: string;
 
   dir?: string;
   labtxt?: string;
 
-  constructor(options) {
-    Object.assign(this, options);
+  constructor(options: PlotaroutePoint & { distance?: number }) {
+    this.lat = options.lat;
+    this.lng = options.lon;
+    this.distance = options.distance || 0;
   }
 
   /**
@@ -25,8 +29,10 @@ export class RoutePoint {
 
   /**
    * Copy the point description to the name property
+   *
    * @param replacement - optional control name if not specified in the route
    */
+
   fixName(replacement?: string) {
     this.name = this.dir || this.labtxt || replacement;
 

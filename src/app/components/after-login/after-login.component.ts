@@ -18,7 +18,7 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const info = localStorage.getItem('info');
+    const info = localStorage.getItem('info') || '';
     localStorage.removeItem('info');
 
     this.auth.user$.pipe(takeUntil(this.unsubscribe$), first())

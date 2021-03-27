@@ -1,14 +1,14 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
 
-export class RiderCheckIn {
+export interface RiderCheckIn {
   uid: string;
   code?: string;
   name: string;
   lastName?: string;
 
   // Brevet info page, progress table
-  time?: Timestamp[];
+  time: Timestamp[];
 
   // Checkpoint info page, rider table
   in?: Timestamp;

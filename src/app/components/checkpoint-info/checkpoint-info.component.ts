@@ -1,24 +1,24 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
-
 import {Checkpoint} from '../../models/checkpoint';
-import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import {MatDialog} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
 import {AuthService} from '../../services/auth.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage.service';
 import {Barcode} from '../../models/barcode';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {takeUntil, tap} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
-import * as firebase from 'firebase/app';
-import GeoPoint = firebase.firestore.GeoPoint;
+import firebase from 'firebase/app';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
+import GeoPoint = firebase.firestore.GeoPoint;
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -63,6 +63,9 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('brevetUid');
       const checkpointUid = params.get('checkpointUid');
+      if (!brevetUid || !checkpointUid) {
+        return;
+      }
       this.url = window.location.origin + `/c/${checkpointUid}`;
       this.checkpoint$ = this.storage.getCheckpoint(checkpointUid);
       this.storage.watchBarcodes('checkpoints', checkpointUid)
@@ -91,12 +94,12 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
         if (checkpoint === undefined) {
           return;
         }
-        this.titleService.setTitle(`Бревет ${checkpoint.brevet.name} - ${checkpoint.displayName}`);
+        this.titleService.setTitle(`Бревет ${checkpoint.brevet?.name} - ${checkpoint.displayName}`);
         this.checkpoint = checkpoint;
-        this.formGroup.get('displayName').setValue(checkpoint.displayName);
-        this.formGroup.get('distance').setValue(checkpoint.distance);
-        this.formGroup.get('sleep').setValue(checkpoint.sleep);
-        this.formGroup.get('selfcheck').setValue(checkpoint.selfcheck);
+        this.formGroup.controls.displayName?.setValue(checkpoint.displayName);
+        this.formGroup.controls.distance?.setValue(checkpoint.distance);
+        this.formGroup.controls.sleep?.setValue(checkpoint.sleep);
+        this.formGroup.controls.selfcheck?.setValue(checkpoint.selfcheck);
       });
   }
 
@@ -112,6 +115,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
     const control = this.formGroup.get(field);
     if (control && control.valid) {
       console.log('new value of', field, control.value);
+      // @ts-ignore
       this.checkpoint[field] = control.value;
       this.storage.updateCheckpoint(this.checkpoint)
          .then(() => {
@@ -123,17 +127,18 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
             'Закрыть', {duration: 5000});
         });
     } else {
-      control.setValue(this.checkpoint[field]);
+      // @ts-ignore
+      control?.setValue(this.checkpoint[field]);
     }
   }
 
-  updateSleep(event) {
-    this.formGroup.get('sleep').setValue(event.source.checked);
+  updateSleep(event: MatButtonToggleChange) {
+    this.formGroup.controls.sleep?.setValue(event.source.checked);
     this.updateField('sleep');
   }
 
-  updateSelfCheck(event) {
-    this.formGroup.get('selfcheck').setValue(event.source.checked);
+  updateSelfCheck(event: MatButtonToggleChange) {
+    this.formGroup.controls.selfcheck?.setValue(event.source.checked);
     this.updateField('selfcheck');
   }
   addBarcode() {
@@ -149,7 +154,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
       takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => {
         this.storage.createBarcode('checkpoints',
-          this.checkpoint.uid, barcode, this.auth.user.uid)
+          this.checkpoint.uid, barcode, this.auth.user?.uid)
           .then(uid => console.log('= barcode created', uid))
           .catch(error => {
             console.error('= barcode reporting has failed', error);

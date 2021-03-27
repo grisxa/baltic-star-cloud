@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {Rider} from '../../models/rider';
 
@@ -14,9 +14,11 @@ export class LoginPromptComponent implements OnInit {
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
-    this.auth.user$.subscribe((user: Rider) => {
+    this.auth.user$.subscribe((user: Rider|null) => {
       this.userName = user ? user.displayName : '';
-      this.url = user && user.hasCard ? `/rider/${user.uid}` : null;
+      if (user && user.hasCard) {
+        this.url = `/rider/${user.uid}`;
+      }
     });
   }
 

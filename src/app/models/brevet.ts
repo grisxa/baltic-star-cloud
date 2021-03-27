@@ -1,5 +1,7 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
+
+export const NONE_BREVET = 'none';
 
 export class Brevet {
   uid: string;

@@ -1,3 +1,4 @@
+<form [formGroup]="formGroup">
 <h2>Участник
   <app-editable (update)="updateField('firstName')">
     <ng-template appViewMode>
@@ -6,7 +7,7 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Имя</mat-label>
-        <input matInput [formControl]="formGroup?.get('firstName')"
+        <input matInput formControlName="firstName"
                value="{{rider?.firstName}}" size="15"
                placeholder="Иван">
       </mat-form-field>
@@ -19,7 +20,7 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Фамилия</mat-label>
-        <input matInput [formControl]="formGroup?.get('lastName')"
+        <input matInput formControlName="lastName"
                value="{{rider?.lastName}}" size="15"
                placeholder="Петров">
       </mat-form-field>
@@ -34,7 +35,7 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Номер</mat-label>
-        <input matInput [formControl]="formGroup?.get('code')"
+        <input matInput formControlName="code"
                value="{{rider?.code}}" size="15"
                placeholder="001234">
       </mat-form-field>
@@ -43,7 +44,7 @@
 </div>
 <div class="code">
   <qrcode *ngIf="isEditable && url" [qrdata]="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-  <ngx-barcode6 *ngIf="!isEditable || !url" [bc-format]="'CODE128'" [bc-value]="rider?.code || rider?.uid" [bc-display-value]="true"></ngx-barcode6>
+  <ngx-barcode6 *ngIf="!isEditable || !url" [bc-format]="'CODE128'" [bc-value]="rider?.code || rider?.uid || ''" [bc-display-value]="true"></ngx-barcode6>
 </div>
 
 <div class="row" *ngIf="!isEditable">Год рождения: {{(rider?.birthDate?.toDate() | date: 'yyyy') || '?'}}</div>
@@ -55,7 +56,7 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Дата</mat-label>
-        <input matInput [matDatepicker]="picker" [formControl]="formGroup.get('birthDate')"
+        <input matInput [matDatepicker]="picker" formControlName="birthDate"
                placeholder="23/12/1967">
       </mat-form-field>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -71,7 +72,7 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Город</mat-label>
-        <input matInput [formControl]="formGroup?.get('city')"
+        <input matInput formControlName="city"
                value="{{rider?.city || '?'}}" size="15"
                placeholder="Санкт-Петербург">
       </mat-form-field>
@@ -84,13 +85,14 @@
     <ng-template appEditMode *ngIf="isEditable">
       <mat-form-field>
         <mat-label>Страна</mat-label>
-        <input matInput [formControl]="formGroup?.get('country')"
+        <input matInput formControlName="country"
                value="{{rider?.country || '?'}}" size="15"
                placeholder="Россия">
       </mat-form-field>
     </ng-template>
   </app-editable>
 </div>
+</form>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">

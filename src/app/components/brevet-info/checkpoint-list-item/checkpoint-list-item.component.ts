@@ -21,6 +21,9 @@ export class CheckpointListItemComponent implements OnInit {
 
   deleteCheckpoint(uid: string) {
     console.log('= delete checkpoint', uid);
+    if (!this.checkpoint.brevet?.uid) {
+      return;
+    }
     this.storage.deleteCheckpoint(this.checkpoint.brevet.uid, uid)
       .then(() => {
         console.log(`= removed cp ${uid}`);

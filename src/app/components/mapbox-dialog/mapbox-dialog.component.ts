@@ -1,13 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import * as mapboxgl from 'mapbox-gl';
-import GeoPoint = firebase.firestore.GeoPoint;
-import LngLat = mapboxgl.LngLat;
-
 import {environment} from '../../../environments/environment';
 import {AuthService} from '../../services/auth.service';
+import GeoPoint = firebase.firestore.GeoPoint;
+import LngLat = mapboxgl.LngLat;
 
 
 @Component({
@@ -34,8 +33,8 @@ export class MapboxDialogComponent implements OnInit {
       this.data = this.defaultCenter;
     }
 
-    this.formGroup.get('latitude').setValue(this.data.latitude);
-    this.formGroup.get('longitude').setValue(this.data.longitude);
+    this.formGroup.controls.latitude?.setValue(this.data.latitude);
+    this.formGroup.controls.longitude?.setValue(this.data.longitude);
     this.formGroup.valueChanges
       .subscribe(position => this.marker.setLngLat([position.longitude, position.latitude]));
 
@@ -53,12 +52,12 @@ export class MapboxDialogComponent implements OnInit {
     this.marker = new mapboxgl.Marker({draggable: this.auth.isAdmin})
       .setLngLat(center)
       .addTo(this.map)
-      .on('dragend', this.onDragEnd.bind(this));
+      .on('dragend', this.onDragEnd);
   }
 
-  onDragEnd(event) {
-    const lngLat = event.target.getLngLat();
-    this.formGroup.get('latitude').setValue(lngLat.lat);
-    this.formGroup.get('longitude').setValue(lngLat.lng);
+  onDragEnd() {
+    const lngLat = this.marker.getLngLat();
+    this.formGroup.controls.latitude?.setValue(lngLat.lat);
+    this.formGroup.controls.longitude?.setValue(lngLat.lng);
   }
 }

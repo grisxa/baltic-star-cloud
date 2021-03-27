@@ -1,6 +1,6 @@
-import {Component, EventEmitter, forwardRef, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -16,7 +16,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   @Input() value: Date;
   timeControl: FormControl;
   dateControl: FormControl;
-  onChange: (value: Date) => {};
+  onChange: (value: Date) => void;
 
   constructor() {
     console.log('= constructor');
@@ -41,11 +41,11 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
       this.onChange(this.value);
     }
   }
-  registerOnChange(fn) {
+  registerOnChange(fn: () => void) {
     console.log('= register picker onChange', fn);
     this.onChange = fn;
   }
-  registerOnTouched(fn) {
+  registerOnTouched(fn: () => void) {
     // console.log('= register on touch');
   }
 
@@ -77,7 +77,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 */
   }
 
-  setDate(event?: MatDatepickerInputEvent<unknown>) {
+  setDate(event: MatDatepickerInputEvent<unknown>) {
     console.log('= set date', this.dateControl.value);
     if (this.dateControl.valid) {
       console.log('= date valid', this.dateControl.value, this.value);
@@ -90,12 +90,13 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
 
   }
   // TODO: check focus in MS Edge
-  setTime(event?: Event) {
+  setTime(event: Event) {
     event.stopPropagation();
     if (this.timeControl.valid) {
       const date = new Date(this.value);
       // split time input of HH:mm
-      const [hours, mins]: number[] = this.timeControl.value.split(':').map(v => parseInt(v, 10));
+      const [hours, mins]: number[] = this.timeControl.value
+        .split(':').map((v: string) => parseInt(v, 10));
       date.setHours(hours, mins, 0, 0);
       this.writeValue(date);
     }

@@ -22,7 +22,7 @@ import {takeUntil} from 'rxjs/operators';
     <ng-container *ngTemplateOutlet="currentView"></ng-container>`,
   styleUrls: ['./editable.component.scss']
 })
-export class EditableComponent implements  OnInit, OnDestroy {
+export class EditableComponent implements OnInit, OnDestroy {
   @Output() update = new EventEmitter<boolean>();
   @ContentChild(ViewModeDirective, {static: true}) viewModeTemplate: ViewModeDirective;
   @ContentChild(EditModeDirective, {static: false}) editModeTemplate: EditModeDirective;
@@ -35,11 +35,15 @@ export class EditableComponent implements  OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.currentView = this.viewModeTemplate ? this.viewModeTemplate.template : null;
+    if (this.viewModeTemplate) {
+      this.currentView = this.viewModeTemplate.template;
+    }
     this.editMode.pipe(takeUntil(this.unsubscribe$))
       .subscribe((switchToEdit: boolean) => {
         if (!switchToEdit || this.editModeTemplate === undefined) {
-          this.currentView = this.viewModeTemplate ? this.viewModeTemplate.template : null;
+          if (this.viewModeTemplate) {
+            this.currentView = this.viewModeTemplate.template;
+          }
         } else {
           this.currentView = this.editModeTemplate.template;
           try {
@@ -63,8 +67,10 @@ export class EditableComponent implements  OnInit, OnDestroy {
 
   /**
    * Global (outside) click handler to switch edit mode off
+   *
    * @param event - Detect target here
    */
+
   @HostListener('document:click', ['$event'])
   public documentClick(event: MouseEvent) {
     // FIXME: fire on mouse button up not down
@@ -73,7 +79,8 @@ export class EditableComponent implements  OnInit, OnDestroy {
     if (this.editMode.getValue() === true &&
       target.length &&
       !target.includes(this.host.nativeElement) &&
-      !target.map((item: HTMLElement) => item.tagName).includes('MAT-DATEPICKER-CONTENT')) {
+      !target.map((item: EventTarget) => (item as HTMLElement).tagName)
+        .includes('MAT-DATEPICKER-CONTENT')) {
 
       this.editMode.next(false);
       this.update.next(true);
@@ -85,6 +92,7 @@ export class EditableComponent implements  OnInit, OnDestroy {
   /**
    * Private component click handler to switch edit mode on
    */
+
   @HostListener('click', ['$event'])
   public hostClick(event: MouseEvent) {
     // const target = event.composedPath();

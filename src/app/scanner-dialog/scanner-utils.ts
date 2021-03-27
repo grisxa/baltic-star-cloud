@@ -1,4 +1,4 @@
-export function findRearCamera(devices: MediaDeviceInfo[]): string {
+export const findRearCamera = (devices: MediaDeviceInfo[]): string => {
   if (!devices || !devices.length) {
     return '';
   }
@@ -12,13 +12,13 @@ export function findRearCamera(devices: MediaDeviceInfo[]): string {
 
   // return the last camera by default
   return devices[devices.length - 1].deviceId;
-}
+};
 
-export function cutOffUrl(code: string): string {
+export const cutOffUrl = (code: string): string => {
   const codeIndex = code.lastIndexOf('/');
 
   if (codeIndex !== -1) {
     return code.substr(codeIndex + 1);
   }
   return code;
-}
+};

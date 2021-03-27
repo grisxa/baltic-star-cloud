@@ -58,9 +58,11 @@ import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-l
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
   {path: 'rider/:uid', component: RiderInfoComponent},
+  // a shortcut
   {path: 'r/:uid', component: RiderInfoComponent},
   {path: 'brevet/:uid', component: BrevetInfoComponent},
   {path: 'brevet/:brevetUid/checkpoint/:checkpointUid', component: CheckpointInfoComponent},
+  // a shortcut
   {path: 'c/:checkpointUid', component: CheckpointInfoComponent},
   {path: 'riders', component: RiderListComponent},
   {path: 'brevet', component: BrevetListComponent},

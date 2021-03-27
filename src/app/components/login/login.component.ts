@@ -41,11 +41,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSuccess(event: FirebaseUISignInSuccessWithAuthResult): boolean {
     const info = event.authResult.additionalUserInfo;
-    if (info.isNewUser) {
-      event.authResult.user.sendEmailVerification()
+    if (info?.isNewUser) {
+      event.authResult.user?.sendEmailVerification()
         .then(() => this.snackBar.open('Отправлено письмо с подтверждением',
           'Закрыть', {duration: 5000}))
-        .catch(error => {
+        .catch((error: Error) => {
           console.error('email verification has failed', error);
           this.snackBar.open(`Не удалось отправить письмо. ${error.message}`,
             'Закрыть', {duration: 5000});

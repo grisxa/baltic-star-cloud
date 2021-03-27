@@ -12,9 +12,9 @@ export class LocationService {
     timeout: 30000
   };
 
-  static onSuccess(resolve: (position: Position) => void,
+  static onSuccess(resolve: (place: GeolocationPosition ) => void,
                    reject: (error: string) => void,
-                   position: Position) {
+                   position: GeolocationPosition ) {
 
     console.log('= current locaton', position);
 
@@ -24,8 +24,8 @@ export class LocationService {
     return resolve(position);
   }
 
-  static onError(reject: (error: string) => void,
-                 error: PositionError) {
+  static onError(reject: (text: string) => void,
+                 error: GeolocationPositionError ) {
 
     console.error('= location failure', error);
 
@@ -47,7 +47,7 @@ export class LocationService {
     return !!navigator.geolocation;
   }
 
-  get() {
+  get(): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(
         LocationService.onSuccess.bind(null, resolve, reject),

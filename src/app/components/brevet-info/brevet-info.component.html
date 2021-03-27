@@ -1,10 +1,11 @@
+<form [formGroup]="formGroup">
 <h2>Бревет
   <app-editable (update)="updateField('name')">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.name}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <input matInput [formControl]="formGroup?.get('name')" value="{{brevet?.name}}" size="15">
+      <input matInput formControlName="name" value="{{brevet?.name}}" size="15">
     </ng-template>
   </app-editable>
 </h2>
@@ -14,17 +15,17 @@
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.length}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <input matInput [formControl]="formGroup?.get('length')" value="{{brevet?.length}}" size="5" type="number">
+      <input matInput formControlName="length" value="{{brevet?.length}}" size="5" type="number">
     </ng-template>
   </app-editable>
   км</div>
 <div class="row date-time-picker">Старт
   <app-editable (update)="updateField('startDate')">
     <ng-template appViewMode>
-      <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
+      <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate?.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <app-date-time-picker [formControl]="formGroup.get('startDate')" [value]="brevet?.startDate?.toDate()" name="startDate"></app-date-time-picker>
+      <app-date-time-picker formControlName="startDate" [value]="brevet?.startDate?.toDate()" name="startDate"></app-date-time-picker>
     </ng-template>
   </app-editable>
 </div>
@@ -36,11 +37,12 @@
       <span *ngIf="!brevet?.mapUrl" [attr.data-editable]="auth.isAdmin">отсутствует</span>
     </ng-template>
     <ng-template appEditMode *ngIf="auth.isAdmin">
-      <input matInput [formControl]="formGroup?.get('mapUrl')" value="{{brevet?.mapUrl}}" size="15">
+      <input matInput formControlName="mapUrl" value="{{brevet?.mapUrl}}" size="15">
     </ng-template>
   </app-editable>
   <a *ngIf="brevet?.mapUrl" [href]="brevet?.mapUrl" target="_blank" title="открыть"><mat-icon>launch</mat-icon></a>
 </div>
+</form>
 
 <div *ngIf="brevet?.mapUrl" class="plotarouteMap">
   <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
@@ -63,28 +65,28 @@
 <h3>Контрольные пункты</h3>
 <app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
 <mat-list>
-  <app-checkpoint-list-item [checkpoint]="checkpoints?.length && checkpoints[0]">
+  <app-checkpoint-list-item *ngIf="!!checkpoints && checkpoints.length" [checkpoint]="checkpoints[0]">
     <ng-container *ngIf="brevet?.uid && settings.getValue('expand.' + brevet.uid) else expandButton">
-      <button mat-raised-button title="Свернуть" *ngIf="checkpoints?.length > 3"
+      <button mat-raised-button title="Свернуть" *ngIf="!!checkpoints && checkpoints.length > 3"
               (click)="brevet?.uid && settings.setValue('expand.' + brevet.uid, false)">
         <mat-icon>expand_less</mat-icon>
         Меньше
       </button>
     </ng-container>
     <ng-template #expandButton>
-      <button mat-raised-button title="Развернуть" *ngIf="checkpoints?.length > 3"
+      <button mat-raised-button title="Развернуть" *ngIf="!!checkpoints && checkpoints.length > 3"
               (click)="brevet?.uid && settings.setValue('expand.' + brevet.uid, true)">
         <mat-icon>expand_more</mat-icon>
         Больше
       </button>
     </ng-template>
   </app-checkpoint-list-item>
-  <ng-container *ngIf="checkpoints?.length <=3 || brevet?.uid && settings.getValue('expand.' + brevet.uid)">
+  <ng-container *ngIf="(!!checkpoints && checkpoints.length <= 3) || brevet?.uid && settings.getValue('expand.' + brevet.uid)">
     <app-checkpoint-list-item *ngFor="let checkpoint of checkpoints?.slice(1, -1)"
                               [checkpoint]="checkpoint"></app-checkpoint-list-item>
   </ng-container>
-  <app-checkpoint-list-item
-    [checkpoint]="checkpoints?.length > 1 && checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
+  <app-checkpoint-list-item *ngIf="!!checkpoints && checkpoints?.length > 1"
+    [checkpoint]="checkpoints[checkpoints.length - 1]"></app-checkpoint-list-item>
 </mat-list>
 
 <h3>Отметки участников</h3>
