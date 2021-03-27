@@ -6,8 +6,7 @@ import {Brevet} from '../../../models/brevet';
 
 @Component({
   selector: 'app-brevet-list-item',
-  templateUrl: './brevet-list-item.component.html',
-  styleUrls: ['./brevet-list-item.component.scss']
+  templateUrl: './brevet-list-item.component.html'
 })
 export class BrevetListItemComponent implements OnInit {
   @Input() brevet: Brevet;

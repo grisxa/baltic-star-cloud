@@ -7,15 +7,20 @@
     display: flex;
     align-items: center;
   }
-  .mat-cell, .mat-header-cell {
+
+  .mat-cell,
+  .mat-header-cell {
     padding: 0 10px;
   }
+
   .mat-column-select {
     overflow: initial;
   }
+
   table {
     margin-top: 5px;
   }
+
   input {
     border: 1px solid;
     padding: 2px;
@@ -24,6 +29,7 @@
   .coordinates {
     padding: 0 5px;
   }
+
   .code {
     display: flex;
     flex-direction: column;
@@ -39,15 +45,24 @@
   .checkpoint-type-icon {
     margin-left: 5px;
   }
+
   .checkpoint-type-button {
     margin-left: 5px;
+
     ::ng-deep .mat-button-toggle-label-content {
       line-height: 24px;
+      height: 24px;
+      width: 24px;
       padding: 4px;
+      margin: 0;
+    }
+
+    ::ng-deep .mat-button-toggle-focus-overlay {
+      margin: 0;
     }
   }
 
-  ::ng-deep .mat-raised-button {
+  .mat-raised-button {
     margin-left: 5px;
   }
 }

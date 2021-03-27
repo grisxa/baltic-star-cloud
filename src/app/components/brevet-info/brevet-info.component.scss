@@ -18,19 +18,21 @@
     margin-left: 5px;
   }
 
-  p{
+  p {
     align-items: center;
   }
+
   .checkpoint-type-icon {
     margin-left: 5px;
   }
+
   .date-time-picker {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-left: 5px;
 
-    app-editable {
+    .editable {
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -46,7 +48,7 @@
     margin-left: 5px;
   }
 
-  ::ng-deep .mat-raised-button {
+  .mat-raised-button {
     margin-left: 5px;
   }
 
@@ -59,20 +61,23 @@
   .mat-header-cell {
     padding: 0 5px;
   }
+
   .mat-cell {
     text-align: center;
     padding: 0 5px;
   }
+
   .mat-column-name {
     min-width: 150px;
     text-align: left;
     padding-left: 15px;
   }
+
   .checkpoint-type-sleep {
     background-color: #d9dfff;
   }
+
   .checkpoint-type-selfcheck {
     background-color: #f7f7f7;
   }
 }
-

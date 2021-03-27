@@ -20,7 +20,7 @@
   </app-editable>
   км</div>
 <div class="row date-time-picker">Старт
-  <app-editable (update)="updateField('startDate')">
+  <app-editable (update)="updateField('startDate')" class="editable">
     <ng-template appViewMode>
       <span [attr.data-editable]="auth.isAdmin">{{brevet?.startDate?.toDate() | date: 'в HH:mm dd.MM.yyyy'}}</span>
     </ng-template>
@@ -63,7 +63,7 @@
 </div>
 
 <h3>Контрольные пункты</h3>
-<app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button>
+<div class="row"><app-add-button *ngIf="auth.isAdmin" (click)="addCheckpoint()"></app-add-button></div>
 <mat-list>
   <app-checkpoint-list-item *ngIf="!!checkpoints && checkpoints.length" [checkpoint]="checkpoints[0]">
     <ng-container *ngIf="brevet?.uid && settings.getValue('expand.' + brevet.uid) else expandButton">

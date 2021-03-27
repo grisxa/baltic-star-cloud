@@ -18,9 +18,7 @@ import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-editable',
-  template: `
-    <ng-container *ngTemplateOutlet="currentView"></ng-container>`,
-  styleUrls: ['./editable.component.scss']
+  template: `<ng-container *ngTemplateOutlet="currentView"></ng-container>`
 })
 export class EditableComponent implements OnInit, OnDestroy {
   @Output() update = new EventEmitter<boolean>();
