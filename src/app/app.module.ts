@@ -52,6 +52,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
 import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-list-item/checkpoint-list-item.component';
+import {ServiceWorkerModule} from '@angular/service-worker';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -140,7 +141,8 @@ const appRoutes: Routes = [
     MatSnackBarModule,
     MatSlideToggleModule,
     MatButtonToggleModule,
-    MatSortModule
+    MatSortModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production})
   ],
   exports: [],
   providers: [
