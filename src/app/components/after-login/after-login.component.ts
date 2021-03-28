@@ -5,6 +5,7 @@ import {Rider} from '../../models/rider';
 import {StorageService} from '../../services/storage.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {SettingService} from '../../services/setting.service';
 
 @Component({
   template: ''
@@ -14,12 +15,13 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router,
               private auth: AuthService,
+              private settings: SettingService,
               private storage: StorageService) {
   }
 
   ngOnInit(): void {
-    const info = localStorage.getItem('info') || '';
-    localStorage.removeItem('info');
+    const info = this.settings.getValue('info') || '';
+    this.settings.removeKey('info');
 
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
       .subscribe((user: Rider|null) => {

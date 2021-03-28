@@ -5,6 +5,7 @@ import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
+import {SettingService} from '../../services/setting.service';
 
 @Component({
   selector: 'app-login',
@@ -17,13 +18,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private auth: AuthService,
+              private settings: SettingService,
               private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
     this.route.url.subscribe((paths: UrlSegment[]) => {
       if (paths && paths.length) {
-        localStorage.setItem('info', paths.join('/'));
+        this.settings.setValue('info', paths.join('/'));
       }
     });
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))

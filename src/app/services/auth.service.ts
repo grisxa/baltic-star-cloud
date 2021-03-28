@@ -5,6 +5,7 @@ import {StorageService} from './storage.service';
 import {Rider} from '../models/rider';
 import {switchMap, takeUntil} from 'rxjs/operators';
 import firebase from 'firebase';
+import {SettingService} from './setting.service';
 import User = firebase.User;
 
 @Injectable({
@@ -16,8 +17,12 @@ export class AuthService implements OnDestroy {
   user$ = new Subject<Rider | null>();
   readonly unsubscribe$ = new Subject();
 
-  constructor(public fireAuth: AngularFireAuth, storage: StorageService) {
-    localStorage.setItem('user', '');
+  constructor(
+    public fireAuth: AngularFireAuth,
+    private settings: SettingService,
+    private storage: StorageService
+  ) {
+    this.settings.setValue('user', '');
     this.fireAuth.authState.pipe(
       takeUntil(this.unsubscribe$),
       switchMap((user: User | null) => user ?
@@ -34,7 +39,7 @@ export class AuthService implements OnDestroy {
     this.user$.pipe(takeUntil(this.unsubscribe$))
       .subscribe(user => {
         this.user = user;
-        localStorage.setItem('user', JSON.stringify(this.user));
+        this.settings.setValue('user', this.user);
       });
   }
 
@@ -45,21 +50,21 @@ export class AuthService implements OnDestroy {
 
   get isLoggedIn(): boolean {
     if (this.user === undefined) {
-      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+      this.user = this.settings.getValue('user');
     }
     return this.user !== null;
   }
 
   get isAdmin(): boolean {
     if (this.user === undefined) {
-      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+      this.user = this.settings.getValue('user');
     }
     // console.log('=isAdmin', user, user !== null && user.admin);
     return this.user !== null && !!this.user?.admin;
   }
 
   async logout() {
-    localStorage.removeItem('user');
+    this.settings.removeKey('user');
     this.user$.next(null);
     await this.fireAuth.signOut();
   }
