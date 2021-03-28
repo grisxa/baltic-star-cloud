@@ -51,7 +51,7 @@ export class MapboxDialogComponent implements OnInit {
     this.marker = new mapboxgl.Marker({draggable: this.auth.isAdmin})
       .setLngLat(center)
       .addTo(this.map)
-      .on('dragend', this.onDragEnd);
+      .on('dragend', this.onDragEnd.bind(this));
   }
 
   onDragEnd() {
