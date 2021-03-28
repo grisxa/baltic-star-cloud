@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { BrevetInfoComponent } from './brevet-info.component';
 
@@ -6,7 +6,7 @@ xdescribe('BrevetInfoComponent', () => {
   let component: BrevetInfoComponent;
   let fixture: ComponentFixture<BrevetInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BrevetInfoComponent ]
     })

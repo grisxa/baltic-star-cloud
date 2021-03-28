@@ -1,12 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
-import { BrevetArchiveComponent } from './brevet-archive.component';
+import {BrevetArchiveComponent} from './brevet-archive.component';
 
 describe('BrevetArchiveComponent', () => {
   let component: BrevetArchiveComponent;
   let fixture: ComponentFixture<BrevetArchiveComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BrevetArchiveComponent ]
     })

@@ -1,7 +1,14 @@
-import { Checkpoint } from './checkpoint';
+import {Checkpoint} from './checkpoint';
+import {RoutePoint} from './route-point';
 
 describe('Control', () => {
   it('should create an instance', () => {
-    expect(new Checkpoint('1', '2', 3)).toBeTruthy();
+    const routPoint = {
+      lat: 0,
+      lng: 0,
+      distance: 0,
+      name: 'test'
+    } as RoutePoint;
+    expect(new Checkpoint(routPoint)).toBeTruthy();
   });
 });

@@ -1,16 +1,28 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ScannerDialogComponent } from './scanner-dialog.component';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ScannerDialogComponent} from './scanner-dialog.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {ZXingScannerModule} from '@zxing/ngx-scanner';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('ScannerDialogComponent', () => {
   let component: ScannerDialogComponent;
   let fixture: ComponentFixture<ScannerDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScannerDialogComponent ]
-    })
-    .compileComponents();
+      imports: [
+        MatSnackBarModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        NoopAnimationsModule,
+        ZXingScannerModule
+      ],
+      declarations: [ScannerDialogComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

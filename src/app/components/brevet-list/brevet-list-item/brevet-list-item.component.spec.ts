@@ -1,16 +1,28 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {BrevetListItemComponent} from './brevet-list-item.component';
+import {AuthService} from '../../../services/auth.service';
+import {StorageService} from '../../../services/storage.service';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-import { BrevetListItemComponent } from './brevet-list-item.component';
+class MockAuthService {
+}
+
+class MockStorageService {
+}
 
 describe('BrevetListItemComponent', () => {
   let component: BrevetListItemComponent;
   let fixture: ComponentFixture<BrevetListItemComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BrevetListItemComponent ]
-    })
-    .compileComponents();
+      imports: [MatSnackBarModule],
+      providers: [
+        {provide: AuthService, useClass: MockAuthService},
+        {provide: StorageService, useClass: MockStorageService},
+      ],
+      declarations: [BrevetListItemComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

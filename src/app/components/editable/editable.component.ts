@@ -43,9 +43,7 @@ export class EditableComponent implements OnInit, OnDestroy {
     // FIXME: fire on mouse button up not down
     const target = event.composedPath();
 
-    if (this.editMode.getValue() === true &&
-      target.length &&
-      !target.includes(this.host.nativeElement) &&
+    if (this.editMode.getValue() && target.length && !target.includes(this.host.nativeElement) &&
       !target.map((item: EventTarget) => (item as HTMLElement).tagName)
         .includes('MAT-DATEPICKER-CONTENT')) {
 
@@ -64,7 +62,7 @@ export class EditableComponent implements OnInit, OnDestroy {
   public hostClick(event: MouseEvent) {
     // const target = event.composedPath();
 
-    if (this.editMode.getValue() === false) {
+    if (!this.editMode.getValue()) {
       this.editMode.next(true);
     }
   }
@@ -73,7 +71,7 @@ export class EditableComponent implements OnInit, OnDestroy {
   public hostKeyUp(event: KeyboardEvent) {
     // const target = event.composedPath();
 
-    if (this.editMode.getValue() === true) {
+    if (this.editMode.getValue()) {
       if (event.key === 'Enter') {
         this.update.next(true);
       } else if (event.key !== 'Escape') {

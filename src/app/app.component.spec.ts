@@ -1,8 +1,10 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {Component} from '@angular/core';
+import {RouterTestingModule} from '@angular/router/testing';
+import {MatIconModule} from '@angular/material/icon';
 
-// tslint:disable-next-line:component-selector
+// eslint-disable-next-line @angular-eslint/component-selector
 @Component({selector: 'router-outlet', template: ''})
 class RouterOutletStubComponent {
 }
@@ -11,6 +13,10 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        RouterTestingModule
+      ],
       declarations: [
         AppComponent,
         RouterOutletStubComponent
@@ -24,8 +30,8 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should have a router only', () => {
+  it('should have a home icon', () => {
     const element = fixture.debugElement.nativeElement;
-    expect(element.innerText).toEqual('');
+    expect(element.innerText).toContain('home');
   });
 });

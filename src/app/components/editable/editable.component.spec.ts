@@ -1,5 +1,5 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Component, EmbeddedViewRef, NO_ERRORS_SCHEMA, TemplateRef, ViewChild} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {Component, EmbeddedViewRef, TemplateRef, ViewChild} from '@angular/core';
 
 import {EditableComponent} from './editable.component';
 import {ViewModeDirective} from '../../directives/view-mode.directive';
@@ -11,14 +11,14 @@ import {EditModeDirective} from '../../directives/edit-mode.directive';
     <app-editable></app-editable>`,
 })
 export class TestComponent {
-  @ViewChild(EditableComponent, null) editableComponent: EditableComponent;
+  @ViewChild(EditableComponent) editableComponent?: EditableComponent;
 }
 
 describe('EditableComponent modes', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         TestComponent,
@@ -44,40 +44,46 @@ describe('EditableComponent modes', () => {
   });
 
   it('should have a null template if markup is empty', () => {
-    expect(component.editableComponent.currentView).toBeNull();
+    expect(component.editableComponent?.currentView).toBeNull();
   });
 
   it(`should take edit template if it exists and mode matches`, fakeAsync(() => {
-    const viewTemplate = {elementRef: null} as TemplateRef<HTMLElement>;
+    const viewTemplate = {elementRef: null} as unknown as TemplateRef<HTMLElement>;
     const editTemplate = {
       elementRef: null,
-      createEmbeddedView: (context: HTMLElement): EmbeddedViewRef<HTMLElement> => null
-    } as TemplateRef<HTMLElement>;
-    component.editableComponent.viewModeTemplate = new ViewModeDirective(viewTemplate);
-    component.editableComponent.editModeTemplate = new ViewModeDirective(editTemplate);
-    component.editableComponent.editMode.next(true);
+      createEmbeddedView: (context: HTMLElement): EmbeddedViewRef<HTMLElement>|null => null
+    } as unknown as TemplateRef<HTMLElement>;
+    if (component.editableComponent) {
+      component.editableComponent.viewModeTemplate = new ViewModeDirective(viewTemplate);
+      component.editableComponent.editModeTemplate = new ViewModeDirective(editTemplate);
+    }
+    component.editableComponent?.editMode.next(true);
     tick(1);
-    expect(component.editableComponent.currentView).toEqual(editTemplate);
+    expect(component.editableComponent?.currentView).toEqual(editTemplate);
   }));
 
   it(`should take view mode template if edit doesn't exists`, fakeAsync(() => {
-    const template = {elementRef: null} as TemplateRef<HTMLElement>;
-    component.editableComponent.viewModeTemplate = new ViewModeDirective(template);
-    component.editableComponent.editMode.next(true);
+    const template = {elementRef: null} as unknown as TemplateRef<HTMLElement>;
+    if (component.editableComponent) {
+      component.editableComponent.viewModeTemplate = new ViewModeDirective(template);
+    }
+    component.editableComponent?.editMode.next(true);
     tick(1);
-    expect(component.editableComponent.currentView).toEqual(template);
+    expect(component.editableComponent?.currentView).toEqual(template);
   }));
 
   it(`should explicitly take view template if mode matches`, fakeAsync(() => {
-    const viewTemplate = {elementRef: null} as TemplateRef<HTMLElement>;
+    const viewTemplate = {elementRef: null} as unknown as TemplateRef<HTMLElement>;
     const editTemplate = {
       elementRef: null,
-      createEmbeddedView: (context: HTMLElement): EmbeddedViewRef<HTMLElement> => null
-    } as TemplateRef<HTMLElement>;
-    component.editableComponent.viewModeTemplate = new ViewModeDirective(viewTemplate);
-    component.editableComponent.editModeTemplate = new ViewModeDirective(editTemplate);
-    component.editableComponent.editMode.next(false);
+      createEmbeddedView: (context: HTMLElement): EmbeddedViewRef<HTMLElement>|null => null
+    } as unknown as TemplateRef<HTMLElement>;
+    if (component.editableComponent) {
+      component.editableComponent.viewModeTemplate = new ViewModeDirective(viewTemplate);
+      component.editableComponent.editModeTemplate = new ViewModeDirective(editTemplate);
+    }
+    component.editableComponent?.editMode.next(false);
     tick(1);
-    expect(component.editableComponent.currentView).toEqual(viewTemplate);
+    expect(component.editableComponent?.currentView).toEqual(viewTemplate);
   }));
 });

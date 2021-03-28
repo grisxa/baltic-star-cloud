@@ -1,13 +1,10 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {DateTimePickerComponent} from './date-time-picker.component';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatInputModule} from '@angular/material/input';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, OnInit, ViewChild} from '@angular/core';
-import {EditableComponent} from '../editable/editable.component';
-import {element} from 'protractor';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
 @Component({
@@ -18,17 +15,13 @@ import {By} from '@angular/platform-browser';
     </app-date-time-picker>`
 })
 
-export class TestComponent implements OnInit {
-  @ViewChild(DateTimePickerComponent, null) dateTimePickerComponent: DateTimePickerComponent;
+export class TestComponent {
+  @ViewChild(DateTimePickerComponent) dateTimePickerComponent?: DateTimePickerComponent;
   dateControl: FormControl;
+
   // date: Date;
 
   constructor(public date?: Date) {
-  }
-
-  ngOnInit() {
-//    this.date = new Date();
-    console.log('=init test value', this.date);
     this.dateControl = new FormControl(this.date, Validators.required);
   }
 }
@@ -38,7 +31,7 @@ describe('DateTimePickerComponent', () => {
   let component: DateTimePickerComponent;
   let fixture: ComponentFixture<DateTimePickerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DateTimePickerComponent],
       imports: [
@@ -62,10 +55,6 @@ describe('DateTimePickerComponent', () => {
   });
 
   describe('Date formatter', () => {
-    it('should return empty string by default', () => {
-      expect(component.formatInputDate(null)).toEqual('');
-    });
-
     it('should return an ISO string for the date', () => {
       const date = new Date();
       date.setTime(1000000000000);
@@ -74,10 +63,6 @@ describe('DateTimePickerComponent', () => {
   });
 
   describe('Time formatter', () => {
-    it('should return empty string by default', () => {
-      expect(component.formatInputTime(null)).toEqual('');
-    });
-
     it('should return hour:minutes', () => {
       const date = new Date();
       date.setTime(1000000000000);
@@ -92,11 +77,11 @@ describe('DateTimePickerComponent', () => {
 
 });
 
-fdescribe('DateTimePickerComponent usage', () => {
+describe('DateTimePickerComponent usage', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         TestComponent,
@@ -109,7 +94,7 @@ fdescribe('DateTimePickerComponent usage', () => {
         MatNativeDateModule
       ],
       // FIXME
-      providers: [ {provide: Date, useValue: new Date()}],
+      providers: [{provide: Date, useValue: new Date()}],
       // schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
     })
       .compileComponents();
@@ -125,26 +110,32 @@ fdescribe('DateTimePickerComponent usage', () => {
   });
 
   it('should register a change callback', () => {
-    spyOn(component.dateTimePickerComponent, 'registerOnChange');
-    fixture.detectChanges();
-    expect(component.dateTimePickerComponent.registerOnChange).toHaveBeenCalled();
+    if (component.dateTimePickerComponent) {
+      spyOn(component.dateTimePickerComponent, 'registerOnChange');
+      fixture.detectChanges();
+      expect(component.dateTimePickerComponent?.registerOnChange).toHaveBeenCalled();
+    }
   });
 
   describe('time field', () => {
     it('change should emit setting', () => {
-      spyOn(component.dateTimePickerComponent, 'setTime');
-      const timeInput: DebugElement = fixture.debugElement.query(By.css('#time'));
-      timeInput.nativeElement.dispatchEvent(new Event('change'));
-      expect(component.dateTimePickerComponent.setTime).toHaveBeenCalled();
+      if (component.dateTimePickerComponent) {
+        spyOn(component.dateTimePickerComponent, 'setTime');
+        const timeInput: DebugElement = fixture.debugElement.query(By.css('#time'));
+        timeInput.nativeElement.dispatchEvent(new Event('change'));
+        expect(component.dateTimePickerComponent?.setTime).toHaveBeenCalled();
+      }
     });
   });
 
   describe('date field', () => {
     it('change should emit setting', () => {
-      spyOn(component.dateTimePickerComponent, 'setDate');
-      const dateInput: DebugElement = fixture.debugElement.query(By.css('#date'));
-      dateInput.nativeElement.dispatchEvent(new Event('change'));
-      expect(component.dateTimePickerComponent.setDate).toHaveBeenCalled();
+      if (component.dateTimePickerComponent) {
+        spyOn(component.dateTimePickerComponent, 'setDate');
+        const dateInput: DebugElement = fixture.debugElement.query(By.css('#date'));
+        dateInput.nativeElement.dispatchEvent(new Event('change'));
+        expect(component.dateTimePickerComponent?.setDate).toHaveBeenCalled();
+      }
     });
   });
 });

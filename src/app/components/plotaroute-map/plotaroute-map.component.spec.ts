@@ -1,16 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { PlotarouteMapComponent } from './plotaroute-map.component';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {PlotarouteMapComponent} from './plotaroute-map.component';
+import {SafeUrlPipe} from '../../pipes/safe-url.pipe';
 
 describe('PlotarouteMapComponent', () => {
   let component: PlotarouteMapComponent;
   let fixture: ComponentFixture<PlotarouteMapComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PlotarouteMapComponent ]
-    })
-    .compileComponents();
+      declarations: [PlotarouteMapComponent, SafeUrlPipe]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
