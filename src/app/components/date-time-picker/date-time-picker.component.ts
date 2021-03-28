@@ -7,7 +7,8 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => DateTimePickerComponent),
-    multi: true}],
+    multi: true
+  }],
   templateUrl: './date-time-picker.component.html',
   styleUrls: ['./date-time-picker.component.scss']
 })
@@ -19,17 +20,21 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
   onChange?: (value: Date) => void;
 
   constructor() {
-    this.dateControl = new FormControl(this.value ? this.formatInputDate(this.value) : '', Validators.required);
-    this.timeControl = new FormControl(this.value ? this.formatInputTime(this.value) : '', Validators.required);
+    this.dateControl = new FormControl('', Validators.required);
+    this.timeControl = new FormControl('', Validators.required);
   }
 
   // TODO: fix input height
   ngOnInit() {
     // console.log('=init value', this.value);
+    if (this.value) {
+      this.dateControl.setValue(this.formatInputDate(this.value));
+      this.timeControl.setValue(this.formatInputTime(this.value));
+    }
   }
 
   writeValue(date: Date) {
-    if (this.value && (this.value instanceof Date) && this.value.getTime() === date.getTime()) {
+    if (this.value && this.value.getTime() === date.getTime()) {
       return;
     }
     this.value = date;
@@ -40,10 +45,12 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
       this.onChange(this.value);
     }
   }
+
   registerOnChange(fn: () => void) {
     console.log('= register picker onChange', fn);
     this.onChange = fn;
   }
+
   registerOnTouched(fn: () => void) {
     // console.log('= register on touch');
   }
@@ -73,6 +80,7 @@ export class DateTimePickerComponent implements OnInit, ControlValueAccessor {
     }
 
   }
+
   // TODO: check focus in MS Edge
   setTime(event: Event) {
     event.stopPropagation();
