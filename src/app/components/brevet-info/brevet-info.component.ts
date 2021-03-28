@@ -1,29 +1,29 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-
-import {Brevet} from '../../models/brevet';
-import {AuthService} from '../../services/auth.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSort} from '@angular/material/sort';
+import {Title} from '@angular/platform-browser';
+import firebase from 'firebase/app';
+import {Observable, of, Subject} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
+import {Brevet, NONE_BREVET} from '../../models/brevet';
+import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
-import {Observable, Subject} from 'rxjs';
-import * as firebase from 'firebase/app';
-import {Checkpoint} from '../../models/checkpoint';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {takeUntil} from 'rxjs/operators';
-import Timestamp = firebase.firestore.Timestamp;
 import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
 import {RoutePoint} from '../../models/route-point';
 import {LocationService} from '../../services/location.service';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {Barcode} from '../../models/barcode';
-import {MatDialog} from '@angular/material/dialog';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
 import {SettingService} from '../../services/setting.service';
-import {MatSort} from '@angular/material/sort';
-import {Title} from '@angular/platform-browser';
+import {isNotNullOrUndefined} from '../../utils';
+import Timestamp = firebase.firestore.Timestamp;
 
 @Component({
   selector: 'app-brevet-info',
@@ -31,22 +31,25 @@ import {Title} from '@angular/platform-browser';
   styleUrls: ['./brevet-info.component.scss']
 })
 export class BrevetInfoComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject();
-  private brevet$: Observable<Brevet>;
+  @ViewChild(MatTable) table?: MatTable<RiderCheckIn>;
 
-  brevet: Brevet;
-  mapId: number;
+  brevet?: Brevet;
+  mapId?: number;
   formGroup: FormGroup;
   showMap = false;
 
   checkpoints$ = new Subject<Checkpoint[]>();
-  checkpoints: Checkpoint[];
+  checkpoints: Checkpoint[] = [];
 
-  @ViewChild(MatTable) table: MatTable<RiderCheckIn>;
+  // FIXME: consider pre-defined
+  // dynamic column names like cp, cp3 (no pre-defined count)
   progress = new MatTableDataSource<RiderCheckIn>();
   columnsToDisplay = ['name'];
-  columnNames = {name: 'Имя'};
-  columnTypes = {name: ''};
+  columnNames: {[key: string]: string} = {name: 'Имя'};
+  columnTypes: {[key: string]: string} = {name: ''};
+
+  private unsubscribe$ = new Subject();
+  private brevet$: Observable<Brevet> = of({} as Brevet);
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -58,22 +61,26 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,
               private snackBar: MatSnackBar) {
-  }
-
-  ngOnInit() {
-    this.titleService.setTitle('Бревет');
-    this.progress.sort = new MatSort();
-    this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
       length: new FormControl(0, [Validators.required, Validators.pattern('[0-9]+')]),
       startDate: new FormControl(new Date(), Validators.required),
       mapUrl: new FormControl('', Validators.required),
     });
+  }
+
+  ngOnInit() {
+    this.titleService.setTitle('Бревет');
+    this.progress.sort = new MatSort();
+    this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
 
     this.route.paramMap.subscribe(params => {
-      this.brevet$ = this.storage.getBrevet(params.get('uid'));
-      this.storage.watchCheckpoints(params.get('uid'))
+      const brevetUid = params.get('uid');
+      if (!brevetUid) {
+        return;
+      }
+      this.brevet$ = this.storage.getBrevet(brevetUid);
+      this.storage.watchCheckpoints(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoints: Checkpoint[]) => {
           console.log('= checkpoints', checkpoints);
@@ -83,13 +90,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           this.checkpoints.forEach((cp, i) => {
             const id = 'cp' + (i + 1);
             this.columnsToDisplay.push(id);
-            this.columnNames[id] = cp.displayName;
+            this.columnNames[id] = cp.displayName || NONE_CHECKPOINT;
             this.columnTypes[id] = cp.sleep ? 'checkpoint-type-sleep' :
               cp.selfcheck ? 'checkpoint-type-selfcheck' : '';
           });
           this.checkpoints$.next(this.checkpoints);
         });
-      this.storage.watchBrevetProgress(params.get('uid'))
+      this.storage.watchBrevetProgress(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoint: Checkpoint) => {
           // FIXME: avoid self-assignment
@@ -101,11 +108,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
             console.warn(`unknown checkpoint ${checkpoint.uid}`);
             return;
           }
-          checkpoint.riders.forEach(rider => {
+          checkpoint.riders?.forEach(rider => {
             const known = this.progress.data.find(row => row.uid === rider.uid);
             const checkIn = Array.isArray(rider.time) ? rider.time[0] : null;
             if (known) {
               // console.log('known rider', rider);
+              // a property with variable name: cp1, cp3, etc.
+              // @ts-ignore
               known['cp' + (checkpointIndex + 1)] = checkIn;
             } else {
               // console.log('new rider', rider);
@@ -114,25 +123,28 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
                 lastName: rider.lastName,
                 uid: rider.uid,
                 ['cp' + (checkpointIndex + 1)]: checkIn
-              } as RiderCheckIn;
+              } as unknown as RiderCheckIn;
               this.progress.data.push(row);
             }
           });
-          this.table.renderRows();
+          this.table?.renderRows();
           // console.log('= updated table', this.progress.data);
           // this.dataSource.paginator = this.paginator;
         });
     });
     this.brevet$
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(brevet => {
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        filter(isNotNullOrUndefined))
+      .subscribe((brevet: Brevet) => {
         this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
-        this.formGroup.get('name').setValue(brevet.name);
-        this.formGroup.get('length').setValue(brevet.length);
-        this.formGroup.get('mapUrl').setValue(brevet.mapUrl);
+        this.formGroup.controls.name?.setValue(brevet.name);
+        this.formGroup.controls.length?.setValue(brevet.length);
+        this.formGroup.controls.mapUrl?.setValue(brevet.mapUrl);
         this.mapId = this.findMapId(brevet.mapUrl);
-        this.formGroup.get('startDate').setValue(brevet.startDate ? brevet.startDate.toDate() : null);
+        this.formGroup.controls
+          .startDate?.setValue(brevet.startDate ? brevet.startDate.toDate() : null);
       });
   }
 
@@ -145,40 +157,44 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     return !!this.auth.user;
   }
 
-  findMapId(url: string): number {
+  findMapId(url?: string): number {
     if (!url) {
-      return;
+      return 0;
     }
     const idSearch = url.match('/route/(\\d+)');
     if (idSearch && idSearch.length > 1) {
       return parseInt(idSearch[1], 10);
     }
+    return 0;
   }
 
   updateMapUrl() {
-    const control = this.formGroup.get('mapUrl');
+    const control = this.formGroup.controls.mapUrl;
     if (control && control.valid) {
       const mapId = this.findMapId(control.value);
       // ignore URL updates if map ID hasn't changed
-      if (mapId === this.findMapId(this.brevet.mapUrl)) {
+      if (mapId === this.findMapId(this.brevet?.mapUrl)) {
         return;
       }
       this.routeService.retrieve(mapId)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(data => {
-            this.brevet.name = data.name;
-            this.formGroup.get('name').setValue(data.name);
+            if (this.brevet) {
+              this.brevet.name = data.name;
+              this.brevet.length = data.length;
+            }
 
-            this.brevet.length = data.length;
-            this.formGroup.get('length').setValue(data.length);
+            this.formGroup.controls.name?.setValue(data.name);
+            this.formGroup.controls.length?.setValue(data.length);
 
-            if (data.checkpoints && data.checkpoints.length) {
-              data.checkpoints.forEach(checkpoint => this.storage.createCheckpoint(this.brevet,
-                new Checkpoint({
-                  ...checkpoint,
-                  // Convert the distance from meters to kilometers
-                  distance: Math.round(checkpoint.distance / 1000)
-                } as RoutePoint)));
+            if (data.checkpoints && data.checkpoints.length && this.brevet) {
+              data.checkpoints.forEach(checkpoint => this.storage
+                .createCheckpoint(this.brevet as Brevet,
+                  new Checkpoint({
+                    ...checkpoint,
+                    // Convert the distance from meters to kilometers
+                    distance: Math.round(checkpoint.distance / 1000)
+                  } as RoutePoint)));
             }
 
             this.updateField('mapUrl');
@@ -186,11 +202,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           error => {
             console.error(error);
             // switch back in case of retrieval error
-            control.setValue(this.brevet.mapUrl);
+            control.setValue(this.brevet?.mapUrl);
           });
     } else {
       // switch back if new value is invalid
-      control.setValue(this.brevet.mapUrl);
+      control?.setValue(this.brevet?.mapUrl);
     }
   }
 
@@ -203,15 +219,19 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       // check if the field needs updating
       if (control.value instanceof Date) {
         const value = Timestamp.fromDate(control.value);
+        // @ts-ignore
         if (this.brevet[field] && this.brevet[field].seconds === value.seconds) {
           return;
         } else {
+          // @ts-ignore
           this.brevet[field] = value;
         }
       } else {
+        // @ts-ignore
         if (this.brevet[field] === control.value) {
           return;
         } else {
+          // @ts-ignore
           this.brevet[field] = control.value;
         }
       }
@@ -219,7 +239,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       console.log(`= update ${field} with ${control.value}`);
       this.storage.updateBrevet(this.brevet)
         .then(() => {
-          console.log(`= updated brevet ${this.brevet.uid}`);
+          console.log(`= updated brevet ${this.brevet?.uid}`);
         })
         .catch(error => {
           console.error('brevet update has failed', error);
@@ -228,8 +248,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         });
     } else {
       // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
-      control.setValue(this.brevet[field] instanceof Timestamp ?
+      // @ts-ignore
+      control?.setValue(this.brevet[field] instanceof Timestamp ?
+        // @ts-ignore
         this.brevet[field].toDate() :
+        // @ts-ignore
         this.brevet[field]
       );
     }
@@ -237,9 +260,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   addCheckpoint() {
     console.log('= add checkpoint');
+    if (!this.brevet) {
+      console.error('No brevet defined');
+      return;
+    }
     const checkpoint = new Checkpoint({name: 'Новый', distance: 0} as RoutePoint);
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
-      this.router.navigate(['brevet', this.brevet.uid, 'checkpoint', uid]);
+      this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid]);
     });
   }
 
@@ -252,10 +279,10 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     dialogRef.componentInstance.onSuccess
       .pipe(takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => this.storage
-        .hasCheckpoint(this.brevet.uid, barcode.code)
+        .hasCheckpoint(this.brevet?.uid || NONE_BREVET, barcode.code)
         .then(found => found ?
           this.storage.createBarcode('riders',
-            this.auth.user.uid, barcode, this.auth.user.uid) :
+            this.auth.user?.uid, barcode, this.auth.user?.uid) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
         )
         .then(uid => console.log('= barcode created', uid))
@@ -275,18 +302,18 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     // request current coordinates
     this.geoLocation.get()
       // find checkpoints nearby
-      .then((position: Position) => this.storage.listCloseCheckpoints(position))
+      .then((position: GeolocationPosition ) => this.storage.listCloseCheckpoints(position))
       // get the checkpoint info + delta distance to the current point
       .then(snapshot => snapshot.docs
         .map((doc): Checkpoint => Object.assign({} as Checkpoint, doc.data(), {delta: doc.distance})))
       // skip checkpoints not in the brevet
       .then(checkpoints => this.storage
-        .filterCheckpoints(this.brevet.uid, checkpoints).toPromise())
+        .filterCheckpoints(this.brevet?.uid || NONE_BREVET, checkpoints).toPromise())
       // filter out checkpoints by brevet's date
       .then(checkpoints => checkpoints
-        .filter(checkpoint => Checkpoint.prototype.isOnline.call(checkpoint, Timestamp.now())))
+        .filter((checkpoint: Checkpoint) => Checkpoint.prototype.isOnline.call(checkpoint, Timestamp.now())))
       // sort them by the distance, closest first
-      .then(checkpoints => checkpoints.sort((a, b) => a.delta - b.delta))
+      .then(checkpoints => checkpoints.sort((a: Checkpoint, b: Checkpoint) => (a.delta || 0) - (b.delta || 0)))
       .then(checkpoints => checkpoints.length > 1 ? this.dialog
           // offer selecting among several controls
           .open(CheckpointSearchDialogComponent, {data: checkpoints})
@@ -298,9 +325,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       )
       .then((uid: string) => uid ?
         this.storage.createBarcode('riders',
-          this.auth.user.uid,
+          this.auth.user?.uid,
           new Barcode(undefined, uid, undefined),
-          this.auth.user.uid) :
+          this.auth.user?.uid) :
         Promise.reject('no uid'))
       .then(uid => {
         console.log('= record created', uid);

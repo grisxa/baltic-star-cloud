@@ -1,13 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import * as mapboxgl from 'mapbox-gl';
-import GeoPoint = firebase.firestore.GeoPoint;
-import LngLat = mapboxgl.LngLat;
-
 import {environment} from '../../../environments/environment';
 import {AuthService} from '../../services/auth.service';
+import GeoPoint = firebase.firestore.GeoPoint;
+import LngLat = mapboxgl.LngLat;
 
 
 @Component({
@@ -17,27 +16,26 @@ import {AuthService} from '../../services/auth.service';
 })
 export class MapboxDialogComponent implements OnInit {
   formGroup: FormGroup;
-  map: mapboxgl.Map;
-  marker: mapboxgl.Marker;
+  map?: mapboxgl.Map;
+  marker?: mapboxgl.Marker;
   private defaultCenter = new GeoPoint(59.95, 30.317);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: GeoPoint, public auth: AuthService) {
-  }
-
-  ngOnInit(): void {
     this.formGroup = new FormGroup({
       latitude: new FormControl('', [Validators.required, Validators.pattern('[-0-9,.]+')]),
       longitude: new FormControl('', [Validators.required, Validators.pattern('[-0-9,.]+')])
     });
+  }
 
+  ngOnInit(): void {
     if (!this.data || !this.data.latitude || !this.data.longitude) {
       this.data = this.defaultCenter;
     }
 
-    this.formGroup.get('latitude').setValue(this.data.latitude);
-    this.formGroup.get('longitude').setValue(this.data.longitude);
+    this.formGroup.controls.latitude?.setValue(this.data.latitude);
+    this.formGroup.controls.longitude?.setValue(this.data.longitude);
     this.formGroup.valueChanges
-      .subscribe(position => this.marker.setLngLat([position.longitude, position.latitude]));
+      .subscribe(position => this.marker?.setLngLat([position.longitude, position.latitude]));
 
     const center = new LngLat(this.data.longitude, this.data.latitude);
 
@@ -56,9 +54,9 @@ export class MapboxDialogComponent implements OnInit {
       .on('dragend', this.onDragEnd.bind(this));
   }
 
-  onDragEnd(event) {
-    const lngLat = event.target.getLngLat();
-    this.formGroup.get('latitude').setValue(lngLat.lat);
-    this.formGroup.get('longitude').setValue(lngLat.lng);
+  onDragEnd() {
+    const lngLat = this.marker?.getLngLat();
+    this.formGroup.controls.latitude?.setValue(lngLat?.lat);
+    this.formGroup.controls.longitude?.setValue(lngLat?.lng);
   }
 }

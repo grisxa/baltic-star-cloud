@@ -1,16 +1,16 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { OfflineSwitchComponent } from './offline-switch.component';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {OfflineSwitchComponent} from './offline-switch.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 describe('OfflineSwitchComponent', () => {
   let component: OfflineSwitchComponent;
   let fixture: ComponentFixture<OfflineSwitchComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OfflineSwitchComponent ]
-    })
-    .compileComponents();
+      imports: [MatSlideToggleModule],
+      declarations: [OfflineSwitchComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

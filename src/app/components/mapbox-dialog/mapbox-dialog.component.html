@@ -1,17 +1,18 @@
 <div class="map" id="mapbox"></div>
 <div class="row controls">
+  <form [formGroup]="formGroup">
   <mat-form-field>
     <mat-label>Широта</mat-label>
     <input matInput
            type="number" step="0.001"
-           [formControl]="formGroup?.get('latitude')"
+           formControlName="latitude"
            placeholder="0.0">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Долгота</mat-label>
     <input matInput
            type="number" step="0.001"
-           [formControl]="formGroup?.get('longitude')"
+           formControlName="longitude"
            placeholder="0.0">
   </mat-form-field>
   <mat-dialog-actions>
@@ -20,4 +21,5 @@
             *ngIf="auth.isAdmin" cdkFocusInitial>Выбрать
     </button>
   </mat-dialog-actions>
+  </form>
 </div>

@@ -1,7 +1,9 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import {Buffer} from 'buffer';
 import Timestamp = firebase.firestore.Timestamp;
 import User = firebase.User;
+
+export const NONE_RIDER = 'none';
 
 export class Rider {
   // Google Auth unique user ID
@@ -10,18 +12,18 @@ export class Rider {
 
   displayName: string;
   uid: string;
-  code: string;
+  code?: string;
 
   hidden = false;
-  admin: boolean;
+  admin = false;
 
   firstName: string;
   lastName: string;
-  birthDate: Timestamp;
-  city: string;
-  country: string;
+  birthDate?: Timestamp;
+  city?: string;
+  country?: string;
 
-  constructor(owner: string, uid: string, displayName: string) {
+  constructor(owner: string, uid: string, displayName?: string) {
     this.owner = owner;
     this.uid = uid;
 
@@ -42,8 +44,8 @@ export class Rider {
 
   static fromDoc(doc: Rider) {
     const rider = new Rider(doc.owner,
-      doc.uid || doc.auth.uid,
-      doc.displayName || doc.auth.displayName);
+      doc.uid || doc.auth?.uid || '',
+      doc.displayName || doc.auth?.displayName || '');
     return Object.assign(rider, doc);
   }
 

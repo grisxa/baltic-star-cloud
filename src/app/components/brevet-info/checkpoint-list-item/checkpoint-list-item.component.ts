@@ -10,7 +10,7 @@ import {Checkpoint} from '../../../models/checkpoint';
   styleUrls: ['./checkpoint-list-item.component.scss']
 })
 export class CheckpointListItemComponent implements OnInit {
-  @Input() checkpoint: Checkpoint;
+  @Input() checkpoint?: Checkpoint;
 
   constructor(public auth: AuthService,
               private storage: StorageService,
@@ -21,6 +21,9 @@ export class CheckpointListItemComponent implements OnInit {
 
   deleteCheckpoint(uid: string) {
     console.log('= delete checkpoint', uid);
+    if (!this.checkpoint?.brevet?.uid) {
+      return;
+    }
     this.storage.deleteCheckpoint(this.checkpoint.brevet.uid, uid)
       .then(() => {
         console.log(`= removed cp ${uid}`);

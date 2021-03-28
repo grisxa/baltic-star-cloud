@@ -1,19 +1,20 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import * as firebase from 'firebase/app';
+import {MatDialog} from '@angular/material/dialog';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {Title} from '@angular/platform-browser';
+import firebase from 'firebase/app';
 import {Observable, of, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+
 
 import {Rider} from '../../models/rider';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
-import {takeUntil} from 'rxjs/operators';
-import Timestamp = firebase.firestore.Timestamp;
 import {Barcode} from '../../models/barcode';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import {Title} from '@angular/platform-browser';
+import Timestamp = firebase.firestore.Timestamp;
 
 
 @Component({
@@ -22,14 +23,15 @@ import {Title} from '@angular/platform-browser';
   styleUrls: ['./rider-info.component.scss']
 })
 export class RiderInfoComponent implements OnInit, OnDestroy {
-  private unsubscribe$ = new Subject();
-  private rider$: Observable<Rider> = of<Rider>({} as Rider);
-  rider: Rider;
-  url: string;
+  rider?: Rider;
+  url?: string;
   formGroup: FormGroup;
 
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
+
+  private unsubscribe$ = new Subject();
+  private rider$: Observable<Rider> = of({} as Rider);
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,
@@ -37,10 +39,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               private storage: StorageService,
               private snackBar: MatSnackBar) {
-  }
-
-  ngOnInit() {
-    this.titleService.setTitle('Участник');
     this.formGroup = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
@@ -50,8 +48,15 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       signed: new FormControl(false, Validators.required),
       birthDate: new FormControl(new Date(), Validators.required)
     });
+  }
+
+  ngOnInit() {
+    this.titleService.setTitle('Участник');
     this.route.paramMap.subscribe(params => {
       const riderUid = params.get('uid');
+      if (!riderUid) {
+        return;
+      }
       this.rider$ = this.storage.watchRider(riderUid);
       this.url = window.location.origin + '/r/' + riderUid;
       this.storage.watchBarcodes('riders', riderUid)
@@ -67,12 +72,14 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         this.titleService.setTitle(rider.displayName);
         this.rider = Rider.fromDoc(rider);
         console.log('= rider found', rider);
-        this.formGroup.get('firstName').setValue(rider.firstName);
-        this.formGroup.get('lastName').setValue(rider.lastName);
-        this.formGroup.get('country').setValue(rider.country);
-        this.formGroup.get('code').setValue(rider.code);
-        this.formGroup.get('city').setValue(rider.city);
-        this.formGroup.get('birthDate').setValue(rider.birthDate ? rider.birthDate.toDate() : null);
+        this.formGroup.controls.firstName?.setValue(rider.firstName);
+        this.formGroup.controls.lastName?.setValue(rider.lastName);
+        this.formGroup.controls.country?.setValue(rider.country);
+        this.formGroup.controls.code?.setValue(rider.code);
+        this.formGroup.controls.city?.setValue(rider.city);
+        this.formGroup.controls.birthDate?.setValue(rider.birthDate
+          ? rider.birthDate.toDate()
+          : null);
       });
   }
 
@@ -83,7 +90,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
   get isEditable(): boolean {
     return this.auth.isAdmin ||
-      (this.auth.user && this.rider && this.auth.user.uid === this.rider.owner);
+      (!!this.auth.user && !!this.rider && this.auth.user.uid === this.rider.owner);
   }
 
   updateField(field: string) {
@@ -95,15 +102,19 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       // check if the field needs updating
       if (control.value instanceof Date) {
         const value = Timestamp.fromDate(control.value);
+        // @ts-ignore
         if (this.rider[field] && this.rider[field].seconds === value.seconds) {
           return;
         } else {
+          // @ts-ignore
           this.rider[field] = value;
         }
       } else {
+        // @ts-ignore
         if (this.rider[field] === control.value) {
           return;
         } else {
+          // @ts-ignore
           this.rider[field] = control.value;
         }
       }
@@ -114,7 +125,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       }
       this.storage.updateRider(this.rider)
         .then(() => {
-          console.log(`= updated rider ${this.rider.uid}`);
+          console.log(`= updated rider ${this.rider?.uid}`);
         })
         .catch(error => {
           console.error('rider update has failed', error);
@@ -123,9 +134,10 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         });
     } else {
       // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
-      control.setValue(this.rider[field] instanceof Timestamp ?
-        this.rider[field].toDate() :
-        this.rider[field]
+      // @ts-ignore
+      control?.setValue(this.rider[field] instanceof Timestamp ?
+        // @ts-ignore
+        this.rider[field].toDate() : this.rider[field]
       );
     }
   }

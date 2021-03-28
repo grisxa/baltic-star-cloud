@@ -8,7 +8,7 @@ import {SettingService} from '../../services/setting.service';
   styleUrls: ['./brevet-archive.component.scss']
 })
 export class BrevetArchiveComponent implements OnInit {
-  @Input() brevets: Brevet[];
+  @Input() brevets?: Brevet[];
 
   constructor(public settings: SettingService) { }
 

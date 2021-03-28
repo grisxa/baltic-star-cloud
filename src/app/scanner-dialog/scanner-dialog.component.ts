@@ -13,11 +13,11 @@ import {cutOffUrl, findRearCamera} from './scanner-utils';
 })
 export class ScannerDialogComponent {
   onSuccess = new EventEmitter<Barcode>();
-  lastCode: string;
+  lastCode?: string;
   acceptedFormats: BarcodeFormat[] = [];
 
   availableDevices: MediaDeviceInfo[] = [];
-  currentDevice: MediaDeviceInfo = null;
+  currentDevice?: MediaDeviceInfo;
   currentDeviceId = '';
 
   constructor(
@@ -27,8 +27,7 @@ export class ScannerDialogComponent {
   }
 
   setCamera(id: string) {
-    const device = this.availableDevices.find(camera => camera.deviceId === id);
-    this.currentDevice = device || null;
+    this.currentDevice = this.availableDevices.find(camera => camera.deviceId === id);
     this.acceptedFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_128];
   }
 

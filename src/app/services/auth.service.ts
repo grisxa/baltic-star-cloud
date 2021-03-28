@@ -1,36 +1,41 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {User} from 'firebase/app';
-import {Observable, of, Subject} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
-import {switchMap, takeUntil} from 'rxjs/operators';
 import {Rider} from '../models/rider';
+import {switchMap, takeUntil} from 'rxjs/operators';
+import firebase from 'firebase';
+import User = firebase.User;
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements OnDestroy {
   // may be either a Google Auth user or an UID-mapped rider
-  user: Rider;
-  user$: Observable<Rider>;
-  private unsubscribe$ = new Subject();
+  user?: Rider | null;
+  user$ = new Subject<Rider | null>();
+  readonly unsubscribe$ = new Subject();
 
   constructor(public fireAuth: AngularFireAuth, storage: StorageService) {
-    localStorage.setItem('user', null);
-    this.user$ = this.fireAuth.authState.pipe(
+    localStorage.setItem('user', '');
+    this.fireAuth.authState.pipe(
       takeUntil(this.unsubscribe$),
-      switchMap((user: User) => user ?
+      switchMap((user: User | null) => user ?
         storage.watchRider(user.uid).pipe(
           switchMap((rider: Rider) => rider ?
             of(Rider.fromDoc({...rider, auth: user} as Rider)) :
             of(Rider.fromDoc({auth: user} as Rider))
-          )) :
-        of(null))
-    );
-    this.user$.subscribe((user: Rider) => {
-      this.user = user;
-      localStorage.setItem('user', JSON.stringify(this.user));
-    });
+          )) : of(null)))
+      .subscribe(
+        user => {
+          this.user$.next(user);
+        }
+      );
+    this.user$.pipe(takeUntil(this.unsubscribe$))
+      .subscribe(user => {
+        this.user = user;
+        localStorage.setItem('user', JSON.stringify(this.user));
+      });
   }
 
   // FIXME: when to destroy?
@@ -39,17 +44,23 @@ export class AuthService implements OnDestroy {
   }
 
   get isLoggedIn(): boolean {
-    const user = JSON.parse(localStorage.getItem('user'));
-    return user !== null;
+    if (this.user === undefined) {
+      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+    }
+    return this.user !== null;
   }
 
   get isAdmin(): boolean {
-    const user = JSON.parse(localStorage.getItem('user'));
-    return user !== null && user.admin === true;
+    if (this.user === undefined) {
+      this.user = JSON.parse(localStorage.getItem('user') || 'null');
+    }
+    // console.log('=isAdmin', user, user !== null && user.admin);
+    return this.user !== null && !!this.user?.admin;
   }
 
   async logout() {
-    await this.fireAuth.signOut();
     localStorage.removeItem('user');
+    this.user$.next(null);
+    await this.fireAuth.signOut();
   }
 }

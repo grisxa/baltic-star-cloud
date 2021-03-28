@@ -1,4 +1,4 @@
-<mat-list *ngIf="brevets?.length > 0">
+<mat-list *ngIf="!!brevets && brevets.length > 0">
   <mat-list-item>
     <button mat-raised-button title="Свернуть" *ngIf="settings.getValue('expand_brevets') else expandButton"
             (click)="settings.setValue('expand_brevets', false)">

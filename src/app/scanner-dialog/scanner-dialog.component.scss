@@ -1,33 +1,29 @@
 :host {
   @media (min-aspect-ratio: 1/1) {
-    zxing-scanner::ng-deep {
+    .scanner {
       width: calc(90vmin - 48px);
     }
   }
+
   @media (max-aspect-ratio: 1/1) {
-    zxing-scanner::ng-deep {
+    .scanner {
       max-height: calc(90vmax - 200px);
     }
   }
 
-  mat-dialog-actions {
+  .mat-dialog-actions {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-/*
-    @media (max-aspect-ratio: 1/1) {
-      background-color: green;
-    }
-    @media (min-aspect-ratio: 1/1) {
-      background-color: red;
-    }
-*/
   }
+
   button {
     margin: 5px;
   }
+
   .torch {
     line-height: 36px;
+
     .mat-icon {
       vertical-align: middle;
       margin: 0 5px;

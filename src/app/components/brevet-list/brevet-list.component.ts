@@ -1,13 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-
+import {Router} from '@angular/router';
+import {Title} from '@angular/platform-browser';
+import firebase from 'firebase/app';
 import {AuthService} from '../../services/auth.service';
 import {Brevet} from '../../models/brevet';
 import {StorageService} from '../../services/storage.service';
-import {Router} from '@angular/router';
-import * as firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {Title} from '@angular/platform-browser';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -23,8 +21,7 @@ export class BrevetListComponent implements OnInit {
   constructor(private router: Router,
               public auth: AuthService,
               private titleService: Title,
-              private storage: StorageService,
-              private snackBar: MatSnackBar) {
+              private storage: StorageService) {
   }
 
   ngOnInit() {
@@ -46,18 +43,5 @@ export class BrevetListComponent implements OnInit {
     this.storage.createBrevet(brevet).then(uid => {
       this.router.navigate(['brevet', uid]);
     });
-  }
-
-  deleteBrevet(uid: string) {
-    console.log('= delete brevet', uid);
-    this.storage.deleteBrevet(uid)
-      .then(() => {
-        console.log(`= removed brevet ${uid}`);
-      })
-      .catch(error => {
-        console.error('brevet removal has failed', error);
-        this.snackBar.open(`Не удалось удалить бревет. ${error.message}`,
-          'Закрыть', {duration: 5000});
-      });
   }
 }

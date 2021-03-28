@@ -5,6 +5,6 @@
     <a [href]="url" title="Личная карточка">{{userName}}</a>
   </div>
   <div *ngIf="auth.isLoggedIn && !url"><mat-icon>person</mat-icon> {{userName}}</div>
-  <button class="logout" *ngIf="auth.isLoggedIn" mat-raised-button (click)="auth.logout()"><mat-icon>logout</mat-icon>Выйти</button>
+  <button class="logout" *ngIf="auth.isLoggedIn" mat-raised-button (click)="logout()"><mat-icon>logout</mat-icon>Выйти</button>
   <app-offline-switch *ngIf="auth.isAdmin"></app-offline-switch>
 </div>

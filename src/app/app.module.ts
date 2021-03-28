@@ -2,26 +2,24 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AngularFireModule} from '@angular/fire';
-import {AngularFirestoreModule} from '@angular/fire/firestore';
+import {AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR} from '@angular/fire/firestore';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTableModule} from '@angular/material/table';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-
-import {AngularFireAuthModule} from '@angular/fire/auth';
-
+import {AngularFireAuthModule, USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/auth';
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
 import {RiderInfoComponent} from './components/rider-info/rider-info.component';
@@ -43,8 +41,8 @@ import {NgxBarcode6Module} from 'ngx-barcode6';
 import {ScannerDialogModule} from './scanner-dialog/scanner-dialog.module';
 import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map.component';
 import {HttpClientModule} from '@angular/common/http';
-import { CheckpointSearchDialogComponent } from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
-import { MapboxDialogComponent } from './components/mapbox-dialog/mapbox-dialog.component';
+import {CheckpointSearchDialogComponent} from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
+import {MapboxDialogComponent} from './components/mapbox-dialog/mapbox-dialog.component';
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
@@ -58,9 +56,11 @@ import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-l
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
   {path: 'rider/:uid', component: RiderInfoComponent},
+  // a shortcut
   {path: 'r/:uid', component: RiderInfoComponent},
   {path: 'brevet/:uid', component: BrevetInfoComponent},
   {path: 'brevet/:brevetUid/checkpoint/:checkpointUid', component: CheckpointInfoComponent},
+  // a shortcut
   {path: 'c/:checkpointUid', component: CheckpointInfoComponent},
   {path: 'riders', component: RiderListComponent},
   {path: 'brevet', component: BrevetListComponent},
@@ -142,9 +142,17 @@ const appRoutes: Routes = [
     MatButtonToggleModule,
     MatSortModule
   ],
-  exports: [
+  exports: [],
+  providers: [
+    {
+      provide: USE_FIRESTORE_EMULATOR,
+      useValue: environment.useEmulators ? ['localhost', 8080] : undefined
+    },
+    {
+      provide: USE_AUTH_EMULATOR,
+      useValue: environment.useEmulators ? ['localhost', 9099] : undefined
+    },
   ],
-  providers: [],
   entryComponents: [
     AppComponent,
     CheckpointSearchDialogComponent

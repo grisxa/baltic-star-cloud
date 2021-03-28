@@ -39,11 +39,11 @@
     "firestore": {
       "port": 8080
     },
+    "auth": {
+      "port": 9099
+    },
     "hosting": {
       "port": 5000
-    },
-    "pubsub": {
-      "port": 8085
     }
   }
 }

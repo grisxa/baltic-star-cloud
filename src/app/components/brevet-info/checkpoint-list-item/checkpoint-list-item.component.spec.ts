@@ -1,16 +1,28 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {CheckpointListItemComponent} from './checkpoint-list-item.component';
+import {AuthService} from '../../../services/auth.service';
+import {StorageService} from '../../../services/storage.service';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-import { CheckpointListItemComponent } from './checkpoint-list-item.component';
+class MockAuthService {
+}
+
+class MockStorageService {
+}
 
 describe('CheckpointListItemComponent', () => {
   let component: CheckpointListItemComponent;
   let fixture: ComponentFixture<CheckpointListItemComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CheckpointListItemComponent ]
-    })
-    .compileComponents();
+      imports: [MatSnackBarModule],
+      providers: [
+        {provide: AuthService, useClass: MockAuthService},
+        {provide: StorageService, useClass: MockStorageService},
+      ],
+      declarations: [CheckpointListItemComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

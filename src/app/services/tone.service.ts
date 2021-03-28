@@ -9,8 +9,8 @@ export class ToneService {
 
   constructor() {
     // @ts-ignore
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    this.audioContext = new AudioContext();
+    const audioContext = window.AudioContext || window.webkitAudioContext;
+    this.audioContext = new audioContext();
     this.gainNode = this.audioContext.createGain();
     this.gainNode.connect(this.audioContext.destination);
     // set the maximum volume
@@ -19,9 +19,11 @@ export class ToneService {
 
   /**
    * Make a tone sound.
+   *
    * @param frequency - 3200 on success, 450 on failure
    * @param length - 80 msec
    */
+
   make(frequency: number, length: number) {
     const oscillator = this.audioContext.createOscillator();
     oscillator.frequency.value = frequency;
