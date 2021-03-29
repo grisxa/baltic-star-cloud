@@ -279,8 +279,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     dialogRef.componentInstance.onSuccess
       .pipe(takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => this.storage
-        .hasCheckpoint(this.brevet?.uid || NONE_BREVET, barcode.code)
-        .then(found => found ?
+        .filterCheckpoints(this.brevet?.uid || NONE_BREVET, [barcode.code]).toPromise()
+        .then(checkpoints => checkpoints.length ?
           this.storage.createBarcode('riders',
             this.auth.user?.uid, barcode, this.auth.user?.uid) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
@@ -308,7 +308,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         .map((doc): Checkpoint => Object.assign({} as Checkpoint, doc.data(), {delta: doc.distance})))
       // skip checkpoints not in the brevet
       .then(checkpoints => this.storage
-        .filterCheckpoints(this.brevet?.uid || NONE_BREVET, checkpoints).toPromise())
+        .filterCheckpoints(this.brevet?.uid || NONE_BREVET,
+          checkpoints.map(cp => cp.uid)).toPromise())
       // filter out checkpoints by brevet's date
       .then(checkpoints => checkpoints
         .filter((checkpoint: Checkpoint) => Checkpoint.prototype.isOnline.call(checkpoint, Timestamp.now())))

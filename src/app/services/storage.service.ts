@@ -82,14 +82,14 @@ export class StorageService {
       .then(doc => doc.exists);
   }
 
-  filterCheckpoints(brevetUid: string, checkpoints: Checkpoint[]) {
+  filterCheckpoints(brevetUid: string, checkpoints: string[]) {
     return this.firestore
       .collection<Brevet>('brevets').doc(brevetUid)
       .collection<Checkpoint>('checkpoints').get()
       .pipe(
         map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
         map(docs => docs.map(doc => doc.data())
-          .filter(checkpoint => checkpoints.map(cp => cp.uid).includes(checkpoint.uid)))
+          .filter(checkpoint => checkpoints.includes(checkpoint.uid)))
       );
   }
 
