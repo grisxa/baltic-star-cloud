@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
@@ -23,6 +23,8 @@ import {CheckpointNotFound} from '../../models/checkpoint-not-found';
 import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
 import {SettingService} from '../../services/setting.service';
 import {isNotNullOrUndefined} from '../../utils';
+import {BarcodeQueueService} from '../../services/barcode-queue.service';
+import {Offline} from '../../models/offline';
 import Timestamp = firebase.firestore.Timestamp;
 
 @Component({
@@ -57,6 +59,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               public auth: AuthService,
               private storage: StorageService,
               public settings: SettingService,
+              private queue: BarcodeQueueService,
               public dialog: MatDialog,
               public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,
@@ -67,6 +70,12 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       startDate: new FormControl(new Date(), Validators.required),
       mapUrl: new FormControl('', Validators.required),
     });
+  }
+
+  // try sending old codes again
+  @HostListener('window:online')
+  onConnectionBack() {
+    this.queue.repeatSending();
   }
 
   ngOnInit() {
@@ -281,14 +290,16 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       .subscribe((barcode: Barcode) => this.storage
         .filterCheckpoints(this.brevet?.uid || NONE_BREVET, [barcode.code]).toPromise()
         .then(checkpoints => checkpoints.length ?
-          this.storage.createBarcode('riders',
-            this.auth.user?.uid, barcode, this.auth.user?.uid) :
+          this.queue.enqueueBarcode('riders', this.auth.user?.uid, barcode) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
         )
         .then(uid => console.log('= barcode created', uid))
         .catch(error => {
           if (error instanceof CheckpointNotFound) {
             this.snackBar.open('Неверный контрольный пункт',
+              'Закрыть', {duration: 5000});
+          } else if (error instanceof Offline) {
+            this.snackBar.open('Нет интернета. Код записан в архив.',
               'Закрыть', {duration: 5000});
           } else {
             console.error('= barcode reporting has failed', error);
@@ -325,10 +336,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           Promise.reject(new CheckpointNotFound('nothing found'))
       )
       .then((uid: string) => uid ?
-        this.storage.createBarcode('riders',
+        this.queue.enqueueBarcode('riders',
           this.auth.user?.uid,
-          new Barcode(undefined, uid, undefined),
-          this.auth.user?.uid) :
+          new Barcode(undefined, uid, undefined)) :
         Promise.reject('no uid'))
       .then(uid => {
         console.log('= record created', uid);
@@ -338,6 +348,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       .catch(error => {
         if (error instanceof CheckpointNotFound) {
           this.snackBar.open('КП поблизости не найдено.',
+            'Закрыть', {duration: 5000});
+        } else if (error instanceof Offline) {
+          this.snackBar.open('Нет интернета. Код записан в архив.',
             'Закрыть', {duration: 5000});
         } else {
           // fallback

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, of, Subject} from 'rxjs';
 import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
@@ -18,6 +18,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
+import {BarcodeQueueService} from '../../services/barcode-queue.service';
+import {Offline} from '../../models/offline';
 import GeoPoint = firebase.firestore.GeoPoint;
 
 @Component({
@@ -45,6 +47,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               private router: Router,
               private storage: StorageService,
+              private queue: BarcodeQueueService,
               public auth: AuthService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
@@ -53,6 +56,12 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
       sleep: new FormControl('', Validators.required),
       selfcheck: new FormControl('', Validators.required),
     });
+  }
+
+  // try sending old codes again
+  @HostListener('window:online')
+  onConnectionBack() {
+    this.queue.repeatSending();
   }
 
   ngOnInit() {
@@ -157,13 +166,17 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
           console.error('No checkpoint defined');
           return;
         }
-        this.storage.createBarcode('checkpoints',
-          this.checkpoint.uid, barcode, this.auth.user?.uid)
+        this.queue.enqueueBarcode('checkpoints', this.checkpoint.uid, barcode)
           .then(uid => console.log('= barcode created', uid))
           .catch(error => {
-            console.error('= barcode reporting has failed', error);
-            this.snackBar.open(`Не удалось отправить код. ${error.message}`,
-              'Закрыть', {duration: 5000});
+            if (error instanceof Offline) {
+              this.snackBar.open('Нет интернета. Код записан в архив.',
+                'Закрыть', {duration: 5000});
+            } else {
+              console.error('= barcode reporting has failed', error);
+              this.snackBar.open(`Не удалось отправить код. ${error.message}`,
+                'Закрыть', {duration: 5000});
+            }
           });
       });
   }
