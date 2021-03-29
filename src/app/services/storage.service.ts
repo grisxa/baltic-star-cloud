@@ -101,6 +101,12 @@ export class StorageService {
       }).get();
   }
 
+  listCheckpoints() {
+    return this.firestore
+      .collection<Checkpoint>('checkpoints')
+      .get();
+  }
+
   createCheckpoint(brevet: Brevet, checkpoint: Checkpoint): Promise<string | void> {
     const {uid, name, length} = brevet;
     console.log('= create checkpoint', brevet, checkpoint);

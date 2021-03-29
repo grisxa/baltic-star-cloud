@@ -83,6 +83,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     this.progress.sort = new MatSort();
     this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
 
+    this.storage.listCheckpoints()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((snapshot) => {
+        console.log(snapshot.docs.length + ' checkpoints in a cache');
+      });
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('uid');
       if (!brevetUid) {
