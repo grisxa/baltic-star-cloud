@@ -10,4 +10,7 @@ module.exports = {
       openAnalyzer: true,
     },
   },
+  devServer: {
+    progress: false,
+  },
 };
