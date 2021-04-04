@@ -1,16 +1,20 @@
 <template>
-  <el-select v-model="locale" :placeholder="$t('LocaleSwitcher.language')" @change="switchLocale">
-    <el-option
-      v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value">
-    </el-option>
-  </el-select>
+  <el-submenu :index="rootIndex">
+    <template slot="title">
+      <i class="el-icon-chat-line-round"></i>
+      <span>{{ $t('LocaleSwitcher.language') }}</span>
+    </template>
+    <el-menu-item v-for="item in options" class="language"
+                  @click="switchLocale"
+                  :key="item.value"
+                  :index="item.value">{{ item.label }}
+      <i class="el-icon-check selected" v-if="item.value === $i18n.locale"></i>
+    </el-menu-item>
+  </el-submenu>
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Prop, Vue} from 'vue-property-decorator';
 
 const languages: { [key: string]: string } = {
   en: 'English',
@@ -19,17 +23,18 @@ const languages: { [key: string]: string } = {
 
 @Component
 export default class LocaleSwitcher extends Vue {
+  @Prop() private rootIndex?: string;
+
   locales: string[] = process.env.VUE_APP_I18N_SUPPORTED_LOCALES.split(',');
   options: { value: string, label: string }[] = [];
-  locale = process.env.VUE_APP_I18N_LOCALE;
 
   mounted(): void {
     this.options = this.locales.map((item: string) => ({value: item, label: languages[item]}));
   }
 
-  switchLocale(): void {
-    if (this.$i18n.locale !== this.locale) {
-      this.$i18n.locale = this.locale;
+  switchLocale(item: { index: string }): void {
+    if (this.$i18n.locale !== item.index) {
+      this.$i18n.locale = item.index;
     }
   }
 }
@@ -37,9 +42,6 @@ export default class LocaleSwitcher extends Vue {
 Vue.component('app-locale-switcher', LocaleSwitcher);
 </script>
 
-<style scoped>
-/* don't emphasize the selection */
-.el-select-dropdown__item.selected {
-  font-weight: normal;
-}
+<style scoped lang="scss">
+@include element-menu-item;
 </style>

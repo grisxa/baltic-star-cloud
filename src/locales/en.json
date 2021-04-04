@@ -28,11 +28,19 @@
       "sleeping": "Sleeping",
       "selfCheck": "SelfCheck"
     },
+    "ClubSelector": {
+      "menuItem": "Clubs"
+    },
     "LocaleSwitcher": {
       "language": "Language"
     },
     "NotFoundPlug": {
       "title": "Not found"
+    },
+    "Route": {
+      "brevetList": "Brevet list",
+      "brevetInfo": "Brevet info",
+      "checkpointInfo": "Checkpoint info"
     }
   }
 }
