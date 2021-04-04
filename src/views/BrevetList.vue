@@ -67,6 +67,10 @@ export default class BrevetList extends Vue {
       ],
     } as Brevet),
   ];
+
+  mounted(): void {
+    document.title = this.$t('Route.brevetList');
+  }
 }
 
 </script>

@@ -102,6 +102,10 @@ export default class BrevetInfo extends Vue {
     ],
   } as Brevet);
   checkpointsOpenState = false;
+
+  mounted(): void {
+    document.title = this.$t('Route.brevetInfo', {name: this.brevet.name});
+  }
 }
 </script>
 
