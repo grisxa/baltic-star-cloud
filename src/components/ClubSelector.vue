@@ -47,6 +47,10 @@ export default class ClubSelector extends Vue {
     },
   ];
 
+  mounted(): void {
+    this.$store.dispatch('listClubs');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   onCheck(item: { index: string }): void {
     const clubChecked = this.options.find((club) => club.id.toString() === item.index);

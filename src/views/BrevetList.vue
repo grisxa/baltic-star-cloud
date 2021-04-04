@@ -29,8 +29,6 @@ import {mapGetters} from 'vuex';
 })
 export default class BrevetList extends Vue {
   mounted(): void {
-    //
-    this.$store.dispatch('listClubs');
     this.$store.dispatch('listBrevets');
     document.title = this.$t('Route.brevetList').toString();
   }
