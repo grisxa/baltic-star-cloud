@@ -44,13 +44,4 @@ Vue.component('app-locale-switcher', LocaleSwitcher);
 
 <style scoped lang="scss">
 @include element-menu-item;
-
-// check icon positioning
-i.selected {
-  position: absolute;
-  top: 50%;
-  right: 0.5em;
-  margin-top: -0.55em;
-  font-size: 1.3em;
-}
 </style>

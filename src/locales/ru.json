@@ -28,6 +28,9 @@
       "sleeping": "Спальный",
       "selfCheck": "Самоотметка"
     },
+    "ClubSelector": {
+      "menuItem": "Клубы"
+    },
     "LocaleSwitcher": {
       "language": "Язык"
     },

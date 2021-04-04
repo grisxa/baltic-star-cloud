@@ -5,6 +5,7 @@
     <el-dropdown-menu slot="dropdown">
       <el-menu :default-active="activeIndex" :unique-opened="true"
                @select="onSelect">
+        <app-club-selector rootIndex="50"></app-club-selector>
         <el-menu-item :index="route.id" v-for="route in menuItems" :key="route.id">
           <i :class="route.icon"></i>
           <span slot="title">{{ $t(route.title) }}</span>
@@ -16,12 +17,14 @@
 </template>
 
 <script lang="ts">
+import ClubSelector from '@/components/ClubSelector.vue';
 import LocaleSwitcher from '@/components/LocaleSwitcher.vue';
 import router, {routes} from '@/router';
 import {Component, Vue} from 'vue-property-decorator';
 
 @Component({
   components: {
+    ClubSelector,
     LocaleSwitcher,
   },
   watch: {
@@ -73,5 +76,16 @@ Vue.component('app-navigation-menu', NavigationMenu);
 
 .el-icon-menu {
   vertical-align: sub;
+}
+</style>
+
+<style lang="css">
+/* check icon positioning */
+i.el-icon-check.selected {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  margin-top: -0.55em;
+  font-size: 1.3em;
 }
 </style>

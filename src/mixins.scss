@@ -3,6 +3,8 @@
     li.el-menu-item {
       min-width: $menu-min-width;
       padding-right: 24px;
+      // engine puts an inline style
+      padding-left: 1em !important;
     }
   }
 }
