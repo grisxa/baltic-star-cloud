@@ -5,4 +5,5 @@ export interface State {
   clubs: Club[];
   brevets: Brevet[];
   loading: boolean;
+  locale: string;
 }

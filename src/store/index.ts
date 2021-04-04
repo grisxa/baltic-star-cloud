@@ -13,6 +13,7 @@ export default new Vuex.Store<State>({
     clubs: [],
     brevets: [],
     loading: false,
+    locale: process.env.VUE_APP_I18N_LOCALE,
   },
   getters,
   mutations,

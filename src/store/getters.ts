@@ -25,4 +25,6 @@ export const getClubs = (state: State): Club[] => state.clubs;
 
 export const isLoading = (state: State): boolean => state.loading;
 
-export default {oldBrevets, newBrevets, getBrevet, getClubs, isLoading};
+export const getLocale = (state: State): string => state.locale;
+
+export default {oldBrevets, newBrevets, getBrevet, getClubs, isLoading, getLocale};

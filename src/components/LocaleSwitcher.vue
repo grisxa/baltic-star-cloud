@@ -8,33 +8,48 @@
                   @click="switchLocale"
                   :key="item.value"
                   :index="item.value">{{ item.label }}
-      <i class="el-icon-check selected" v-if="item.value === $i18n.locale"></i>
+      <i class="el-icon-check selected" v-if="item.value === locale"></i>
     </el-menu-item>
   </el-submenu>
 </template>
 
 <script lang="ts">
+import languages from '@/locales/languages.json';
+import SetLocaleMutation from '@/store/models/setLocaleMutation';
 import {Component, Prop, Vue} from 'vue-property-decorator';
 
-const languages: { [key: string]: string } = {
-  en: 'English',
-  ru: 'Русский',
-};
+type LanguageNames = { [key: string]: string };
+type Language = { value: string, label: string };
 
-@Component
+@Component({
+  computed: {
+    locale(): string {
+      const locale = this.$store.getters.getLocale;
+      this.$i18n.locale = locale;
+      return locale;
+    },
+  },
+})
 export default class LocaleSwitcher extends Vue {
   @Prop() private rootIndex?: string;
-
+  locale?: string;
   locales: string[] = process.env.VUE_APP_I18N_SUPPORTED_LOCALES.split(',');
-  options: { value: string, label: string }[] = [];
+  // default locale of the build
+  options: Language[] = [{
+    value: process.env.VUE_APP_I18N_LOCALE,
+    label: process.env.VUE_APP_I18N_LOCALE,
+  }];
 
+  // eslint-disable-next-line class-methods-use-this
   mounted(): void {
-    this.options = this.locales.map((item: string) => ({value: item, label: languages[item]}));
+    const names = languages as LanguageNames;
+    // replace locales with a list of supported
+    this.options = this.locales.map((value: string) => ({label: names[value], value}));
   }
 
   switchLocale(item: { index: string }): void {
-    if (this.$i18n.locale !== item.index) {
-      this.$i18n.locale = item.index;
+    if (this.locale !== item.index) {
+      this.$store.commit(new SetLocaleMutation(item.index));
     }
   }
 }
