@@ -13,4 +13,14 @@ module.exports = {
   devServer: {
     progress: false,
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        prependData: `
+          @import "@/globals.scss";
+          @import "@/mixins.scss";
+        `,
+      },
+    },
+  },
 };

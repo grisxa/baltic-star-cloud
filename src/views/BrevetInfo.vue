@@ -68,7 +68,9 @@ import {mapGetters} from 'vuex';
   },
   computed: {
     brevet() {
-      return this.$store.getters.getBrevet(this.$route.params.uid);
+      const info = this.$store.getters.getBrevet(this.$route.params.uid);
+      document.title = this.$t('Route.brevetInfo', {name: info.name}).toString();
+      return info;
     },
     ...mapGetters(['isLoading']),
   },
