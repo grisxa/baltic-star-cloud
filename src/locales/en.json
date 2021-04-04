@@ -4,7 +4,8 @@
       "brevetList": "Brevet list"
     },
     "BrevetList": {
-      "title": "Upcoming events"
+      "title": "Upcoming events",
+      "noPlans": "Nothing has been planned"
     },
     "BrevetListItem": {
       "length": "{length} km",

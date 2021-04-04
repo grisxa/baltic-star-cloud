@@ -4,7 +4,8 @@
       "brevetList": "Список бреветов"
     },
     "BrevetList": {
-      "title": "Предстоящие бреветы"
+      "title": "Предстоящие бреветы",
+      "noPlans": "Ничего не запланировано"
     },
     "BrevetListItem": {
       "length": "{length} км",

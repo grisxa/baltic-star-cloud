@@ -6,7 +6,7 @@
                             :key="brevet.uid"
                             :brevet="brevet"></app-brevet-list-item>
     </ul>
-    <p v-else class="empty">Nothing has been planned.</p>
+    <p v-else class="empty">{{ $t('BrevetList.noPlans') }}</p>
     <app-brevet-archive v-if="oldBrevets.length > 0"
                         :brevets="oldBrevets"></app-brevet-archive>
   </div>
