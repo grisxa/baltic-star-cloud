@@ -23,8 +23,18 @@ export const getBrevet = (state: State) => (uid: string): Brevet | undefined => 
 
 export const getClubs = (state: State): Club[] => state.clubs;
 
+export const getClubSelection = (state: State): string[] => state.clubSelection;
+
 export const isLoading = (state: State): boolean => state.loading;
 
 export const getLocale = (state: State): string => state.locale;
 
-export default {oldBrevets, newBrevets, getBrevet, getClubs, isLoading, getLocale};
+export default {
+  oldBrevets,
+  newBrevets,
+  getBrevet,
+  getClubs,
+  getClubSelection,
+  isLoading,
+  getLocale,
+};

@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import Club from '@/models/club';
+import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
 import {Component, Prop, Vue} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
 
@@ -24,15 +25,28 @@ type ClubMenuItem = Club & { selected: boolean };
   watch: {
     clubs(items: Club[]) {
       // eslint-disable-next-line no-use-before-define
-      (this as ClubSelector).options = items.map((item) => ({...item, selected: false}));
+      (this as ClubSelector).options = items.map((item) => ({
+        ...item,
+        // eslint-disable-next-line no-use-before-define
+        selected: (this as ClubSelector).selection.includes(item.id.toString()),
+      }));
+    },
+    selection(items: string[]) {
+      // eslint-disable-next-line no-use-before-define
+      (this as ClubSelector).options.forEach((club) => {
+        // eslint-disable-next-line no-param-reassign
+        club.selected = items.includes(club.id.toString());
+      });
     },
   },
   computed: {
-    ...mapGetters({clubs: 'getClubs'}),
+    ...mapGetters({clubs: 'getClubs', selection: 'getClubSelection'}),
   },
 })
 export default class ClubSelector extends Vue {
   @Prop() private rootIndex?: string;
+  clubs!: Club[];
+  selection!: string[];
 
   locales: string[] = process.env.VUE_APP_I18N_SUPPORTED_LOCALES.split(',');
   options: ClubMenuItem[] = [
@@ -51,12 +65,8 @@ export default class ClubSelector extends Vue {
     this.$store.dispatch('listClubs');
   }
 
-  // eslint-disable-next-line class-methods-use-this
   onCheck(item: { index: string }): void {
-    const clubChecked = this.options.find((club) => club.id.toString() === item.index);
-    if (clubChecked) {
-      clubChecked.selected = !clubChecked.selected;
-    }
+    this.$store.commit(new ToggleClubSelectionMutation(item.index));
   }
 }
 

@@ -11,6 +11,7 @@ export default new Vuex.Store<State>({
   strict: true,
   state: {
     clubs: [],
+    clubSelection: [],
     brevets: [],
     loading: false,
     locale: process.env.VUE_APP_I18N_LOCALE,
