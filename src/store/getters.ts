@@ -1,4 +1,5 @@
 import Brevet from '@/models/brevet';
+import Club from '@/models/club';
 import {State} from '@/models/state';
 
 const WEEK_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
@@ -20,6 +21,8 @@ export const newBrevets = (state: State): Brevet[] => {
 export const getBrevet = (state: State) => (uid: string): Brevet | undefined => state.brevets
   .find((brevet) => brevet.uid === uid);
 
+export const getClubs = (state: State): Club[] => state.clubs;
+
 export const isLoading = (state: State): boolean => state.loading;
 
-export default {oldBrevets, newBrevets, getBrevet, isLoading};
+export default {oldBrevets, newBrevets, getBrevet, getClubs, isLoading};

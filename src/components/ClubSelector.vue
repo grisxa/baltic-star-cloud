@@ -6,51 +6,50 @@
     </template>
     <el-menu-item v-for="item in options"
                   @click="onCheck"
-                  :key="item.code"
-                  :index="item.code">{{ item.name[$i18n.locale] || item.name.default }}
+                  :key="item.id"
+                  :index="item.id.toString()">{{ item.name[$i18n.locale] || item.name.default }}
       <i class="el-icon-check selected" v-if="item.selected"></i>
     </el-menu-item>
   </el-submenu>
 </template>
 
 <script lang="ts">
+import Club from '@/models/club';
 import {Component, Prop, Vue} from 'vue-property-decorator';
+import {mapGetters} from 'vuex';
 
-type ClubMenuItem = {
-  selected: boolean;
-  code: string;
-  name: {
-    [key: string]: string;
-  };
-}
+type ClubMenuItem = Club & { selected: boolean };
 
-@Component
+@Component({
+  watch: {
+    clubs(items: Club[]) {
+      // eslint-disable-next-line no-use-before-define
+      (this as ClubSelector).options = items.map((item) => ({...item, selected: false}));
+    },
+  },
+  computed: {
+    ...mapGetters({clubs: 'getClubs'}),
+  },
+})
 export default class ClubSelector extends Vue {
   @Prop() private rootIndex?: string;
 
   locales: string[] = process.env.VUE_APP_I18N_SUPPORTED_LOCALES.split(',');
   options: ClubMenuItem[] = [
     {
-      code: '511200',
+      id: 0,
+      country: 'any',
       name: {
-        default: 'Etoile Baltique',
-        en: 'Baltic star',
-        ru: 'Балтийская звезда',
+        default: 'All',
+        ru: 'Все',
       },
       selected: true,
-    },
-    {
-      code: 'xxx',
-      name: {
-        default: 'M8',
-      },
-      selected: false,
     },
   ];
 
   // eslint-disable-next-line class-methods-use-this
   onCheck(item: { index: string }): void {
-    const clubChecked = this.options.find((club) => club.code === item.index);
+    const clubChecked = this.options.find((club) => club.id.toString() === item.index);
     if (clubChecked) {
       clubChecked.selected = !clubChecked.selected;
     }

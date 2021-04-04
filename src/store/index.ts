@@ -10,6 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store<State>({
   strict: true,
   state: {
+    clubs: [],
     brevets: [],
     loading: false,
   },
