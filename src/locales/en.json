@@ -33,6 +33,11 @@
     },
     "NotFoundPlug": {
       "title": "Not found"
+    },
+    "Route": {
+      "brevetList": "Brevet list",
+      "brevetInfo": "Brevet info",
+      "checkpointInfo": "Checkpoint info"
     }
   }
 }

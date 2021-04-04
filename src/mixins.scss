@@ -1,0 +1,8 @@
+@mixin element-menu-item {
+  li {
+    li.el-menu-item {
+      min-width: $menu-min-width;
+      padding-right: 24px;
+    }
+  }
+}

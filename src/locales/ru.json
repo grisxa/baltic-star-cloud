@@ -33,6 +33,11 @@
     },
     "NotFoundPlug": {
       "title": "Не найдено"
+    },
+    "Route": {
+      "brevetList": "Список бреветов",
+      "brevetInfo": "Описание бревета",
+      "checkpointInfo": "Описание КП"
     }
   }
 }
