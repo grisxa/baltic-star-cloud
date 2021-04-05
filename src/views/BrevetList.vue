@@ -24,12 +24,20 @@ import {mapGetters} from 'vuex';
     BrevetArchive,
   },
   computed: {
-    ...mapGetters(['oldBrevets', 'newBrevets', 'isLoading']),
+    ...mapGetters(['oldBrevets', 'newBrevets', 'isLoading', 'getClubSelection']),
+  },
+  watch: {
+    getClubSelection() {
+      // eslint-disable-next-line no-use-before-define
+      this.$store.dispatch('listBrevets', (this as BrevetList).getClubSelection);
+    },
   },
 })
 export default class BrevetList extends Vue {
+  getClubSelection!: string[];
+
   mounted(): void {
-    this.$store.dispatch('listBrevets');
+    this.$store.dispatch('listBrevets', this.getClubSelection);
     document.title = this.$t('Route.brevetList').toString();
   }
 }

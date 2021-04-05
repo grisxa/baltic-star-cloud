@@ -6,8 +6,11 @@ import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import axios from 'axios';
 import {ActionContext} from 'vuex';
 
-export default function (context: ActionContext<State, State>): void {
-  const url = `${process.env.VUE_APP_AWS_API}/brevets`;
+export default function (context: ActionContext<State, State>, clubs: string[] = []): void {
+  // eslint-disable-next-line prefer-template
+  const url = `${process.env.VUE_APP_AWS_API}/brevets?` + clubs
+    .map((id) => `club=${id}`)
+    .join('&');
 
   if (!navigator.onLine) {
     console.error('Network error');
