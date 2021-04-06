@@ -1,28 +1,23 @@
 import Brevet from '@/models/brevet';
-import {State} from '@/models/state';
 import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import UpdateBrevetMutation from '@/store/models/updateBrevetMutation';
-import axios from 'axios';
-import {ActionContext} from 'vuex';
+import {cacheAction} from 'vuex-cache';
 
-export default function (context: ActionContext<State, State>, id: string): void {
-  const url = `${process.env.VUE_APP_AWS_API}/brevet/${id}`;
+export default cacheAction(
+  ({cache, commit}, uid: string): Promise<void | Brevet> => {
+    commit(new SetLoadingMutation(true));
 
-  if (!navigator.onLine) {
-    console.error('Network error');
-    return;
-  }
+    return cache.dispatch('apiRequest', `brevet/${uid}`)
+      .then((response) => {
+        const brevet = new Brevet(response.data);
 
-  context.commit(new SetLoadingMutation(true));
-  axios
-    .get(url, {timeout: 60000})
-    .then((response) => {
-      const brevet = new Brevet(response.data);
-      context.commit(new UpdateBrevetMutation(brevet));
-    })
-    .catch((error) => {
-      // TODO: set a state error and show
-      console.error('get doc', error.message, error);
-    })
-    .finally(() => context.commit(new SetLoadingMutation(false)));
-}
+        commit(new UpdateBrevetMutation(brevet));
+        return brevet;
+      })
+      .catch((error) => {
+        // TODO: set a state error and show
+        console.error('get doc', error.message, error);
+      })
+      .finally(() => commit(new SetLoadingMutation(false)));
+  },
+);

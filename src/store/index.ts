@@ -6,11 +6,13 @@ import getters from '@/store/getters';
 import mutations from '@/store/mutations';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createCache from 'vuex-cache';
 import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
 const STORAGE_KEY = 'brevet_online_storage';
+const WEEK_IN_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
 
 const rehydrate = (key: string, storage: unknown) => JSON
   .parse((storage as Storage).getItem(key) || 'null', (name, value) => {
@@ -36,12 +38,19 @@ export default new Vuex.Store<State>({
     loading: false,
     locale: process.env.VUE_APP_I18N_LOCALE,
   },
-  plugins: [createPersistedState({
-    key: STORAGE_KEY,
-    getState: rehydrate,
-  })],
+  plugins: [
+    createPersistedState({
+      key: STORAGE_KEY,
+      getState: rehydrate,
+    }),
+    createCache({
+      timeout: WEEK_IN_MILLISECONDS,
+    }),
+  ],
   getters,
   mutations,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   actions,
   modules: {},
 });

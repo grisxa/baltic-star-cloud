@@ -29,7 +29,7 @@ import {mapGetters} from 'vuex';
   watch: {
     getClubSelection() {
       // eslint-disable-next-line no-use-before-define
-      this.$store.dispatch('listBrevets', (this as BrevetList).getClubSelection);
+      this.$store.dispatch('listBrevets', (this as BrevetList).getClubSelection.slice().sort());
     },
   },
 })
@@ -38,7 +38,7 @@ export default class BrevetList extends Vue {
   $title!: string;
 
   mounted(): void {
-    this.$store.dispatch('listBrevets', this.getClubSelection);
+    this.$store.dispatch('listBrevets', this.getClubSelection.slice().sort());
   }
 
   updated(): void {
