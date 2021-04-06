@@ -7,8 +7,15 @@ import SetLocaleMutation from '@/store/models/setLocaleMutation';
 import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
 import UpdateBrevetMutation from '@/store/models/updateBrevetMutation';
 
-export const setBrevets = (state: State, payload: SetBrevetMutation): void => {
-  state.brevets = payload.brevets;
+export const setBrevets = (state: State, payload: SetBrevetsMutation): void => {
+  const known = state.brevets.reduce((dict: { [uid: string]: Brevet }, brevet) => {
+    // eslint-disable-next-line no-param-reassign
+    dict[brevet.uid] = brevet;
+    return dict;
+  }, {});
+  state.brevets = [...payload.brevets
+    .map((brevet) => (brevet.uid in known ? known[brevet.uid] : brevet)),
+  ].sort((a: Brevet, b: Brevet) => a.startDate.valueOf() - b.startDate.valueOf());
 };
 
 export const setClubs = (state: State, payload: SetClubsMutation): void => {
