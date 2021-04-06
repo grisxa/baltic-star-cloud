@@ -1,6 +1,6 @@
 import Brevet from '@/models/brevet';
 import {State} from '@/models/state';
-import SetBrevetMutation from '@/store/models/setBrevetMutation';
+import SetBrevetsMutation from '@/store/models/setBrevetsMutation';
 import SetClubsMutation from '@/store/models/setClubsMutation';
 import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import SetLocaleMutation from '@/store/models/setLocaleMutation';

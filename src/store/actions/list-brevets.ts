@@ -1,5 +1,5 @@
 import Brevet from '@/models/brevet';
-import SetBrevetMutation from '@/store/models/setBrevetMutation';
+import SetBrevetsMutation from '@/store/models/setBrevetsMutation';
 import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import {cacheAction} from 'vuex-cache';
 
@@ -16,7 +16,7 @@ export default cacheAction(
           .map((item: Brevet) => new Brevet(item))
           .sort((a: Brevet, b: Brevet) => a.startDate.valueOf() - b.startDate.valueOf());
 
-        commit(new SetBrevetMutation(brevets));
+        commit(new SetBrevetsMutation(brevets));
         return brevets;
       })
       .catch((error) => {

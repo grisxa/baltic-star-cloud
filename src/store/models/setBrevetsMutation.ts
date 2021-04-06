@@ -1,6 +1,6 @@
 import Brevet from '@/models/brevet';
 
-export default class SetBrevetMutation {
+export default class SetBrevetsMutation {
   type = 'setBrevets';
   brevets: Brevet[];
 
