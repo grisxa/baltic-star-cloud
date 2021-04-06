@@ -1,7 +1,7 @@
 <template>
   <el-dropdown placement="top-start" ref="dropdown" trigger="click">
     <span class="el-dropdown-link"><i class="el-icon-menu"></i></span>
-    <span>{{ $title }}</span>
+    <span>{{ getTitle }}</span>
     <el-dropdown-menu slot="dropdown">
       <el-menu :default-active="activeIndex" :unique-opened="true"
                @select="onSelect">
@@ -23,12 +23,16 @@ import LocaleSwitcher from '@/components/LocaleSwitcher.vue';
 import LogInOut from '@/components/LogInOut.vue';
 import router, {routes} from '@/router';
 import {Component, Vue} from 'vue-property-decorator';
+import {mapGetters} from 'vuex';
 
 @Component({
   components: {
     ClubSelector,
     LocaleSwitcher,
     LogInOut,
+  },
+  computed: {
+    ...mapGetters(['getTitle']),
   },
   watch: {
     $route(value) {

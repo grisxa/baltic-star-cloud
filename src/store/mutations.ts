@@ -6,6 +6,7 @@ import {
   SetLoadingMutation,
   SetLocaleMutation,
   SetLogInMutation,
+  SetTitleMutation,
   ToggleClubSelectionMutation,
   UpdateBrevetMutation,
 } from './models';
@@ -48,6 +49,11 @@ export const setLocale = (state: State, payload: SetLocaleMutation): void => {
   state.locale = payload.locale;
 };
 
+export const setTitle = (state: State, payload: SetTitleMutation): void => {
+  state.title = payload.title;
+  document.title = payload.title;
+};
+
 export const updateBrevet = (state: State, payload: UpdateBrevetMutation): void => {
   const rest = state.brevets.filter((item) => item.uid !== payload.brevet.uid);
   state.brevets = [...rest, payload.brevet]
@@ -61,5 +67,6 @@ export default {
   setLoading,
   setLocale,
   setLogIn,
+  setTitle,
   updateBrevet,
 };

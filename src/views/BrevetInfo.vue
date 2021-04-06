@@ -59,6 +59,7 @@
 import CheckpointListItem from '@/components/CheckpointListItem.vue';
 import NotFoundPlug from '@/components/NotFoundPlug.vue';
 import Brevet from '@/models/brevet';
+import SetTitleMutation from '@/store/models/setTitleMutation';
 import {Component, Vue} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
 
@@ -76,16 +77,18 @@ import {mapGetters} from 'vuex';
 })
 export default class BrevetInfo extends Vue {
   visible: string[] = [];
-  $title!: string;
   brevet!: Brevet;
 
   mounted(): void {
+    this.$store.commit(new SetTitleMutation(this.$t('BrevetInfo.title').toString()));
     this.$store.dispatch('getBrevet', this.$route.params.uid);
   }
 
   updated(): void {
-    const name = this.brevet ? this.brevet.name : '';
-    this.$title = this.$t('Route.brevetInfo', {name}).toString();
+    const title = this.brevet
+      ? this.$t('Route.brevetInfo', {name: this.brevet.name})
+      : this.$t('BrevetInfo.title');
+    this.$store.commit(new SetTitleMutation(title.toString()));
   }
 }
 </script>

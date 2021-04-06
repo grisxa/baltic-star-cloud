@@ -31,6 +31,8 @@ export const isLoggedIn = (state: State): boolean => state.loggedIn;
 
 export const getLocale = (state: State): string => state.locale;
 
+export const getTitle = (state: State): string => state.title;
+
 export default {
   oldBrevets,
   newBrevets,
@@ -40,4 +42,5 @@ export default {
   isLoading,
   isLoggedIn,
   getLocale,
+  getTitle,
 };

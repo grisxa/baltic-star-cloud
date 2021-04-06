@@ -8,4 +8,5 @@ export interface State {
   loggedIn: boolean;
   loading: boolean;
   locale: string;
+  title: string;
 }

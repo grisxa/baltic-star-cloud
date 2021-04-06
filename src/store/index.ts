@@ -38,6 +38,7 @@ export default new Vuex.Store<State>({
     loggedIn: false,
     loading: false,
     locale: process.env.VUE_APP_I18N_LOCALE,
+    title: 'brevet.online',
   },
   plugins: [
     createPersistedState({
