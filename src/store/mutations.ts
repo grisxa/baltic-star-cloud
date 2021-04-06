@@ -1,11 +1,13 @@
 import Brevet from '@/models/brevet';
 import {State} from '@/models/state';
-import SetBrevetsMutation from '@/store/models/setBrevetsMutation';
-import SetClubsMutation from '@/store/models/setClubsMutation';
-import SetLoadingMutation from '@/store/models/setLoadingMutation';
-import SetLocaleMutation from '@/store/models/setLocaleMutation';
-import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
-import UpdateBrevetMutation from '@/store/models/updateBrevetMutation';
+import {
+  SetBrevetsMutation,
+  SetClubsMutation,
+  SetLoadingMutation,
+  SetLocaleMutation,
+  ToggleClubSelectionMutation,
+  UpdateBrevetMutation,
+} from './models';
 
 export const setBrevets = (state: State, payload: SetBrevetsMutation): void => {
   const known = state.brevets.reduce((dict: { [uid: string]: Brevet }, brevet) => {
