@@ -6,9 +6,9 @@
       <el-menu :default-active="activeIndex" :unique-opened="true"
                @select="onSelect">
         <app-club-selector rootIndex="50"></app-club-selector>
-        <el-menu-item :index="route.id" v-for="route in menuItems" :key="route.id">
-          <i :class="route.icon"></i>
-          <span slot="title">{{ $t(route.title) }}</span>
+        <el-menu-item :index="route.meta.id" v-for="route in menuItems" :key="route.meta.id">
+          <i :class="route.meta.icon"></i>
+          <span slot="title">{{ $t(route.meta.title) }}</span>
         </el-menu-item>
         <app-locale-switcher rootIndex="100"></app-locale-switcher>
       </el-menu>
@@ -31,7 +31,7 @@ import {Component, Vue} from 'vue-property-decorator';
     $route(value) {
       const menuRoute = routes.find((item) => item.name === value.name);
       if (menuRoute) {
-        const {title, id} = menuRoute;
+        const {title, id} = menuRoute.meta;
         // eslint-disable-next-line no-use-before-define
         (this as NavigationMenu).header = title;
         // eslint-disable-next-line no-use-before-define
@@ -41,7 +41,7 @@ import {Component, Vue} from 'vue-property-decorator';
   },
 })
 export default class NavigationMenu extends Vue {
-  menuItems = routes.filter((item) => item.showInMenu);
+  menuItems = routes.filter((item) => item.meta.showInMenu);
   header = '';
   activeIndex = '1';
 
@@ -49,12 +49,12 @@ export default class NavigationMenu extends Vue {
     // set a menu selection based on the route
     const menuRoute = routes.find((item) => item.name === router.currentRoute.name);
     if (menuRoute) {
-      this.activeIndex = menuRoute.id;
+      this.activeIndex = menuRoute.meta.id;
     }
   }
 
   onSelect(key: string, keyPath: string[]): void {
-    const route = this.menuItems.find((item) => item.id === key);
+    const route = this.menuItems.find((item) => item.meta.id === key);
     if (route && route.path !== router.currentRoute.path) {
       router.push(route.path);
     }
