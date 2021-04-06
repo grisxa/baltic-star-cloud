@@ -1,7 +1,7 @@
 <template>
   <el-dropdown placement="top-start" ref="dropdown">
     <span class="el-dropdown-link"><i class="el-icon-menu"></i></span>
-    <span>{{ $t(header) }}</span>
+    <span>{{ $title }}</span>
     <el-dropdown-menu slot="dropdown">
       <el-menu :default-active="activeIndex" :unique-opened="true"
                @select="onSelect">
@@ -31,18 +31,14 @@ import {Component, Vue} from 'vue-property-decorator';
     $route(value) {
       const menuRoute = routes.find((item) => item.name === value.name);
       if (menuRoute) {
-        const {title, id} = menuRoute.meta;
         // eslint-disable-next-line no-use-before-define
-        (this as NavigationMenu).header = title;
-        // eslint-disable-next-line no-use-before-define
-        (this as NavigationMenu).activeIndex = id;
+        (this as NavigationMenu).activeIndex = menuRoute.meta.id;
       }
     },
   },
 })
 export default class NavigationMenu extends Vue {
   menuItems = routes.filter((item) => item.meta.showInMenu);
-  header = '';
   activeIndex = '1';
 
   mounted(): void {

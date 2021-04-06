@@ -1,9 +1,11 @@
 import BrevetInfo from '@/views/BrevetInfo.vue';
 import BrevetList from '@/views/BrevetList.vue';
 import Vue from 'vue';
+import VuePageTitle from 'vue-page-title';
 import VueRouter, {RouteConfig} from 'vue-router';
 
 Vue.use(VueRouter);
+Vue.use(VuePageTitle);
 
 type MenuRoute = RouteConfig & {
   meta: {

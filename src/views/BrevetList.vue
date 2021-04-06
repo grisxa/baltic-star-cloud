@@ -35,10 +35,14 @@ import {mapGetters} from 'vuex';
 })
 export default class BrevetList extends Vue {
   getClubSelection!: string[];
+  $title!: string;
 
   mounted(): void {
     this.$store.dispatch('listBrevets', this.getClubSelection);
-    document.title = this.$t('Route.brevetList').toString();
+  }
+
+  updated(): void {
+    this.$title = this.$t('Route.brevetList').toString();
   }
 }
 

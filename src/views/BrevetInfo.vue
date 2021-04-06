@@ -58,6 +58,7 @@
 <script lang="ts">
 import CheckpointListItem from '@/components/CheckpointListItem.vue';
 import NotFoundPlug from '@/components/NotFoundPlug.vue';
+import Brevet from '@/models/brevet';
 import {Component, Vue} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
 
@@ -68,20 +69,23 @@ import {mapGetters} from 'vuex';
   },
   computed: {
     brevet() {
-      const info = this.$store.getters.getBrevet(this.$route.params.uid);
-      if (info) {
-        document.title = this.$t('Route.brevetInfo', {name: info.name}).toString();
-      }
-      return info;
+      return this.$store.getters.getBrevet(this.$route.params.uid);
     },
     ...mapGetters(['isLoading']),
   },
 })
 export default class BrevetInfo extends Vue {
   visible: string[] = [];
+  $title!: string;
+  brevet!: Brevet;
 
   mounted(): void {
     this.$store.dispatch('getBrevet', this.$route.params.uid);
+  }
+
+  updated(): void {
+    const name = this.brevet ? this.brevet.name : '';
+    this.$title = this.$t('Route.brevetInfo', {name}).toString();
   }
 }
 </script>
