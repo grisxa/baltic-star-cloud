@@ -1,4 +1,5 @@
+import getBrevet from './get-brevet';
 import listBrevets from './list-brevets';
 import listClubs from './list-clubs';
 
-export default {listBrevets, listClubs};
+export default {getBrevet, listBrevets, listClubs};

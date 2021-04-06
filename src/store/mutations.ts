@@ -1,9 +1,11 @@
+import Brevet from '@/models/brevet';
 import {State} from '@/models/state';
 import SetBrevetMutation from '@/store/models/setBrevetMutation';
 import SetClubsMutation from '@/store/models/setClubsMutation';
 import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import SetLocaleMutation from '@/store/models/setLocaleMutation';
 import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
+import UpdateBrevetMutation from '@/store/models/updateBrevetMutation';
 
 export const setBrevets = (state: State, payload: SetBrevetMutation): void => {
   state.brevets = payload.brevets;
@@ -31,10 +33,18 @@ export const setLoading = (state: State, payload: SetLoadingMutation): void => {
 export const setLocale = (state: State, payload: SetLocaleMutation): void => {
   state.locale = payload.locale;
 };
+
+export const updateBrevet = (state: State, payload: UpdateBrevetMutation): void => {
+  const rest = state.brevets.filter((item) => item.uid !== payload.brevet.uid);
+  state.brevets = [...rest, payload.brevet]
+    .sort((a: Brevet, b: Brevet) => a.startDate.valueOf() - b.startDate.valueOf());
+};
+
 export default {
   setBrevets,
   setClubs,
   toggleClubSelection,
   setLoading,
   setLocale,
+  updateBrevet,
 };

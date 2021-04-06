@@ -81,8 +81,7 @@ export default class BrevetInfo extends Vue {
   visible: string[] = [];
 
   mounted(): void {
-    // reload brevet list
-    this.$store.dispatch('listBrevets');
+    this.$store.dispatch('getBrevet', this.$route.params.uid);
   }
 }
 </script>
