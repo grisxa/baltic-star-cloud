@@ -15,11 +15,21 @@ export default class Brevet {
   constructor(snapshot: Brevet) {
     // generic copying
     Object.assign(this, snapshot);
+    const {checkpoints, startDate, endDate} = snapshot;
+
     // mandatory fields
     this.uid = snapshot.uid;
     this.name = snapshot.name;
     this.length = snapshot.length;
-    this.startDate = snapshot.startDate;
+    this.startDate = new Date(startDate);
+
+    // optional fields conversion
+    if (endDate) {
+      this.endDate = new Date(endDate);
+    }
+    if (checkpoints instanceof Array) {
+      this.checkpoints = checkpoints.filter((cp) => !!cp).map((cp) => new Checkpoint(cp));
+    }
   }
 
   /**
