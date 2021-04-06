@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown placement="top-start" ref="dropdown">
+  <el-dropdown placement="top-start" ref="dropdown" trigger="click">
     <span class="el-dropdown-link"><i class="el-icon-menu"></i></span>
     <span>{{ $title }}</span>
     <el-dropdown-menu slot="dropdown">
