@@ -5,6 +5,7 @@ import {
   SetClubsMutation,
   SetLoadingMutation,
   SetLocaleMutation,
+  SetLogInMutation,
   ToggleClubSelectionMutation,
   UpdateBrevetMutation,
 } from './models';
@@ -39,6 +40,10 @@ export const setLoading = (state: State, payload: SetLoadingMutation): void => {
   state.loading = payload.loading;
 };
 
+export const setLogIn = (state: State, payload: SetLogInMutation): void => {
+  state.loggedIn = payload.loggedIn;
+};
+
 export const setLocale = (state: State, payload: SetLocaleMutation): void => {
   state.locale = payload.locale;
 };
@@ -55,5 +60,6 @@ export default {
   toggleClubSelection,
   setLoading,
   setLocale,
+  setLogIn,
   updateBrevet,
 };

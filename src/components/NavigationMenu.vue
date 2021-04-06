@@ -10,6 +10,7 @@
           <i :class="route.meta.icon"></i>
           <span slot="title">{{ $t(route.meta.title) }}</span>
         </el-menu-item>
+        <app-login-out></app-login-out>
         <app-locale-switcher rootIndex="100"></app-locale-switcher>
       </el-menu>
     </el-dropdown-menu>
@@ -19,6 +20,7 @@
 <script lang="ts">
 import ClubSelector from '@/components/ClubSelector.vue';
 import LocaleSwitcher from '@/components/LocaleSwitcher.vue';
+import LogInOut from '@/components/LogInOut.vue';
 import router, {routes} from '@/router';
 import {Component, Vue} from 'vue-property-decorator';
 
@@ -26,6 +28,7 @@ import {Component, Vue} from 'vue-property-decorator';
   components: {
     ClubSelector,
     LocaleSwitcher,
+    LogInOut,
   },
   watch: {
     $route(value) {

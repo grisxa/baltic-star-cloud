@@ -39,6 +39,17 @@ export const routes: Array<MenuRoute> = [
       title: 'Route.brevetInfo',
     },
   },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: BrevetInfo,
+    meta: {
+      id: '3',
+      showInMenu: false,
+      icon: 'el-icon-user',
+      title: 'LogInOut.profile',
+    },
+  },
   // route level code-splitting
   // this generates a separate chunk (about.[hash].js) for this route
   // which is lazy-loaded when the route is visited.

@@ -27,6 +27,8 @@ export const getClubSelection = (state: State): string[] => state.clubSelection;
 
 export const isLoading = (state: State): boolean => state.loading;
 
+export const isLoggedIn = (state: State): boolean => state.loggedIn;
+
 export const getLocale = (state: State): string => state.locale;
 
 export default {
@@ -36,5 +38,6 @@ export default {
   getClubs,
   getClubSelection,
   isLoading,
+  isLoggedIn,
   getLocale,
 };

@@ -35,6 +35,11 @@
     "LocaleSwitcher": {
       "language": "Язык"
     },
+    "LogInOut": {
+      "login": "Войти",
+      "logout": "Выйти",
+      "profile": "Профиль"
+    },
     "NotFoundPlug": {
       "title": "Не найдено"
     },
