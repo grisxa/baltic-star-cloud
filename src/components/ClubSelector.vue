@@ -7,8 +7,9 @@
     <el-menu-item v-for="item in options"
                   @click="onCheck"
                   :key="item.id"
-                  :index="item.id.toString()">{{ item.name[$i18n.locale] || item.name.default }}
+                  :index="item.id.toString()">
       <i class="el-icon-check selected" v-if="item.selected"></i>
+      {{ item.name[$i18n.locale] || item.name.default }}
     </el-menu-item>
   </el-submenu>
 </template>

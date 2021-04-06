@@ -80,7 +80,7 @@ Vue.component('app-navigation-menu', NavigationMenu);
 i.el-icon-check.selected {
   position: absolute;
   top: 50%;
-  right: 0.5em;
+  left: 20px;
   margin-top: -0.55em;
   font-size: 1.3em;
 }
