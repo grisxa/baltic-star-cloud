@@ -35,6 +35,7 @@ export default new Vuex.Store<State>({
     brevets: [],
     loading: false,
     locale: process.env.VUE_APP_I18N_LOCALE,
+    title: 'brevet.online',
   },
   plugins: [createPersistedState({
     key: STORAGE_KEY,

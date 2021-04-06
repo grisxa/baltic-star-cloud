@@ -15,6 +15,7 @@
 <script lang="ts">
 import BrevetArchive from '@/components/BrevetArchive.vue';
 import BrevetListItem from '@/components/BrevetListItem.vue';
+import SetTitleMutation from '@/store/models/setTitleMutation';
 import {Component, Vue} from 'vue-property-decorator';
 import {mapGetters} from 'vuex';
 
@@ -38,11 +39,12 @@ export default class BrevetList extends Vue {
   $title!: string;
 
   mounted(): void {
+    this.$store.commit(new SetTitleMutation(this.$t('Route.brevetList').toString()));
     this.$store.dispatch('listBrevets', this.getClubSelection);
   }
 
   updated(): void {
-    this.$title = this.$t('Route.brevetList').toString();
+    this.$store.commit(new SetTitleMutation(this.$t('Route.brevetList').toString()));
   }
 }
 

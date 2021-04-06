@@ -7,4 +7,5 @@ export interface State {
   brevets: Brevet[];
   loading: boolean;
   locale: string;
+  title: string;
 }

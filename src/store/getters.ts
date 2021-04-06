@@ -29,6 +29,8 @@ export const isLoading = (state: State): boolean => state.loading;
 
 export const getLocale = (state: State): string => state.locale;
 
+export const getTitle = (state: State): string => state.title;
+
 export default {
   oldBrevets,
   newBrevets,
@@ -37,4 +39,5 @@ export default {
   getClubSelection,
   isLoading,
   getLocale,
+  getTitle,
 };

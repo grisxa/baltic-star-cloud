@@ -4,6 +4,7 @@ import SetBrevetMutation from '@/store/models/setBrevetMutation';
 import SetClubsMutation from '@/store/models/setClubsMutation';
 import SetLoadingMutation from '@/store/models/setLoadingMutation';
 import SetLocaleMutation from '@/store/models/setLocaleMutation';
+import SetTitleMutation from '@/store/models/setTitleMutation';
 import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
 import UpdateBrevetMutation from '@/store/models/updateBrevetMutation';
 
@@ -34,6 +35,11 @@ export const setLocale = (state: State, payload: SetLocaleMutation): void => {
   state.locale = payload.locale;
 };
 
+export const setTitle = (state: State, payload: SetTitleMutation): void => {
+  state.title = payload.title;
+  document.title = payload.title;
+};
+
 export const updateBrevet = (state: State, payload: UpdateBrevetMutation): void => {
   const rest = state.brevets.filter((item) => item.uid !== payload.brevet.uid);
   state.brevets = [...rest, payload.brevet]
@@ -46,5 +52,6 @@ export default {
   toggleClubSelection,
   setLoading,
   setLocale,
+  setTitle,
   updateBrevet,
 };
