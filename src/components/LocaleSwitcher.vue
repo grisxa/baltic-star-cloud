@@ -7,8 +7,9 @@
     <el-menu-item v-for="item in options" class="language"
                   @click="switchLocale"
                   :key="item.value"
-                  :index="item.value">{{ item.label }}
+                  :index="item.value">
       <i class="el-icon-check selected" v-if="item.value === locale"></i>
+      {{ item.label }}
     </el-menu-item>
   </el-submenu>
 </template>
