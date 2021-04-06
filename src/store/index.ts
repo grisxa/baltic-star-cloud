@@ -1,3 +1,5 @@
+import Brevet from '@/models/brevet';
+import Club from '@/models/club';
 import {State} from '@/models/state';
 import actions from '@/store/actions';
 import getters from '@/store/getters';
@@ -11,11 +13,19 @@ Vue.use(Vuex);
 const STORAGE_KEY = 'brevet_online_storage';
 
 const rehydrate = (key: string, storage: unknown) => JSON
-  .parse((storage as Storage).getItem(key) || 'null',
+  .parse((storage as Storage).getItem(key) || 'null', (name, value) => {
     // string to Date conversion
-    (name, value) => (['startDate', 'endDate'].includes(name)
-      ? new Date(value)
-      : value));
+    if (['startDate', 'endDate'].includes(name)) {
+      return new Date(value);
+    }
+    if (name === 'brevets') {
+      return value.map((item: Brevet) => new Brevet(item));
+    }
+    if (name === 'clubs') {
+      return value.map((item: Club) => new Club(item));
+    }
+    return value;
+  });
 
 export default new Vuex.Store<State>({
   strict: true,
