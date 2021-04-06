@@ -6,54 +6,68 @@
     </template>
     <el-menu-item v-for="item in options"
                   @click="onCheck"
-                  :key="item.code"
-                  :index="item.code">{{ item.name[$i18n.locale] || item.name.default }}
+                  :key="item.id"
+                  :index="item.id.toString()">
       <i class="el-icon-check selected" v-if="item.selected"></i>
+      {{ item.name[$i18n.locale] || item.name.default }}
     </el-menu-item>
   </el-submenu>
 </template>
 
 <script lang="ts">
+import Club from '@/models/club';
+import ToggleClubSelectionMutation from '@/store/models/toggleClubSelectionMutation';
 import {Component, Prop, Vue} from 'vue-property-decorator';
+import {mapGetters} from 'vuex';
 
-type ClubMenuItem = {
-  selected: boolean;
-  code: string;
-  name: {
-    [key: string]: string;
-  };
-}
+type ClubMenuItem = Club & { selected: boolean };
 
-@Component
+@Component({
+  watch: {
+    clubs(items: Club[]) {
+      // eslint-disable-next-line no-use-before-define
+      (this as ClubSelector).options = items.map((item) => ({
+        ...item,
+        // eslint-disable-next-line no-use-before-define
+        selected: (this as ClubSelector).selection.includes(item.id.toString()),
+      }));
+    },
+    selection(items: string[]) {
+      // eslint-disable-next-line no-use-before-define
+      (this as ClubSelector).options.forEach((club) => {
+        // eslint-disable-next-line no-param-reassign
+        club.selected = items.includes(club.id.toString());
+      });
+    },
+  },
+  computed: {
+    ...mapGetters({clubs: 'getClubs', selection: 'getClubSelection'}),
+  },
+})
 export default class ClubSelector extends Vue {
   @Prop() private rootIndex?: string;
+  clubs!: Club[];
+  selection!: string[];
 
   locales: string[] = process.env.VUE_APP_I18N_SUPPORTED_LOCALES.split(',');
   options: ClubMenuItem[] = [
     {
-      code: '511200',
+      id: 0,
+      country: 'any',
       name: {
-        default: 'Etoile Baltique',
-        en: 'Baltic star',
-        ru: 'Балтийская звезда',
+        default: 'All',
+        ru: 'Все',
       },
       selected: true,
     },
-    {
-      code: 'xxx',
-      name: {
-        default: 'M8',
-      },
-      selected: false,
-    },
   ];
 
-  // eslint-disable-next-line class-methods-use-this
+  mounted(): void {
+    this.$store.dispatch('listClubs');
+  }
+
   onCheck(item: { index: string }): void {
-    const clubChecked = this.options.find((club) => club.code === item.index);
-    if (clubChecked) {
-      clubChecked.selected = !clubChecked.selected;
-    }
+    this.$store.commit(new ToggleClubSelectionMutation(item.index));
   }
 }
 

@@ -4,7 +4,8 @@
       "brevetList": "Список бреветов"
     },
     "BrevetList": {
-      "title": "Предстоящие бреветы"
+      "title": "Предстоящие бреветы",
+      "noPlans": "Ничего не запланировано"
     },
     "BrevetListItem": {
       "length": "{length} км",
@@ -34,12 +35,17 @@
     "LocaleSwitcher": {
       "language": "Язык"
     },
+    "LogInOut": {
+      "login": "Войти",
+      "logout": "Выйти",
+      "profile": "Профиль"
+    },
     "NotFoundPlug": {
       "title": "Не найдено"
     },
     "Route": {
       "brevetList": "Список бреветов",
-      "brevetInfo": "Описание бревета",
+      "brevetInfo": "Описание бревета {name}",
       "checkpointInfo": "Описание КП"
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <el-col v-loading="loading">
+  <el-col v-loading="isLoading">
     <h2>{{ $t('BrevetInfo.title') }}</h2>
     <template v-if="brevet">
       <h3>{{ brevet.name }}</h3>
@@ -59,52 +59,36 @@
 import CheckpointListItem from '@/components/CheckpointListItem.vue';
 import NotFoundPlug from '@/components/NotFoundPlug.vue';
 import Brevet from '@/models/brevet';
-import Checkpoint from '@/models/checkpoint';
+import SetTitleMutation from '@/store/models/setTitleMutation';
 import {Component, Vue} from 'vue-property-decorator';
+import {mapGetters} from 'vuex';
 
 @Component({
   components: {
     CheckpointListItem,
     NotFoundPlug,
   },
+  computed: {
+    brevet() {
+      return this.$store.getters.getBrevet(this.$route.params.uid);
+    },
+    ...mapGetters(['isLoading']),
+  },
 })
 export default class BrevetInfo extends Vue {
-  loading = false;
   visible: string[] = [];
-  brevet: Brevet = new Brevet({
-    uid: '2',
-    name: 'test2',
-    mapUrl: 'https://www.plotaroute.com/route/1043125?units=km',
-    length: 200,
-    startDate: new Date(1609000000000),
-    endDate: new Date(1609500000000),
-    checkpoints: [
-      new Checkpoint({
-        uid: '111',
-        name: 'Start',
-        distance: 0,
-      } as Checkpoint),
-      new Checkpoint({
-        uid: '222',
-        name: 'CP1',
-        distance: 70,
-      } as Checkpoint),
-      new Checkpoint({
-        uid: '333',
-        name: 'CP2',
-        distance: 150,
-      } as Checkpoint),
-      new Checkpoint({
-        uid: '444',
-        name: 'Finish',
-        distance: 200,
-      } as Checkpoint),
-    ],
-  } as Brevet);
-  checkpointsOpenState = false;
+  brevet!: Brevet;
 
   mounted(): void {
-    document.title = this.$t('Route.brevetInfo', {name: this.brevet.name});
+    this.$store.commit(new SetTitleMutation(this.$t('BrevetInfo.title').toString()));
+    this.$store.dispatch('getBrevet', this.$route.params.uid);
+  }
+
+  updated(): void {
+    const title = this.brevet
+      ? this.$t('Route.brevetInfo', {name: this.brevet.name})
+      : this.$t('BrevetInfo.title');
+    this.$store.commit(new SetTitleMutation(title.toString()));
   }
 }
 </script>

@@ -7,7 +7,7 @@ module.exports = {
       enableInSFC: false,
     },
     webpackBundleAnalyzer: {
-      openAnalyzer: false,
+      openAnalyzer: true,
     },
   },
   devServer: {

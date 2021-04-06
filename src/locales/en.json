@@ -4,7 +4,8 @@
       "brevetList": "Brevet list"
     },
     "BrevetList": {
-      "title": "Upcoming events"
+      "title": "Upcoming events",
+      "noPlans": "Nothing has been planned"
     },
     "BrevetListItem": {
       "length": "{length} km",
@@ -34,12 +35,17 @@
     "LocaleSwitcher": {
       "language": "Language"
     },
+    "LogInOut": {
+      "login": "Log in",
+      "logout": "Log out",
+      "profile": "Profile"
+    },
     "NotFoundPlug": {
       "title": "Not found"
     },
     "Route": {
       "brevetList": "Brevet list",
-      "brevetInfo": "Brevet info",
+      "brevetInfo": "{name} brevet info",
       "checkpointInfo": "Checkpoint info"
     }
   }

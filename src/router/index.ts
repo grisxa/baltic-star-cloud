@@ -6,30 +6,47 @@ import VueRouter, {RouteConfig} from 'vue-router';
 Vue.use(VueRouter);
 
 type MenuRoute = RouteConfig & {
-  id: string;
-  showInMenu: boolean;
-  icon: string;
-  title: string;
+  meta: {
+    id: string;
+    showInMenu: boolean;
+    icon: string;
+    title: string;
+  }
 };
 
 export const routes: Array<MenuRoute> = [
   {
-    id: '1',
-    showInMenu: true,
-    icon: 'el-icon-notebook-2',
-    title: 'Route.brevetList',
     path: '/brevets',
     name: 'brevet-list',
     component: BrevetList,
+    meta: {
+      id: '1',
+      showInMenu: true,
+      icon: 'el-icon-notebook-2',
+      title: 'Route.brevetList',
+    },
   },
   {
-    id: '2',
-    showInMenu: false,
-    icon: 'el-icon-map-location',
-    title: 'Route.brevetInfo',
     path: '/brevet/:uid',
     name: 'brevet-info',
     component: BrevetInfo,
+    meta: {
+      id: '2',
+      showInMenu: false,
+      icon: 'el-icon-map-location',
+      title: 'Route.brevetInfo',
+    },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: BrevetInfo,
+    meta: {
+      id: '3',
+      showInMenu: false,
+      icon: 'el-icon-user',
+      title: 'LogInOut.profile',
+    },
   },
   // route level code-splitting
   // this generates a separate chunk (about.[hash].js) for this route

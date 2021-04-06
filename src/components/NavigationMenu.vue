@@ -1,15 +1,16 @@
 <template>
-  <el-dropdown placement="top-start" ref="dropdown">
+  <el-dropdown placement="top-start" ref="dropdown" trigger="click">
     <span class="el-dropdown-link"><i class="el-icon-menu"></i></span>
-    <span>{{ $t(header) }}</span>
+    <span>{{ getTitle }}</span>
     <el-dropdown-menu slot="dropdown">
       <el-menu :default-active="activeIndex" :unique-opened="true"
                @select="onSelect">
         <app-club-selector rootIndex="50"></app-club-selector>
-        <el-menu-item :index="route.id" v-for="route in menuItems" :key="route.id">
-          <i :class="route.icon"></i>
-          <span slot="title">{{ $t(route.title) }}</span>
+        <el-menu-item :index="route.meta.id" v-for="route in menuItems" :key="route.meta.id">
+          <i :class="route.meta.icon"></i>
+          <span slot="title">{{ $t(route.meta.title) }}</span>
         </el-menu-item>
+        <app-login-out></app-login-out>
         <app-locale-switcher rootIndex="100"></app-locale-switcher>
       </el-menu>
     </el-dropdown-menu>
@@ -19,42 +20,44 @@
 <script lang="ts">
 import ClubSelector from '@/components/ClubSelector.vue';
 import LocaleSwitcher from '@/components/LocaleSwitcher.vue';
+import LogInOut from '@/components/LogInOut.vue';
 import router, {routes} from '@/router';
 import {Component, Vue} from 'vue-property-decorator';
+import {mapGetters} from 'vuex';
 
 @Component({
   components: {
     ClubSelector,
     LocaleSwitcher,
+    LogInOut,
+  },
+  computed: {
+    ...mapGetters(['getTitle']),
   },
   watch: {
     $route(value) {
       const menuRoute = routes.find((item) => item.name === value.name);
       if (menuRoute) {
-        const {title, id} = menuRoute;
         // eslint-disable-next-line no-use-before-define
-        (this as NavigationMenu).header = title;
-        // eslint-disable-next-line no-use-before-define
-        (this as NavigationMenu).activeIndex = id;
+        (this as NavigationMenu).activeIndex = menuRoute.meta.id;
       }
     },
   },
 })
 export default class NavigationMenu extends Vue {
-  menuItems = routes.filter((item) => item.showInMenu);
-  header = '';
+  menuItems = routes.filter((item) => item.meta.showInMenu);
   activeIndex = '1';
 
   mounted(): void {
     // set a menu selection based on the route
     const menuRoute = routes.find((item) => item.name === router.currentRoute.name);
     if (menuRoute) {
-      this.activeIndex = menuRoute.id;
+      this.activeIndex = menuRoute.meta.id;
     }
   }
 
   onSelect(key: string, keyPath: string[]): void {
-    const route = this.menuItems.find((item) => item.id === key);
+    const route = this.menuItems.find((item) => item.meta.id === key);
     if (route && route.path !== router.currentRoute.path) {
       router.push(route.path);
     }
@@ -84,7 +87,7 @@ Vue.component('app-navigation-menu', NavigationMenu);
 i.el-icon-check.selected {
   position: absolute;
   top: 50%;
-  right: 0.5em;
+  left: 20px;
   margin-top: -0.55em;
   font-size: 1.3em;
 }
