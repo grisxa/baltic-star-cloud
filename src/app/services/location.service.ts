@@ -6,8 +6,8 @@ import {Injectable} from '@angular/core';
 export class LocationService {
   static options: PositionOptions = {
     enableHighAccuracy: true,
-    // milliseconds, 10 min
-    maximumAge: 600000,
+    // milliseconds, 2 min
+    maximumAge: 120000,
     // milliseconds, 30 sec
     timeout: 30000
   };
@@ -19,7 +19,12 @@ export class LocationService {
     console.log('= current locaton', position);
 
     if (position.coords.accuracy > 500) {
+      // allow to try again in 1 sec.
+      LocationService.options.maximumAge = 1000;
       return reject(`Низкая точность координат: ${position.coords.accuracy} метров`);
+    } else {
+      // keep for 2 min.
+      LocationService.options.maximumAge = 120000;
     }
     return resolve(position);
   }
