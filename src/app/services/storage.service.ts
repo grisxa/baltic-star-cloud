@@ -234,7 +234,7 @@ export class StorageService {
       .collection<Rider>('riders')
       .doc(uid)
       .valueChanges().pipe(
-        filter(isNotNullOrUndefined)
+        map((rider: Rider | undefined) => rider ? rider : {} as Rider)
       );
   }
 
