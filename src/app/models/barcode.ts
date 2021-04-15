@@ -10,6 +10,9 @@ export class Barcode {
   control?: string;
   owner?: string;
 
+  // a meaningful control identifier
+  name?: string;
+
   constructor(time: Timestamp = Timestamp.now(),
               code: string = '', message: string = 'new') {
     this.time = time;

@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {isNotNullOrUndefined} from '../utils';
 import GeoPoint = firebase.firestore.GeoPoint;
 import QuerySnapshot = firebase.firestore.QuerySnapshot;
+import Timestamp = firebase.firestore.Timestamp;
 
 
 @Injectable({
@@ -252,7 +253,11 @@ export class StorageService {
       .doc(checkpointUid)
       .collection<Barcode>('barcodes',
         ref => ref.orderBy('time', 'desc'))
-      .valueChanges();
+      .valueChanges().pipe(
+        map((barcodes: Barcode[]) => barcodes
+          .map((b: Barcode) => new Barcode(new Timestamp(b.time.seconds, b.time.nanoseconds),
+            b.name || b.code, b.message)))
+      );
   }
 
   watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
