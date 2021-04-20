@@ -13,6 +13,8 @@ export class RoutePoint {
     this.lat = options.lat;
     this.lng = options.lng;
     this.distance = options.distance || 0;
+    this.dir = options.dir;
+    this.labtxt = options.labtxt;
   }
 
   /**
