@@ -33,7 +33,7 @@ export class PlotarouteInfoService {
 
           route.forEach((point: PlotaroutePoint) => {
             const stepLength = this.distance(previousPoint.lat, previousPoint.lng,
-              point.lat, point.lon);
+              point.lat, point.lng);
             previousPoint = new RoutePoint({
               ...point,
               distance: previousPoint.distance + stepLength

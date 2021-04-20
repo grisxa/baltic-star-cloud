@@ -11,7 +11,7 @@ export class RoutePoint {
 
   constructor(options: PlotaroutePoint & { distance?: number }) {
     this.lat = options.lat;
-    this.lng = options.lon;
+    this.lng = options.lng;
     this.distance = options.distance || 0;
   }
 
