@@ -34,8 +34,4 @@ export class LoginPromptComponent implements OnInit, OnDestroy {
     this.unsubscribe$.next();
   }
 
-  logout() {
-    this.auth.logout();
-    this.cd.detectChanges();
-  }
 }

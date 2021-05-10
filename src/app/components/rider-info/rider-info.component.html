@@ -93,6 +93,7 @@
   </app-editable>
 </div>
 </form>
+<button class="logout" *ngIf="auth.isLoggedIn && isOwner" mat-raised-button (click)="logout()"><mat-icon>logout</mat-icon>Выйти</button>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">

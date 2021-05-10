@@ -88,6 +88,15 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
     this.unsubscribe$.next();
   }
 
+
+  logout() {
+    this.auth.logout();
+  }
+
+  get isOwner(): boolean {
+    return (!!this.auth.user && !!this.rider && this.auth.user.uid === this.rider.owner);
+  }
+
   get isEditable(): boolean {
     return this.auth.isAdmin ||
       (!!this.auth.user && !!this.rider && this.auth.user.uid === this.rider.owner);
