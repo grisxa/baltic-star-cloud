@@ -315,8 +315,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   }
 
   locate(): void {
+    // milliseconds, 30 sec
+    const location_timeout = 30000;
+
+    this.snackBar.open('Определяем координаты', 'Закрыть',
+      {duration: location_timeout});
     // request current coordinates
-    this.geoLocation.get()
+    this.geoLocation.get(location_timeout)
       // find checkpoints nearby
       .then((position: GeolocationPosition ) => this.storage.listCloseCheckpoints(position))
       // get the checkpoint info + delta distance to the current point

@@ -1,5 +1,8 @@
 import {Injectable} from '@angular/core';
 
+// milliseconds, 30 sec
+const DEFAULT_TIMEOUT = 30000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -8,8 +11,7 @@ export class LocationService {
     enableHighAccuracy: true,
     // milliseconds, 2 min
     maximumAge: 120000,
-    // milliseconds, 30 sec
-    timeout: 30000
+    timeout: DEFAULT_TIMEOUT
   };
 
   static onSuccess(resolve: (place: GeolocationPosition ) => void,
@@ -49,7 +51,8 @@ export class LocationService {
     return !!navigator.geolocation;
   }
 
-  get(): Promise<GeolocationPosition> {
+  get(timeout?: number): Promise<GeolocationPosition> {
+    LocationService.options.timeout = timeout || DEFAULT_TIMEOUT;
     return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(
         LocationService.onSuccess.bind(null, resolve, reject),
