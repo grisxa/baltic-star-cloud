@@ -57,7 +57,7 @@
     <mat-icon>camera_alt</mat-icon>
     Сканировать
   </button>
-  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locate()">
+  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locateOnMap()">
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>

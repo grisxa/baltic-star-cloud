@@ -53,6 +53,8 @@ import {MatSortModule} from '@angular/material/sort';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
 import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-list-item/checkpoint-list-item.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
+import {MapboxLocationDialogComponent} from './components/mapbox-location-dialog/mapbox-location-dialog.component';
+import {MatSelectModule} from '@angular/material/select';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -103,6 +105,7 @@ const appRoutes: Routes = [
     PlotarouteMapComponent,
     CheckpointSearchDialogComponent,
     MapboxDialogComponent,
+    MapboxLocationDialogComponent,
     OfflineSwitchComponent,
     LoginComponent,
     AfterLoginComponent,
@@ -138,6 +141,7 @@ const appRoutes: Routes = [
     ScannerDialogModule,
     MatDialogModule,
     MatRadioModule,
+    MatSelectModule,
     MatSnackBarModule,
     MatSlideToggleModule,
     MatButtonToggleModule,

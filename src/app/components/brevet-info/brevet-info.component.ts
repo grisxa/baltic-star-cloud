@@ -20,11 +20,11 @@ import {LocationService} from '../../services/location.service';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {Barcode} from '../../models/barcode';
 import {CheckpointNotFound} from '../../models/checkpoint-not-found';
-import {CheckpointSearchDialogComponent} from '../checkpoint-search-dialog/checkpoint-search-dialog.component';
 import {SettingService} from '../../services/setting.service';
 import {isNotNullOrUndefined} from '../../utils';
 import {BarcodeQueueService} from '../../services/barcode-queue.service';
 import {Offline} from '../../models/offline';
+import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-location-dialog.component';
 import Timestamp = firebase.firestore.Timestamp;
 
 @Component({
@@ -293,7 +293,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     dialogRef.componentInstance.onSuccess
       .pipe(takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => this.storage
-        .filterCheckpoints(this.brevet?.uid || NONE_BREVET, [barcode.code]).toPromise()
+        .filterCheckpoints(this.brevet?.uid || NONE_BREVET,
+          [{uid: barcode.code} as Checkpoint]).toPromise()
         .then(checkpoints => checkpoints.length ?
           this.queue.enqueueBarcode('riders', this.auth.user?.uid, barcode) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
@@ -314,42 +315,24 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         }));
   }
 
-  locate(): void {
-    // milliseconds, 30 sec
-    const location_timeout = 30000;
-
-    this.snackBar.open('Определяем координаты', 'Закрыть',
-      {duration: location_timeout});
-    // request current coordinates
-    this.geoLocation.get(location_timeout)
-      // find checkpoints nearby
-      .then((position: GeolocationPosition ) => this.storage.listCloseCheckpoints(position))
-      // get the checkpoint info + delta distance to the current point
-      .then(snapshot => snapshot.docs
-        .map((doc): Checkpoint => Object.assign({} as Checkpoint, doc.data(), {delta: doc.distance})))
-      // skip checkpoints not in the brevet
-      .then(checkpoints => this.storage
-        .filterCheckpoints(this.brevet?.uid || NONE_BREVET,
-          checkpoints.map(cp => cp.uid)).toPromise())
-      // filter out checkpoints by brevet's date
-      .then(checkpoints => checkpoints
-        .filter((checkpoint: Checkpoint) => Checkpoint.prototype.isOnline.call(checkpoint, Timestamp.now())))
-      // sort them by the distance, closest first
-      .then(checkpoints => checkpoints.sort((a: Checkpoint, b: Checkpoint) => (a.delta || 0) - (b.delta || 0)))
-      .then(checkpoints => checkpoints.length > 1 ? this.dialog
-          // offer selecting among several controls
-          .open(CheckpointSearchDialogComponent, {data: checkpoints})
-          .afterClosed().toPromise() :
-        checkpoints.length === 1 ?
-          // or just return the first
-          Promise.resolve(checkpoints[0].uid) :
-          Promise.reject(new CheckpointNotFound('nothing found'))
-      )
+  locateOnMap(): void {
+    const dialogRef = this.dialog.open(MapboxLocationDialogComponent, {
+      width: '75vw',
+      data: {
+        center: {
+          lng: this.checkpoints[0].coordinates?.longitude,
+          lat: this.checkpoints[0].coordinates?.latitude
+        },
+        checkpoints: this.checkpoints,
+        brevetUid: this.brevet?.uid,
+      }
+    });
+    dialogRef.afterClosed().toPromise()
       .then((uid: string) => uid ?
         this.queue.enqueueBarcode('riders',
           this.auth.user?.uid,
           new Barcode(undefined, uid, undefined)) :
-        Promise.reject('no uid'))
+        Promise.reject('Не указан КП'))
       .then(uid => {
         console.log('= record created', uid);
         this.snackBar.open('Координаты записаны',

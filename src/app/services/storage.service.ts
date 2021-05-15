@@ -83,17 +83,28 @@ export class StorageService {
       .then(doc => doc.exists);
   }
 
-  filterCheckpoints(brevetUid: string, checkpoints: string[]) {
+  /**
+   * Take a list of checkpoints and leave those are in the given brevet
+   *
+   * @param brevetUid The brevet UID
+   * @param checkpoints The checkpoint list
+   */
+  filterCheckpoints(brevetUid: string, checkpoints: Checkpoint[]) {
     return this.firestore
       .collection<Brevet>('brevets').doc(brevetUid)
       .collection<Checkpoint>('checkpoints').get()
       .pipe(
         map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
-        map(docs => docs.map(doc => doc.data())
-          .filter(checkpoint => checkpoints.includes(checkpoint.uid)))
+        map(docs => checkpoints.filter(cp => docs.map(doc => doc.data().uid).includes(cp.uid)))
       );
   }
 
+  /**
+   * Locate checkpoints around using {@link geofirestore.GeoCollectionReference} index.
+   * Search radius: 1.2 km.
+   *
+   * @param position
+   */
   listCloseCheckpoints(position: GeolocationPosition) {
     return this.geoCheckpoints
       .near({

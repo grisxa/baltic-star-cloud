@@ -26,5 +26,21 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "mapbox",
+      "urls": [
+        "https://api.mapbox.com/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "7d"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "!/assets/**",
+    "/**"
   ]
 }
