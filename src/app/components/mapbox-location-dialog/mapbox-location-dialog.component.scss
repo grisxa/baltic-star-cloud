@@ -10,6 +10,16 @@
     span.mapboxgl-ctrl-icon {
       margin: 0;
     }
+
+    .popup {
+      .mapboxgl-popup-content {
+        background-color: #34c2ff61;
+      }
+
+      .mapboxgl-popup-tip {
+        border-top-color: #34c2ff61;
+      }
+    }
   }
 
   .controls {

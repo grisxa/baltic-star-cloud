@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import * as mapboxGL from 'mapbox-gl';
+import {Popup} from 'mapbox-gl';
 import {environment} from '../../../environments/environment';
 import {Checkpoint} from '../../models/checkpoint';
 import {StorageService} from '../../services/storage.service';
 import {NONE_BREVET} from '../../models/brevet';
 import firebase from 'firebase/app';
-import {FeatureCollection} from 'geojson';
 import {FormControl, Validators} from '@angular/forms';
 import LngLat = mapboxGL.LngLat;
 import Timestamp = firebase.firestore.Timestamp;
@@ -47,39 +47,21 @@ export class MapboxLocationDialogComponent implements OnInit {
     this.map.addControl(new mapboxGL.NavigationControl());
     console.log('checkpoints', this.data.checkpoints);
 
-    const points: FeatureCollection = {
-      'type': 'FeatureCollection',
-      'features': []
-    };
-    this.map.loadImage(
-      '/assets/icons/flag-bw-24.png', (error, image) => {
-        if (error) {
-          throw error;
-        }
-        if (!image) {
-          throw new Error('No flag image loaded');
-        }
+    this.data.checkpoints
+      // skip broken coordinates
+      .filter(cp => cp.coordinates?.longitude && cp.coordinates?.latitude)
+      .forEach(cp => new Popup({
+        // offset: 30,
+        closeButton: false,
+        closeOnClick: false,
+        focusAfterOpen: false,
+        anchor: 'bottom',
+        className: 'popup',
+      }).setHTML(cp.displayName || 'КП')
+        // @ts-ignore
+        .setLngLat(new LngLat(cp.coordinates.longitude, cp.coordinates.latitude))
+        .addTo(this.map));
 
-        // Add the image to the map style.
-        this.map.addImage('flag', image);
-
-        this.data.checkpoints
-          // skip broken coordinates
-          .filter(cp => cp.coordinates?.longitude && cp.coordinates?.latitude)
-          .forEach(cp => points.features.push({
-              'type': 'Feature',
-              'properties': {
-                'description': cp.displayName,
-                'icon': 'flag',
-              },
-              'geometry': {
-                'type': 'Point',
-                // @ts-ignore
-                'coordinates': [cp.coordinates.longitude, cp.coordinates.latitude]
-              }
-            })
-          );
-      });
 
     const geoLocate = new mapboxGL.GeolocateControl({
       positionOptions: {
@@ -98,23 +80,6 @@ export class MapboxLocationDialogComponent implements OnInit {
 
     this.map.on('load', () => {
       geoLocate.trigger();
-
-      this.map.addSource('checkpoints', {
-        'type': 'geojson',
-        'data': points,
-      });
-      this.map.addLayer({
-        'id': 'checkpoints',
-        'type': 'symbol',
-        'source': 'checkpoints',
-        'layout': {
-          'text-field': ['get', 'description'],
-          'text-variable-anchor': ['top'],
-          'text-radial-offset': 1,
-          'text-justify': 'center',
-          'icon-image': ['get', 'icon']
-        }
-      });
     });
   }
 
