@@ -108,6 +108,10 @@ export class MapboxLocationDialogComponent implements OnInit {
           this.checkpointControl.enable();
           this.checkpointControl.setValue(checkpoints[0].uid);
         }
+        else {
+          this.checkpointControl.disable();
+          this.checkpointControl.setValue(null);
+        }
       });
   }
 }
