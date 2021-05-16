@@ -1,13 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-// import * as crypto from 'crypto';
-
-import Timestamp = admin.firestore.Timestamp;
-import DocumentReference = admin.firestore.DocumentReference;
-import DocumentData = admin.firestore.DocumentData;
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import checkpointPrint from './checkpoint-print';
+// import * as crypto from 'crypto';
+import GeoPoint = admin.firestore.GeoPoint;
+import Timestamp = admin.firestore.Timestamp;
+import DocumentReference = admin.firestore.DocumentReference;
+import DocumentData = admin.firestore.DocumentData;
 
 // import secret from './secret';
 
@@ -98,6 +98,7 @@ interface Control {
   copy?: boolean;
   selfcheck?: boolean;
   sleep?: boolean;
+  coordinates: GeoPoint;
 }
 
 interface Rider {
@@ -272,6 +273,7 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
     return db.doc(`checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      coordinates: data.coordinates,
       selfcheck: data.selfcheck || false,
       sleep: data.sleep || false,
       copy: true
@@ -295,6 +297,7 @@ export const updateCheckpoint = functions.firestore.document('checkpoints/{check
     return db.doc(`brevets/${data.brevet.uid}/checkpoints/${checkpointUid}`).set({
       displayName: data.displayName,
       distance: data.distance,
+      coordinates: data.coordinates,
       selfcheck: data.selfcheck || false,
       sleep: data.sleep || false,
       copy: true
