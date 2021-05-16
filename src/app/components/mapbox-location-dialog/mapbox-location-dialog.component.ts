@@ -29,6 +29,8 @@ export class MapboxLocationDialogComponent implements OnInit {
   checkpointsAround?: Checkpoint[];
   checkpointControl: FormControl;
 
+  private locationStarted = false;
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: MapboxLocationDialogSettings,
               private storage: StorageService) {
     this.checkpointControl = new FormControl({value: null, disabled: true},
@@ -71,16 +73,17 @@ export class MapboxLocationDialogComponent implements OnInit {
     });
     this.map.addControl(geoLocate);
     geoLocate.on('geolocate', this.onLocationChanged.bind(this));
+    geoLocate.on('trackuserlocationstart', () => {
+      this.locationStarted = true;
+    });
 
-    // start location in 0.3 sec even if the map has failed to load
+    // start location even if the map has failed to load
     this.map.on('error', () => {
-      // @ts-ignore
-      setTimeout(() => geoLocate._geolocateButton.click(), 300);
+      // but wait for 0.5 sec
+      setTimeout(() => this.locationStarted || geoLocate.trigger(), 500);
     });
 
-    this.map.on('load', () => {
-      geoLocate.trigger();
-    });
+    this.map.on('load', () => this.locationStarted || geoLocate.trigger());
   }
 
   onLocationChanged(event: Object | undefined) {
