@@ -17,6 +17,15 @@
     justify-content: space-between;
     align-items: flex-start;
 
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
     .mat-form-field {
       flex-grow: 1;
       width: 10ch;
@@ -34,6 +43,8 @@
     .mat-dialog-actions {
       flex-grow: 1;
       justify-content: center;
+      padding: 4px;
+      flex-wrap: nowrap;
 
       button::ng-deep {
         margin: 4px;
