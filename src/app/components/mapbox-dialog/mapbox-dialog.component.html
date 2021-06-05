@@ -3,14 +3,14 @@
   <form [formGroup]="formGroup">
   <mat-form-field>
     <mat-label>Широта</mat-label>
-    <input matInput
+    <input matInput [readonly]="!auth.isAdmin"
            type="number" step="0.001"
            formControlName="latitude"
            placeholder="0.0">
   </mat-form-field>
   <mat-form-field>
     <mat-label>Долгота</mat-label>
-    <input matInput
+    <input matInput [readonly]="!auth.isAdmin"
            type="number" step="0.001"
            formControlName="longitude"
            placeholder="0.0">
