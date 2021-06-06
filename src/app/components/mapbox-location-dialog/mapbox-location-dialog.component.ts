@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import * as mapboxGL from 'mapbox-gl';
 import {Popup} from 'mapbox-gl';
@@ -24,8 +24,9 @@ type MapboxLocationDialogSettings = {
   templateUrl: './mapbox-location-dialog.component.html',
   styleUrls: ['./mapbox-location-dialog.component.scss']
 })
-export class MapboxLocationDialogComponent implements OnInit {
+export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   map!: mapboxGL.Map;
+  geoLocate!: mapboxGL.GeolocateControl;
   checkpointsAround?: Checkpoint[];
   checkpointControl: FormControl;
 
@@ -65,30 +66,34 @@ export class MapboxLocationDialogComponent implements OnInit {
         .addTo(this.map));
 
 
-    const geoLocate = new mapboxGL.GeolocateControl({
+    this.geoLocate = new mapboxGL.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
       },
       trackUserLocation: true
     });
-    this.map.addControl(geoLocate);
-    geoLocate.on('geolocate', this.onLocationChanged.bind(this));
-    geoLocate.on('trackuserlocationstart', () => {
+    this.map.addControl(this.geoLocate);
+    this.geoLocate.on('geolocate', this.onLocationChanged.bind(this));
+    this.geoLocate.on('trackuserlocationstart', () => {
       this.locationStarted = true;
     });
 
     // start location even if the map has failed to load
     this.map.on('error', () => {
       // but wait for 0.5 sec
-      setTimeout(() => this.locationStarted || geoLocate.trigger(), 500);
+      setTimeout(() => this.locationStarted || this.geoLocate.trigger(), 500);
     });
 
-    this.map.on('load', () => this.locationStarted || geoLocate.trigger());
+    this.map.on('load', () => this.locationStarted || this.geoLocate.trigger());
+  }
+
+  ngOnDestroy() {
+    // stop monitoring
+    this.map.removeControl(this.geoLocate);
   }
 
   onLocationChanged(event: Object | undefined) {
     const {timestamp, coords} = event as GeolocationPosition;
-//    console.log('A geolocate event has occurred.', new Date(timestamp), coords);
     this.storage.listCloseCheckpoints(event as GeolocationPosition)
       .then(snapshot => snapshot.docs
         .map((doc): Checkpoint => Object.assign({} as Checkpoint,
