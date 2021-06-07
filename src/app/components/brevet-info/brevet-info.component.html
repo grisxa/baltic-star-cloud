@@ -48,7 +48,7 @@
 <div *ngIf="brevet?.mapUrl" class="plotarouteMap">
   <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
   <button mat-raised-button *ngIf="showMap"  (click)="showMap=!showMap"><mat-icon>expand_less</mat-icon>Карта</button>
-  <app-plotaroute-map *ngIf="mapId && showMap" [mapId]="mapId"></app-plotaroute-map>
+  <app-mapbox-route *ngIf="showMap" [checkpoints]="checkpoints"></app-mapbox-route>
 </div>
 
 <h3 *ngIf="allowCheckIn">Самоотметка</h3>

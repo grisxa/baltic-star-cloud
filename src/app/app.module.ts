@@ -39,7 +39,6 @@ import {QRCodeModule} from 'angularx-qrcode';
 import {AddBarcodeComponent} from './components/add-barcode/add-barcode.component';
 import {NgxBarcode6Module} from 'ngx-barcode6';
 import {ScannerDialogModule} from './scanner-dialog/scanner-dialog.module';
-import {PlotarouteMapComponent} from './components/plotaroute-map/plotaroute-map.component';
 import {HttpClientModule} from '@angular/common/http';
 import {CheckpointSearchDialogComponent} from './components/checkpoint-search-dialog/checkpoint-search-dialog.component';
 import {MapboxDialogComponent} from './components/mapbox-dialog/mapbox-dialog.component';
@@ -55,6 +54,7 @@ import {CheckpointListItemComponent} from './components/brevet-info/checkpoint-l
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {MapboxLocationDialogComponent} from './components/mapbox-location-dialog/mapbox-location-dialog.component';
 import {MatSelectModule} from '@angular/material/select';
+import {MapboxRouteComponent} from './components/mapbox-route/mapbox-route.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -102,7 +102,6 @@ const appRoutes: Routes = [
     DateTimePickerComponent,
     SafeUrlPipe,
     AddBarcodeComponent,
-    PlotarouteMapComponent,
     CheckpointSearchDialogComponent,
     MapboxDialogComponent,
     MapboxLocationDialogComponent,
@@ -110,7 +109,8 @@ const appRoutes: Routes = [
     LoginComponent,
     AfterLoginComponent,
     BrevetListItemComponent,
-    CheckpointListItemComponent
+    CheckpointListItemComponent,
+    MapboxRouteComponent
   ],
   imports: [
     BrowserModule,
