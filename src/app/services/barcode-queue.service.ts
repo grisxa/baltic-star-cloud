@@ -13,16 +13,17 @@ type SavedBarcode = {
   sourceUid: string;
   barcode: Barcode;
   authUid: string;
-}
+};
 
 // 12 days for timestamp comparison
 const DOZEN_DAYS_IN_SECONDS = 60 * 60; // * 24 * 12;
+const PREFIX = 'random_';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BarcodeQueueService {
-  static PREFIX = 'random_';
+
 
   constructor(
     private auth: AuthService,
@@ -35,7 +36,7 @@ export class BarcodeQueueService {
                  sourceUid: string = NONE_CHECKPOINT,
                  barcode: Barcode): Promise<string> {
 
-    const tempUid = BarcodeQueueService.PREFIX + Math.random()
+    const tempUid = PREFIX + Math.random()
       .toString(36).substr(2, 9);
 
     this.settings.injectToken('barcodes', tempUid, {
@@ -61,11 +62,12 @@ export class BarcodeQueueService {
     console.log('= current barcodes', savedCodes);
 
     // check all the records
+    /* eslint guard-for-in: "warn" */
     for (const oldUid in savedCodes) {
       const savedCode = savedCodes[oldUid];
 
       // confirmed transmission doesn't have a temporary UID
-      if (!oldUid.startsWith(BarcodeQueueService.PREFIX)) {
+      if (!oldUid.startsWith(PREFIX)) {
         // cleanup of old records out of interest
         if (savedCode.barcode.time.seconds < Date.now() / 1000 - DOZEN_DAYS_IN_SECONDS) {
           this.settings.removeToken('barcodes', oldUid);

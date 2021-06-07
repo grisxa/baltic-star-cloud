@@ -45,10 +45,9 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       container: 'mapbox',
       style: 'mapbox://styles/mapbox/streets-v11',
       zoom: 14,
-      center: validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,
+      center: this.validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,
     });
     this.map.addControl(new mapboxGL.NavigationControl());
-    console.log('checkpoints', this.data.checkpoints);
 
     this.data.checkpoints
       // skip broken coordinates
@@ -92,7 +91,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
     this.map.removeControl(this.geoLocate);
   }
 
-  onLocationChanged(event: Object | undefined) {
+  onLocationChanged(event: unknown) {
     const {timestamp, coords} = event as GeolocationPosition;
     this.storage.listCloseCheckpoints(event as GeolocationPosition)
       .then(snapshot => snapshot.docs
@@ -119,8 +118,8 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
         }
       });
   }
-}
 
-function validPoint(coordinates: LngLat) {
-  return coordinates && coordinates.lat && coordinates.lng;
+  validPoint(coordinates: LngLat) {
+    return coordinates && coordinates.lat && coordinates.lng;
+  }
 }

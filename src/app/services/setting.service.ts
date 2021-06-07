@@ -4,15 +4,15 @@ import {Injectable} from '@angular/core';
   providedIn: 'root'
 })
 export class SettingService {
-  static PREFIX = 'brevet.online/';
+  static prefix = 'brevet.online/';
 
   getValue(key: string) {
-    const value = localStorage.getItem(SettingService.PREFIX + key);
+    const value = localStorage.getItem(SettingService.prefix + key);
     return value === 'undefined' ? undefined : JSON.parse(value || 'null');
   }
 
   setValue(key: string, value: unknown): void {
-    localStorage.setItem(SettingService.PREFIX + key, JSON.stringify(value));
+    localStorage.setItem(SettingService.prefix + key, JSON.stringify(value));
   }
 
   injectToken(key: string, token: string, value: unknown): boolean {
@@ -50,7 +50,7 @@ export class SettingService {
   }
 
   removeKey(key: string) {
-    return localStorage.removeItem(SettingService.PREFIX + key);
+    return localStorage.removeItem(SettingService.prefix + key);
   }
 
   removeToken(key: string, token: string) {
