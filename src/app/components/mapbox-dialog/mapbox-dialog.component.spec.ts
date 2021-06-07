@@ -6,10 +6,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
+import {StorageService} from '../../services/storage.service';
 
 class MockAuthService {
 }
 
+class MockStorageService {
+}
 
 describe('MapboxDialogComponent', () => {
   let component: MapboxDialogComponent;
@@ -27,6 +30,7 @@ describe('MapboxDialogComponent', () => {
       providers: [
         {provide: MAT_DIALOG_DATA, useValue: {}},
         {provide: AuthService, useClass: MockAuthService},
+        {provide: StorageService, useClass: MockStorageService},
       ],
       declarations: [MapboxDialogComponent]
     }).compileComponents();

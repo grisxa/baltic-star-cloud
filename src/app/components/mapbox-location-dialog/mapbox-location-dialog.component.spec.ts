@@ -3,15 +3,17 @@ import {MapboxLocationDialogComponent} from './mapbox-location-dialog.component'
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import {AuthService} from '../../services/auth.service';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
+import {StorageService} from '../../services/storage.service';
+import {MatSelectModule} from '@angular/material/select';
 
 class MockAuthService {
 }
+class MockStorageService {
+}
 
-
-describe('MapboxDialogComponent', () => {
+describe('MapboxLocationDialogComponent', () => {
   let component: MapboxLocationDialogComponent;
   let fixture: ComponentFixture<MapboxLocationDialogComponent>;
 
@@ -20,13 +22,14 @@ describe('MapboxDialogComponent', () => {
       imports: [
         MatDialogModule,
         MatFormFieldModule,
-        MatInputModule,
+        MatSelectModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
       ],
       providers: [
         {provide: MAT_DIALOG_DATA, useValue: {}},
         {provide: AuthService, useClass: MockAuthService},
+        {provide: StorageService, useClass: MockStorageService},
       ],
       declarations: [MapboxLocationDialogComponent]
     }).compileComponents();

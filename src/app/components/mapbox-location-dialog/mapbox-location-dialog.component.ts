@@ -15,7 +15,7 @@ const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 
 type MapboxLocationDialogSettings = {
   center: LngLat;
-  checkpoints: Checkpoint[];
+  checkpoints?: Checkpoint[];
   brevetUid: string;
 };
 
@@ -49,9 +49,9 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
     });
     this.map.addControl(new mapboxGL.NavigationControl());
 
-    this.data.checkpoints
+    this.data
       // skip broken coordinates
-      .filter(cp => cp.coordinates?.longitude && cp.coordinates?.latitude)
+      .checkpoints?.filter(cp => cp.coordinates?.longitude && cp.coordinates?.latitude)
       .forEach(cp => new Popup({
         // offset: 30,
         closeButton: false,
