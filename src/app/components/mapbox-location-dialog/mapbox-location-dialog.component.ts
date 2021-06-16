@@ -29,6 +29,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   geoLocate!: mapboxGL.GeolocateControl;
   checkpointsAround?: Checkpoint[];
   checkpointControl: FormControl;
+  errorTimeout?: number;
 
   private locationStarted = false;
 
@@ -77,13 +78,14 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       this.locationStarted = true;
     });
 
-    // start location even if the map has failed to load
-    this.map.on('error', () => {
-      // but wait for 0.5 sec
-      setTimeout(() => this.locationStarted || this.geoLocate.trigger(), 500);
-    });
+    // wait for 0.5 sec and start location
+    this.errorTimeout = setTimeout(() => this.locationStarted ||
+      this.geoLocate.trigger(), 500);
 
-    this.map.on('load', () => this.locationStarted || this.geoLocate.trigger());
+    this.map.on('idle', () => {
+      this.errorTimeout && clearTimeout(this.errorTimeout);
+      this.locationStarted || this.geoLocate.trigger();
+    });
   }
 
   ngOnDestroy() {
