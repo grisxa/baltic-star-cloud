@@ -8,6 +8,7 @@ import {StorageService} from '../../services/storage.service';
 import {NONE_BREVET} from '../../models/brevet';
 import firebase from 'firebase/app';
 import {FormControl, Validators} from '@angular/forms';
+import {geoDistance} from '../../services/plotaroute-info.service';
 import LngLat = mapboxGL.LngLat;
 import Timestamp = firebase.firestore.Timestamp;
 
@@ -95,6 +96,20 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
 
   onLocationChanged(event: unknown) {
     const {timestamp, coords} = event as GeolocationPosition;
+    const quickResult: Checkpoint[] | undefined = this.quickSearch(coords, this.data.checkpoints);
+    if (quickResult) {
+      const checkpoints = quickResult.sort(
+        (a: Checkpoint, b: Checkpoint) => (a.delta || 0) - (b.delta || 0));
+      this.checkpointsAround = checkpoints;
+      if (checkpoints.length) {
+        this.checkpointControl.enable();
+        this.checkpointControl.setValue(checkpoints[0].uid);
+      } else {
+        this.checkpointControl.disable();
+        this.checkpointControl.setValue(null);
+      }
+    }
+
     this.storage.listCloseCheckpoints(event as GeolocationPosition)
       .then(snapshot => snapshot.docs
         .map((doc): Checkpoint => Object.assign({} as Checkpoint,
@@ -119,6 +134,17 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
           this.checkpointControl.setValue(null);
         }
       });
+  }
+
+  // calculate a distance to the control points and compare
+  quickSearch(center: GeolocationCoordinates, checkpoints?: Checkpoint[]) {
+    return checkpoints?.map((point: Checkpoint) => ({
+      ...point,
+      delta: geoDistance(point.coordinates?.latitude || 0,
+        point.coordinates?.longitude || 0,
+        center.latitude, center.longitude)
+    } as Checkpoint))
+      .filter((point: Checkpoint) => 1200 > (point.delta || Infinity));
   }
 
   validPoint(coordinates: LngLat) {

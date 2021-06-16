@@ -32,13 +32,12 @@ export class PlotarouteInfoService {
           }
 
           route.forEach((point: PlotaroutePoint) => {
-            const stepLength = this.distance(previousPoint.lat, previousPoint.lng,
+            const stepLength = geoDistance(previousPoint.lat, previousPoint.lng,
               point.lat, point.lng);
             previousPoint = new RoutePoint({
               ...point,
               distance: previousPoint.distance + stepLength
             });
-            console.log('= new point', previousPoint);
             if (previousPoint.isControl()) {
               previousPoint.fixName();
               checkPoints.push(previousPoint);
@@ -63,28 +62,25 @@ export class PlotarouteInfoService {
         }),
       );
   }
+}
 
-  /**
-   * Generic geo distance calculation
-   *
-   * @param lat1 - Latitude of the first point
-   * @param lon1 - Longitude of the first point
-   * @param lat2 - Latitude of the second point
-   * @param lon2 - Longitude of the second point
-   */
+/**
+ * Generic geo distance calculation
+ *
+ * @param lat1 - Latitude of the first point
+ * @param lon1 - Longitude of the first point
+ * @param lat2 - Latitude of the second point
+ * @param lon2 - Longitude of the second point
+ */
 
-  distance(lat1: number, lon1: number, lat2: number, lon2: number) {
-    if (lat1 === lat2 && lon1 === lon2) {
-      return 0;
-    }
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-    const R = 6371e3;
-    return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * R;
-
+export function geoDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0;
   }
-
-
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  const R = 6371e3;
+  return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * R;
 }
