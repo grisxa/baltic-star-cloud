@@ -6,6 +6,8 @@ import firebase from 'firebase/app';
 import GeoPoint = firebase.firestore.GeoPoint;
 import Timestamp = firebase.firestore.Timestamp;
 
+// an hour in seconds
+const HOUR = 3600;
 export const NONE_CHECKPOINT = 'none';
 
 export class Checkpoint {
@@ -42,8 +44,7 @@ export class Checkpoint {
    */
 
   isOnline(time: Timestamp): boolean {
-    console.log('= compare dates', this.brevet?.startDate, time, this.brevet?.endDate);
-    return (!this.brevet?.startDate || this.brevet.startDate <= time)
-      && (!this.brevet?.endDate || this.brevet.endDate >= time);
+    return (!this.brevet?.startDate || this.brevet.startDate.seconds - HOUR <= time.seconds)
+      && (!this.brevet?.endDate || this.brevet.endDate.seconds + HOUR >= time.seconds);
   }
 }
