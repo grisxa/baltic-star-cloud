@@ -9,6 +9,8 @@ import {NONE_BREVET} from '../../models/brevet';
 import firebase from 'firebase/app';
 import {FormControl, Validators} from '@angular/forms';
 import {geoDistance} from '../../services/plotaroute-info.service';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import LngLat = mapboxGL.LngLat;
 import Timestamp = firebase.firestore.Timestamp;
 
@@ -33,6 +35,8 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   errorTimeout?: number;
 
   private locationStarted = false;
+  private selectedCheckpointUid?: string;
+  private unsubscribe$ = new Subject();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: MapboxLocationDialogSettings,
               private storage: StorageService) {
@@ -50,6 +54,9 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       center: this.validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,
     });
     this.map.addControl(new mapboxGL.NavigationControl());
+    this.checkpointControl.valueChanges
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(value => this.selectedCheckpointUid = value);
 
     this.data
       // skip broken coordinates
@@ -92,6 +99,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // stop monitoring
     this.map.removeControl(this.geoLocate);
+    this.unsubscribe$.next();
   }
 
   onLocationChanged(event: unknown) {
@@ -103,7 +111,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       this.checkpointsAround = checkpoints;
       if (checkpoints.length) {
         this.checkpointControl.enable();
-        this.checkpointControl.setValue(checkpoints[0].uid);
+        this.checkpointControl.setValue(this.validateSelection(checkpoints, this.selectedCheckpointUid));
       } else {
         this.checkpointControl.disable();
         this.checkpointControl.setValue(null);
@@ -127,7 +135,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
         this.checkpointsAround = checkpoints;
         if (checkpoints.length) {
           this.checkpointControl.enable();
-          this.checkpointControl.setValue(checkpoints[0].uid);
+          this.checkpointControl.setValue(this.validateSelection(checkpoints, this.selectedCheckpointUid));
         }
         else {
           this.checkpointControl.disable();
@@ -149,5 +157,9 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
 
   validPoint(coordinates: LngLat) {
     return coordinates && coordinates.lat && coordinates.lng;
+  }
+
+  validateSelection(checkpoints: Checkpoint[], uid?: string): string {
+    return uid && checkpoints.find(cp => cp.uid === uid) ? uid : checkpoints[0].uid;
   }
 }
