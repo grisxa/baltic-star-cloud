@@ -336,7 +336,7 @@ export class StorageService {
                 riders: riders.map(rider => ({
                   name: rider.name,
                   // TODO: rely on lastName presence (?) in the document
-                  lastName: rider.lastName || rider.name.split(/\s/).pop(),
+                  lastName: rider.lastName || rider.name?.split(/\s/).pop(),
                   uid: rider.uid,
                   time: rider.time,
                 } as RiderCheckIn))

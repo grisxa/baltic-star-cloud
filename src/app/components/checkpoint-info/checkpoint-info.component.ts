@@ -89,7 +89,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
           this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
             ...checkIn,
             // TODO: rely on lastName presence (?) in the document
-            lastName: checkIn.lastName || checkIn.name.split(/\s/).pop(),
+            lastName: checkIn.lastName || checkIn.name?.split(/\s/).pop(),
             in: checkIn.time[0],
             out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
           } as RiderCheckIn));
