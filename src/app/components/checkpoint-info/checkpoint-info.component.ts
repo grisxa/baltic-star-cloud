@@ -103,7 +103,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
         if (checkpoint === undefined) {
           return;
         }
-        this.titleService.setTitle(`Бревет ${checkpoint.brevet?.name} - ${checkpoint.displayName}`);
+        this.titleService.setTitle(`${checkpoint.displayName} - Бревет ${checkpoint.brevet?.name}`);
         this.checkpoint = checkpoint;
         this.formGroup.controls.displayName?.setValue(checkpoint.displayName);
         this.formGroup.controls.distance?.setValue(checkpoint.distance);
