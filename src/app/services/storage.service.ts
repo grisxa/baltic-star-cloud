@@ -338,6 +338,7 @@ export class StorageService {
                   // TODO: rely on lastName presence (?) in the document
                   lastName: rider.lastName || rider.name?.trim().split(/\s/).pop(),
                   uid: rider.uid,
+                  code: rider.code,
                   time: rider.time,
                 } as RiderCheckIn))
               } as Checkpoint)

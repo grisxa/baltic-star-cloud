@@ -134,6 +134,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               // console.log('new rider', rider);
               const row = {
                 name: rider.name,
+                code: rider.code,
                 lastName: rider.lastName,
                 uid: rider.uid,
                 ['cp' + (checkpointIndex + 1)]: checkIn
