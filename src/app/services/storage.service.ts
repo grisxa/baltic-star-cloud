@@ -297,9 +297,19 @@ export class StorageService {
               .doc(checkpoint.uid)
               .collection<RiderCheckIn>('riders')
               .valueChanges().pipe(
-                map((riders: RiderCheckIn[]) => riders
-                  .map(rider => Object.assign(rider, {code: dictionary[rider.uid]}))
-                )
+                map((riders: RiderCheckIn[]) => riders.map(rider => {
+                  const names = rider.name?.trim().split(/\s/);
+                  const lastName = rider.lastName || names.pop();
+                  const firstName = rider.firstName || names.shift();
+                  return {
+                    ...rider,
+                    // replace displayName
+                    name: `${lastName} ${firstName}`,
+                    // TODO: rely on lastName presence (?) in the document
+                    lastName, firstName,
+                    code: rider.code || dictionary[rider.uid],
+                  } as RiderCheckIn;
+                }))
               )
             ))));
   }
