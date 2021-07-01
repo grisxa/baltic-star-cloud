@@ -6,6 +6,7 @@ export interface RiderCheckIn {
   code?: string;
   name: string;
   lastName?: string;
+  firstName?: string;
 
   // Brevet info page, progress table
   time: Timestamp[];

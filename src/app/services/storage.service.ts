@@ -333,17 +333,23 @@ export class StorageService {
             // tap(data => console.log('riders change', data)),
             map((riders: RiderCheckIn[]) => ({
                 uid: checkpoint.uid,
-                riders: riders.map(rider => ({
-                  name: rider.name,
-                  // TODO: rely on lastName presence (?) in the document
-                  lastName: rider.lastName || rider.name?.trim().split(/\s/).pop(),
-                  uid: rider.uid,
-                  code: rider.code,
-                  time: rider.time,
-                } as RiderCheckIn))
+                riders: riders.map(rider => {
+                  const names = rider.name?.trim().split(/\s/);
+                  const lastName = rider.lastName || names.pop();
+                  const firstName = rider.firstName || names.shift();
+                  return {
+                    // replace displayName
+                    name: `${lastName} ${firstName}`,
+                    // TODO: rely on lastName presence (?) in the document
+                    lastName, firstName,
+                    uid: rider.uid,
+                    code: rider.code,
+                    time: rider.time,
+                  } as RiderCheckIn;
+                })
               } as Checkpoint)
             )
-          ),
+          )
         ));
   }
 }
