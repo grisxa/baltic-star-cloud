@@ -27,13 +27,23 @@ import {Offline} from '../../models/offline';
 import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-location-dialog.component';
 import Timestamp = firebase.firestore.Timestamp;
 
+type ProgressColumn = {
+  id: string;
+  name: string;
+  type: string;
+  distance: string;
+}
+
+const firstColumn: ProgressColumn = { id: 'name', name: 'Имя', type: '', distance: ''};
+
 @Component({
   selector: 'app-brevet-info',
   templateUrl: './brevet-info.component.html',
   styleUrls: ['./brevet-info.component.scss']
 })
 export class BrevetInfoComponent implements OnInit, OnDestroy {
-  @ViewChild(MatTable) table?: MatTable<RiderCheckIn>;
+  @ViewChild(MatTable) table!: MatTable<RiderCheckIn>;
+  @ViewChild(MatSort) sort!: MatSort;
 
   brevet?: Brevet;
   mapId?: number;
@@ -46,9 +56,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
   // FIXME: consider pre-defined
   // dynamic column names like cp, cp3 (no pre-defined count)
   progress = new MatTableDataSource<RiderCheckIn>();
-  columnsToDisplay = ['name'];
-  columnNames: {[key: string]: string} = {name: 'Имя'};
-  columnTypes: {[key: string]: string} = {name: ''};
+  columnsToDisplay: ProgressColumn[] = [firstColumn];
+  firstHeader = [firstColumn.id];
+  secondHeader = ['dist-' + firstColumn.id];
 
   private unsubscribe$ = new Subject();
   private brevet$: Observable<Brevet> = of({} as Brevet);
@@ -78,10 +88,14 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
     this.queue.repeatSending();
   }
 
+  ngAfterViewInit() {
+    this.progress.sort = this.sort;
+    setTimeout( () => this.sort
+      .sort({id: 'lastName', start: 'asc', disableClear: true}), 0);
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Бревет');
-    this.progress.sort = new MatSort();
-    this.progress.sort.sort({id: 'lastName', start: 'asc', disableClear: true});
 
     this.storage.listCheckpoints()
       .pipe(takeUntil(this.unsubscribe$))
@@ -99,15 +113,18 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         .subscribe((checkpoints: Checkpoint[]) => {
           console.log('= checkpoints', checkpoints);
           this.checkpoints = checkpoints; // .map(doc => doc.data()) as Checkpoint[];
-          this.columnsToDisplay = ['name'];
-          this.columnNames = {name: 'Имя'};
+          this.columnsToDisplay = [firstColumn];
           this.checkpoints.forEach((cp, i) => {
             const id = 'cp' + (i + 1);
-            this.columnsToDisplay.push(id);
-            this.columnNames[id] = cp.displayName || NONE_CHECKPOINT;
-            this.columnTypes[id] = cp.sleep ? 'checkpoint-type-sleep' :
-              cp.selfcheck ? 'checkpoint-type-selfcheck' : '';
+            this.columnsToDisplay.push({
+              id,
+              name: cp.displayName || NONE_CHECKPOINT,
+              type: cp.sleep ? 'checkpoint-type-sleep' : cp.selfcheck ? 'checkpoint-type-selfcheck' : '',
+              distance: cp.distance?.toString() || ''
+            });
           });
+          this.firstHeader = this.columnsToDisplay.map(c => c.id);
+          this.secondHeader = this.columnsToDisplay.map(c => 'dist-' + c.id);
           this.checkpoints$.next(this.checkpoints);
         });
       this.storage.watchBrevetProgress(brevetUid)

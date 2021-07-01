@@ -54,17 +54,23 @@
 
   .table-container {
     max-width: calc(100vw - 18px);
-    max-height: calc(100vh - 18px);
+    max-height: calc(100vh - 44px);
     overflow: auto;
   }
 
   .mat-header-cell {
-    padding: 0 5px;
+    padding-left: 5px;
+    padding-right: 2px;
   }
 
+  .distance-cell,
   .mat-cell {
     text-align: center;
     padding: 0 5px;
+  }
+
+  .distance-row {
+    height: 1.2em;
   }
 
   .mat-column-name {
