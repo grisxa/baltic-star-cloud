@@ -29,6 +29,7 @@ import GeoPoint = firebase.firestore.GeoPoint;
 })
 export class CheckpointInfoComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator, {static: true}) paginator?: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   checkpoint?: Checkpoint;
   url?: string;
@@ -64,10 +65,14 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
     this.queue.repeatSending();
   }
 
+  ngAfterViewInit() {
+    this.riders.sort = this.sort;
+    setTimeout( () => this.sort
+      .sort({id: 'in', start: 'asc', disableClear: true}), 0);
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Контрольный пункт');
-    this.riders.sort = new MatSort();
-    this.riders.sort.sort({id: 'in', start: 'asc', disableClear: true});
     this.barcodes.paginator = this.paginator || null;
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('brevetUid');

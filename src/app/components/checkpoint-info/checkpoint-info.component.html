@@ -57,21 +57,21 @@
     Сканировать
   </button>
 </div>
-<table mat-table [dataSource]="riders">
-  <ng-container matColumnDef="code">
-    <th mat-header-cell *matHeaderCellDef> Номер </th>
+<table mat-table [dataSource]="riders" matSort [matSortDisableClear]="true">
+  <ng-container matColumnDef="code" >
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Номер </th>
     <td mat-cell *matCellDef="let rider"> {{rider.code}} </td>
   </ng-container>
   <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Имя </th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName"> Имя </th>
     <td mat-cell *matCellDef="let rider"> {{rider.name || rider.uid}} </td>
   </ng-container>
   <ng-container matColumnDef="in">
-    <th mat-header-cell *matHeaderCellDef> Приехал </th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Приехал </th>
     <td mat-cell *matCellDef="let rider"> {{rider.in.toDate() | date:'dd/MM HH:mm'}} </td>
   </ng-container>
   <ng-container matColumnDef="out">
-    <th mat-header-cell *matHeaderCellDef> Уехал </th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Уехал </th>
     <td mat-cell *matCellDef="let rider"> {{rider.out?.toDate() | date:'dd/MM HH:mm'}} </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="riderColumnsToDisplay; sticky: true"></tr>
