@@ -6,7 +6,7 @@
       <mat-icon>delete_forever</mat-icon>
     </button>
     {{rider.code || '?'}} &nbsp;
-    <a title="{{rider.displayName}}" [routerLink]="['/rider', rider.uid]">{{rider.displayName}}</a>,
+    <a title="{{rider.displayName}}" [routerLink]="['/rider', rider.uid]">{{rider.lastName}} {{rider.firstName}}</a>,
     {{(rider.birthDate?.toDate() | date: 'yyyy г.') || '?'}}, {{rider.city || '?'}}, {{rider.country || '?'}}
   </mat-list-item>
 </mat-list>
