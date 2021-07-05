@@ -44,6 +44,8 @@
     .mat-dialog-actions {
       flex-grow: 1;
       justify-content: center;
+      align-items: flex-end;
+      padding: 0;
 
       button::ng-deep {
         margin: 4px;

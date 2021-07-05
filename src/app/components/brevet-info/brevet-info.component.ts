@@ -304,8 +304,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   startScanner() {
     const dialogRef = this.dialog.open(ScannerDialogComponent, {
-      maxWidth: '90vw',
-      maxHeight: '90vh'
+      minWidth: 'min(99vw, 600px)',
+      maxHeight: '99vh',
     });
     // track every code coming from the scanner
     dialogRef.componentInstance.onSuccess
@@ -335,7 +335,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
 
   locateOnMap(): void {
     const dialogRef = this.dialog.open(MapboxLocationDialogComponent, {
-      width: '75vw',
+      minWidth: 'min(99vw, 600px)',
+      maxHeight: '99vh',
       data: {
         center: {
           lng: this.checkpoints[0].coordinates?.longitude,
