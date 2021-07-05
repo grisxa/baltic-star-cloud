@@ -2,7 +2,8 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
-import checkpointPrint from './checkpoint-print';
+
+export * from './checkpoint-print';
 // import * as crypto from 'crypto';
 import GeoPoint = admin.firestore.GeoPoint;
 import Timestamp = admin.firestore.Timestamp;
@@ -22,8 +23,6 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 */
-
-export const printCheckpoint = checkpointPrint;
 
 /*
 function makeSignature(text: string) {

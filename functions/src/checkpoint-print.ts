@@ -3,7 +3,7 @@ import * as PDFDocument from 'pdfkit';
 import * as admin from 'firebase-admin';
 import * as QRCode from 'qrcode';
 
-export default functions.https.onRequest((request, response) => {
+export const printCheckpoint = functions.https.onRequest((request, response) => {
   const pdf = new PDFDocument({size: 'A4'});
 
   const search = request.path.match(/brevet\/([^/]+)\/checkpoint\/([^/]+)/) || [];
