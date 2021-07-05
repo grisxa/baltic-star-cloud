@@ -137,7 +137,7 @@ function updateRiderInfo(brevetUid: string, checkpointUid: string, riderUid: str
       // inject new time into the array and sort
       timestamps.push(time);
       timestamps.sort((a: Timestamp, b: Timestamp) => a.seconds - b.seconds);
-      console.log('new times', timestamps.map((t: Timestamp) => t.toDate().toString()).join(','));
+      console.log('= new times', JSON.stringify(timestamps.map((t: Timestamp) => t.toDate().toString()).join(',')));
       return {
         ...document,
         name,
@@ -161,7 +161,7 @@ export const createCheckpointBarcode = functions.firestore.document('checkpoints
     const barcodeObj: Barcode = addCreated(snapshot.data() as Barcode);
     const barcode: string = barcodeObj.code.trim();
 
-    console.log('= new checkpoint code', checkpointUid, barcode, barcodeObj);
+    console.log('= new checkpoint code', checkpointUid, barcode, JSON.stringify(barcodeObj));
 
     /*
     // check signature
@@ -206,7 +206,7 @@ export const createRiderBarcode = functions.firestore.document('riders/{riderUid
     const barcodeObj: Barcode = addCreated(snapshot.data() as Barcode);
     const barcode: string = barcodeObj.code.trim();
 
-    console.log('= new rider code', riderUid, barcode, barcodeObj);
+    console.log('= new rider code', riderUid, barcode, JSON.stringify(barcodeObj));
 
     /*
     // check signature
