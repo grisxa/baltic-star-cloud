@@ -115,7 +115,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           this.checkpoints = checkpoints; // .map(doc => doc.data()) as Checkpoint[];
           this.columnsToDisplay = [firstColumn];
           this.checkpoints.forEach((cp, i) => {
-            const id = 'cp' + (i + 1);
+            const id = `cp${i}`;
             this.columnsToDisplay.push({
               id,
               name: cp.displayName || NONE_CHECKPOINT,
@@ -146,7 +146,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
               // console.log('known rider', rider);
               // a property with variable name: cp1, cp3, etc.
               // @ts-ignore
-              known['cp' + (checkpointIndex + 1)] = checkIn;
+              known[`cp${checkpointIndex}`] = checkIn;
             } else {
               // console.log('new rider', rider);
               const row = {
@@ -154,7 +154,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
                 code: rider.code,
                 lastName: rider.lastName,
                 uid: rider.uid,
-                ['cp' + (checkpointIndex + 1)]: checkIn
+                [`cp${checkpointIndex}`]: checkIn
               } as unknown as RiderCheckIn;
               this.progress.data.push(row);
             }
