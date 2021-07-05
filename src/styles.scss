@@ -70,7 +70,6 @@ span[data-editable="true"] {
 
 @media screen and (max-width: 600px) {
   .mat-dialog-container {
-    background-color: yellow;
     padding-left: 10px !important;
     padding-right: 10px !important;
   }
@@ -78,7 +77,6 @@ span[data-editable="true"] {
 
 @media screen and (max-height: 480px) {
   .mat-dialog-container {
-    background-color: lightblue;
     padding-top: 10px !important;
     padding-bottom: 10px !important;
   }
