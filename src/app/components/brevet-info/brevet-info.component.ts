@@ -276,7 +276,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         .catch(error => {
           console.error('brevet update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-           'Закрыть', {duration: 5000});
+           'Закрыть');
         });
     } else {
       // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
@@ -321,14 +321,14 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
         .catch(error => {
           if (error instanceof CheckpointNotFound) {
             this.snackBar.open('Неверный контрольный пункт',
-              'Закрыть', {duration: 5000});
+              'Закрыть');
           } else if (error instanceof Offline) {
             this.snackBar.open('Нет интернета. Код записан в архив.',
-              'Закрыть', {duration: 5000});
+              'Закрыть');
           } else {
             console.error('= barcode reporting has failed', error);
             this.snackBar.open(`Не удалось отправить код. ${error.message}`,
-              'Закрыть', {duration: 5000});
+              'Закрыть');
           }
         }));
   }
@@ -355,15 +355,15 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
       .then(uid => {
         console.log('= record created', uid);
         this.snackBar.open('Координаты записаны',
-          'Закрыть', {duration: 5000});
+          'Закрыть');
       })
       .catch(error => {
         if (error instanceof CheckpointNotFound) {
           this.snackBar.open('КП поблизости не найдено.',
-            'Закрыть', {duration: 5000});
+            'Закрыть');
         } else if (error instanceof Offline) {
           this.snackBar.open('Нет интернета. Код записан в архив.',
-            'Закрыть', {duration: 5000});
+            'Закрыть');
         } else {
           // fallback
           console.error('= location error', error);
@@ -371,7 +371,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy {
           if (message.includes('of undefined')) {
             message = 'КП поблизости не найдено.';
           }
-          this.snackBar.open(message, 'Закрыть', {duration: 5000});
+          this.snackBar.open(message, 'Закрыть');
         }
       });
   }

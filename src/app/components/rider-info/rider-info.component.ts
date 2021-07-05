@@ -139,7 +139,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         .catch(error => {
           console.error('rider update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-            'Закрыть', {duration: 5000});
+            'Закрыть');
         });
     } else {
       // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);

@@ -138,7 +138,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
         .catch(error => {
           console.error('checkpoint update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-            'Закрыть', {duration: 5000});
+            'Закрыть');
         });
     } else {
       // @ts-ignore
@@ -176,11 +176,11 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
           .catch(error => {
             if (error instanceof Offline) {
               this.snackBar.open('Нет интернета. Код записан в архив.',
-                'Закрыть', {duration: 5000});
+                'Закрыть');
             } else {
               console.error('= barcode reporting has failed', error);
               this.snackBar.open(`Не удалось отправить код. ${error.message}`,
-                'Закрыть', {duration: 5000});
+                'Закрыть');
             }
           });
       });
@@ -206,7 +206,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy {
             .catch(error => {
               console.error('checkpoint update has failed', error);
               this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-                'Закрыть', {duration: 5000});
+                'Закрыть');
             });
         }
       });

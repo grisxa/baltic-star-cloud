@@ -28,7 +28,7 @@ export class BrevetListItemComponent implements OnInit {
       .catch(error => {
         console.error('brevet removal has failed', error);
         this.snackBar.open(`Не удалось удалить бревет. ${error.message}`,
-          'Закрыть', {duration: 5000});
+          'Закрыть');
       });
   }
 }

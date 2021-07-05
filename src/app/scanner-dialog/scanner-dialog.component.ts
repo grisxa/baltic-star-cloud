@@ -58,7 +58,7 @@ export class ScannerDialogComponent {
     }
     this.toneService.make(3200, 80);
     this.snackBar.open(`Прочитан код ${barcode.code}`,
-      'Закрыть', {duration: 5000});
+      'Закрыть');
     this.onSuccess.emit(barcode);
   }
 }

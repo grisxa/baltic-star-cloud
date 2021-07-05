@@ -64,7 +64,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
       .catch(error => {
         console.error('rider deletion has failed', error);
         this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
-          'Закрыть', {duration: 5000});
+          'Закрыть');
       });
   }
 }

@@ -46,11 +46,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (info?.isNewUser) {
       event.authResult.user?.sendEmailVerification()
         .then(() => this.snackBar.open('Отправлено письмо с подтверждением',
-          'Закрыть', {duration: 5000}))
+          'Закрыть'))
         .catch((error: Error) => {
           console.error('email verification has failed', error);
           this.snackBar.open(`Не удалось отправить письмо. ${error.message}`,
-            'Закрыть', {duration: 5000});
+            'Закрыть');
         });
     }
     this.router.navigate(['after-login']);
@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     console.error('= login error', event);
     if (!(event instanceof TypeError)) {
       this.snackBar.open(`Ошибка входа. ${event.code}`,
-        'Закрыть', {duration: 5000});
+        'Закрыть');
     }
   }
 }
