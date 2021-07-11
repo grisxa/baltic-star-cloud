@@ -6,6 +6,8 @@ import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {SettingService} from '../../services/setting.service';
+import firebase from 'firebase/app';
+
 
 @Component({
   selector: 'app-login',
@@ -43,7 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSuccess(event: FirebaseUISignInSuccessWithAuthResult): boolean {
     const info = event.authResult.additionalUserInfo;
-    if (info?.isNewUser) {
+    if (info?.isNewUser && info?.providerId === firebase.auth.EmailAuthProvider.PROVIDER_ID) {
       event.authResult.user?.sendEmailVerification()
         .then(() => this.snackBar.open('Отправлено письмо с подтверждением',
           'Закрыть'))
