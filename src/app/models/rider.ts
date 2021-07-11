@@ -5,25 +5,41 @@ import User = firebase.User;
 
 export const NONE_RIDER = 'none';
 
-export class Rider {
+type ProviderDetails = {
+  code: string;
+  name: string;
+  given_name?: string;
+  family_name?: string;
+  birthDate: string;
+  city: string;
+  country: string;
+  sub: string;
+};
+
+class RiderDetails {
+  code?: string;
+  displayName!: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: Timestamp;
+  city?: string;
+  country?: string;
+}
+
+export class Rider extends RiderDetails{
   // Google Auth unique user ID
   owner: string;
   auth?: User;
-
-  displayName: string;
   uid: string;
-  code?: string;
 
   hidden = false;
   admin = false;
 
-  firstName: string;
-  lastName: string;
-  birthDate?: Timestamp;
-  city?: string;
-  country?: string;
+  // optional collection of provider details
+  profile?: ProviderDetails;
 
   constructor(owner: string, uid: string, displayName?: string) {
+    super();
     this.owner = owner;
     this.uid = uid;
 
@@ -42,11 +58,25 @@ export class Rider {
     // this.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
   }
 
+  static copyProviderDetails(profile: ProviderDetails): RiderDetails {
+    return profile ? {
+      city: profile.city,
+      country: profile.country,
+      displayName: profile.name,
+      firstName: profile.given_name,
+      lastName: profile.family_name,
+      code: profile.sub.padStart(6, '0'),
+      birthDate: Timestamp.fromDate(new Date(profile.birthDate))
+    } : {} as RiderDetails;
+  };
+
   static fromDoc(doc: Rider) {
     const rider = new Rider(doc.owner,
       doc.uid || doc.auth?.uid || '',
       doc.displayName || doc.auth?.displayName || '');
-    return Object.assign(rider, doc);
+    // @ts-ignore
+    const profile = Rider.copyProviderDetails(doc.auth?.profile);
+    return Object.assign(rider, profile, doc);
   }
 
   updateInfo(encoded: string) {

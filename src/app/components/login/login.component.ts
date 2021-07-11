@@ -55,6 +55,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             'Закрыть');
         });
     }
+    if (info?.isNewUser && info?.providerId === 'oidc.balticstar') {
+      // @ts-ignore
+      event.authResult.user['profile'] = info.profile;
+    }
     this.router.navigate(['after-login']);
     return true;
   }
