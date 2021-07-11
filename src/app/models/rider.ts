@@ -65,8 +65,11 @@ export class Rider {
     }
   }
 
-  decodeInfo(encoded: string) {
+  decodeInfo(encoded?: string) {
     let info;
+    if (!encoded) {
+      return
+    }
     try {
       const bytes = Buffer.from(encoded, 'base64');
       info = JSON.parse(bytes.toString('utf-8'));

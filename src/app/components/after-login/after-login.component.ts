@@ -20,7 +20,7 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const info = this.settings.getValue('info') || '';
+    const info = this.settings.getValue('info');
     this.settings.removeKey('info');
 
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
