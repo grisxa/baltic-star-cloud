@@ -2,4 +2,8 @@
   .container {
     max-width: 640px;
   }
+
+  ::ng-deep .firebaseui-idp-generic > .firebaseui-idp-text {
+    color: #0b366b;
+  }
 }
