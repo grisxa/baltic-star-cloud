@@ -9,9 +9,9 @@
     </mat-select>
   </mat-form-field>
   <mat-dialog-actions>
-    <button mat-raised-button mat-dialog-close cdkFocusInitial>Закрыть</button>
     <button mat-raised-button [mat-dialog-close]="checkpointControl.value"
             [disabled]="!checkpointControl.valid">Отправить
     </button>
+    <button mat-raised-button mat-dialog-close cdkFocusInitial>Закрыть</button>
   </mat-dialog-actions>
 </div>
