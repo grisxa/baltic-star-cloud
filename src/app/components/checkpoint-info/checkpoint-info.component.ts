@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, of, Subject} from 'rxjs';
 import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
@@ -27,7 +27,7 @@ import GeoPoint = firebase.firestore.GeoPoint;
   templateUrl: './checkpoint-info.component.html',
   styleUrls: ['./checkpoint-info.component.scss']
 })
-export class CheckpointInfoComponent implements OnInit, OnDestroy {
+export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator, {static: true}) paginator?: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 

@@ -4,7 +4,7 @@ import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
 import {Rider} from '../models/rider';
 import {switchMap, takeUntil} from 'rxjs/operators';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import {SettingService} from './setting.service';
 import User = firebase.User;
 

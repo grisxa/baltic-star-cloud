@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
@@ -32,7 +32,7 @@ type ProgressColumn = {
   name: string;
   type: string;
   distance: string;
-}
+};
 
 const firstColumn: ProgressColumn = { id: 'name', name: 'Имя', type: '', distance: ''};
 
@@ -41,7 +41,7 @@ const firstColumn: ProgressColumn = { id: 'name', name: 'Имя', type: '', dist
   templateUrl: './brevet-info.component.html',
   styleUrls: ['./brevet-info.component.scss']
 })
-export class BrevetInfoComponent implements OnInit, OnDestroy {
+export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatTable) table!: MatTable<RiderCheckIn>;
   @ViewChild(MatSort) sort!: MatSort;
 

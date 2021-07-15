@@ -8,7 +8,9 @@ export const NONE_RIDER = 'none';
 type ProviderDetails = {
   code: string;
   name: string;
+  /* eslint @typescript-eslint/naming-convention: "warn" */
   given_name?: string;
+  /* eslint @typescript-eslint/naming-convention: "warn" */
   family_name?: string;
   birthDate: string;
   city: string;
@@ -98,7 +100,7 @@ export class Rider extends RiderDetails{
   decodeInfo(encoded?: string) {
     let info;
     if (!encoded) {
-      return
+      return;
     }
     try {
       const bytes = Buffer.from(encoded, 'base64');

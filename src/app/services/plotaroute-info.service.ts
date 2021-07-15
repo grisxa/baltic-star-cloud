@@ -73,7 +73,7 @@ export class PlotarouteInfoService {
  * @param lon2 - Longitude of the second point
  */
 
-export function geoDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+export const geoDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   if (lat1 === lat2 && lon1 === lon2) {
     return 0;
   }
@@ -83,4 +83,4 @@ export function geoDistance(lat1: number, lon1: number, lat2: number, lon2: numb
   const Δλ = (lon2 - lon1) * Math.PI / 180;
   const R = 6371e3;
   return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * R;
-}
+};

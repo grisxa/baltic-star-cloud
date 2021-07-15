@@ -91,8 +91,12 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       this.geoLocate.trigger(), 500);
 
     this.map.on('idle', () => {
-      this.errorTimeout && clearTimeout(this.errorTimeout);
-      this.locationStarted || this.geoLocate.trigger();
+      if (this.errorTimeout) {
+        clearTimeout(this.errorTimeout);
+      }
+      if (!this.locationStarted) {
+        this.geoLocate.trigger();
+      }
     });
   }
 
