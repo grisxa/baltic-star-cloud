@@ -4,7 +4,7 @@ import {Brevet} from '../models/brevet';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
 import {Rider} from '../models/rider';
 import {Barcode} from '../models/barcode';
-import {filter, map, mergeMap, tap} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
 import firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
@@ -22,6 +22,11 @@ export class StorageService {
   geoCheckpoints: geofirestore.GeoCollectionReference;
 
   constructor(private firestore: AngularFirestore) {
+    /*
+    firebase.firestore().clearPersistence().catch((error) => {
+      console.error('Firestore cache cleaning error', error.code, error.message);
+    });
+     */
     this.geoCheckpoints = geofirestore
       .initializeApp(firebase.firestore())
       .collection('checkpoints');
@@ -52,12 +57,13 @@ export class StorageService {
   }
 
   getBrevet(uid: string) {
-    console.log('= search brevet', uid);
+    // console.log('= search brevet', uid);
     return this.firestore
       .collection<Brevet>('brevets')
       .doc(uid)
       .valueChanges().pipe(
-        filter(isNotNullOrUndefined)
+        filter(isNotNullOrUndefined),
+        map(doc => Brevet.fromDoc(doc))
       );
   }
 
@@ -182,7 +188,7 @@ export class StorageService {
                 controlUid: string = NONE_CHECKPOINT,
                 barcode: Barcode,
                 authUid?: string) {
-    console.log('= save barcode', barcode);
+    // console.log('= save barcode', barcode);
     if (!authUid) {
       return Promise.reject('No authentication string');
     }
@@ -282,7 +288,7 @@ export class StorageService {
           riders.forEach(rider => dictionary[rider.uid] = rider.code || '');
           return dictionary;
         }),
-        tap(data => console.log('riders', data)),
+        // tap(data => console.log('riders', data)),
         mergeMap(dictionary => this.firestore
           .collection<Checkpoint>('checkpoints')
           .doc(checkpointUid)

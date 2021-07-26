@@ -61,6 +61,10 @@
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
+  <button *ngIf="brevet?.isStarted()" mat-raised-button (click)="startImporting()">
+    <mat-icon svgIcon="icon_strava"></mat-icon>
+    Strava
+  </button>
 </div>
 
 <h3>Контрольные пункты</h3>

@@ -17,4 +17,14 @@ export class Brevet {
     this.length = length;
     this.startDate = startDate;
   }
+
+  static fromDoc(doc: Brevet) {
+    const brevet = new Brevet(doc.uid, doc.name, doc.length, doc.startDate);
+    return Object.assign(brevet, doc);
+  }
+
+  isStarted(): boolean {
+    const time: Timestamp = Timestamp.now();
+    return (!this.startDate || this.startDate.seconds <= time.seconds);
+  }
 }

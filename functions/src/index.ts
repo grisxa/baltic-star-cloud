@@ -4,6 +4,8 @@ import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 export * from './checkpoint-print';
+export * from './json-export';
+export * from './strava-import';
 // import * as crypto from 'crypto';
 import GeoPoint = admin.firestore.GeoPoint;
 import Timestamp = admin.firestore.Timestamp;
@@ -13,7 +15,7 @@ import DocumentData = admin.firestore.DocumentData;
 // import secret from './secret';
 
 
-admin.initializeApp(functions.config().firebase);
+// admin.initializeApp({name: 'test'}); // functions.config().firebase);
 const db = admin.firestore();
 
 // // Start writing Firebase Functions

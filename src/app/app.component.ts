@@ -17,10 +17,16 @@ export class AppComponent {
         'icon_bed',
         this.domSanitizer
           .bypassSecurityTrustResourceUrl('/assets/icons/iconify-bed.svg')
-      ).addSvgIcon(
-      'icon_qr',
-      this.domSanitizer
-        .bypassSecurityTrustResourceUrl('/assets/icons/iconify-qr.svg')
-    );
+      )
+      .addSvgIcon(
+        'icon_qr',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/iconify-qr.svg')
+      )
+      .addSvgIcon(
+        'icon_strava',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/strava.svg')
+      );
   }
 }

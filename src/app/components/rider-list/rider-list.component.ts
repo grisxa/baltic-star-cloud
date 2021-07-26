@@ -30,7 +30,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
     this.storage.watchRiders()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((riders: Rider[]) => {
-      console.log('= riders', riders);
+      // console.log('= riders', riders);
       this.riders$.next(riders);
     });
   }

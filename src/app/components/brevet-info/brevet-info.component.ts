@@ -7,7 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 import firebase from 'firebase/app';
-import {Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Brevet, NONE_BREVET} from '../../models/brevet';
 import {AuthService} from '../../services/auth.service';
@@ -25,6 +25,9 @@ import {isNotNullOrUndefined} from '../../utils';
 import {BarcodeQueueService} from '../../services/barcode-queue.service';
 import {Offline} from '../../models/offline';
 import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-location-dialog.component';
+import {Rider} from '../../models/rider';
+import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
+import {environment} from '../../../environments/environment';
 import Timestamp = firebase.firestore.Timestamp;
 
 type ProgressColumn = {
@@ -49,9 +52,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   mapId?: number;
   formGroup: FormGroup;
   showMap = false;
+  stravaClientId: string = environment.strava.clientId;
 
   checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[] = [];
+  riders: Rider[] = [];
 
   // FIXME: consider pre-defined
   // dynamic column names like cp, cp3 (no pre-defined count)
@@ -73,6 +78,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
               public dialog: MatDialog,
               public geoLocation: LocationService,
               private routeService: PlotarouteInfoService,
+              private strava: StravaActivityService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
@@ -96,7 +102,43 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.titleService.setTitle('Бревет');
+    combineLatest([this.route.queryParams, this.route.paramMap])
+    .subscribe(params => {
+      const [query, route] = params;
+      const brevetUid = route.get('uid');
 
+      if ('state' in query) {
+        console.log('= strava token', query);
+        if ('error' in query && query.error === 'access_denied') {
+          this.snackBar.open(`Доступ запрещён`, 'Закрыть');
+          this.router.navigate(['brevet', brevetUid])
+            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
+          return;
+        }
+        if ('scope' in query && !query.scope.includes('activity:read')) {
+          this.snackBar.open(`Не достаточно разрешений`, 'Закрыть');
+          this.router.navigate(['brevet', brevetUid])
+            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
+          return;
+        }
+        if (query.code) {
+          this.snackBar.open(`Поиск запущен`, 'Закрыть');
+          this.strava.getToken(query.code)
+            .then((reply: unknown) => console.log('= strava token', reply))
+            .then(() => console.log('= import strava'))
+            .then(() => this.router.navigate(['brevet', brevetUid]))
+            .catch((error: Error) => {
+              this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
+              console.error(error);
+            });
+        }
+      }
+    });
+    this.storage.watchRiders()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((riders: Rider[]) => {
+        this.riders = riders;
+      });
     this.storage.listCheckpoints()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((snapshot) => {
@@ -111,7 +153,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storage.watchCheckpoints(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoints: Checkpoint[]) => {
-          console.log('= checkpoints', checkpoints);
+          // console.log('= checkpoints', checkpoints);
           this.checkpoints = checkpoints; // .map(doc => doc.data()) as Checkpoint[];
           this.columnsToDisplay = [firstColumn];
           this.checkpoints.forEach((cp, i) => {
@@ -133,7 +175,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           // FIXME: avoid self-assignment
           this.progress.data = this.progress.data ? this.progress.data : [];
 
-          console.log('got checkpoint', checkpoint);
+          // console.log('got checkpoint', checkpoint);
           const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
           if (checkpointIndex === -1) {
             console.warn(`unknown checkpoint ${checkpoint.uid}`);
@@ -160,7 +202,28 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           });
           this.table?.renderRows();
-          // console.log('= updated table', this.progress.data);
+/*
+          const toExport = this.progress.data.map(row => {
+            const newRow = {
+              code: (this.riders.find(r => r.uid === row.uid) || {})['code'],
+              name: row.name
+            };
+            for (const col in row) {
+              // @ts-ignore
+              const time = row[col];
+              if (time instanceof Timestamp) {
+                const hours = time.toDate().getHours()
+                const minutes = time.toDate().getMinutes();
+                // @ts-ignore
+                newRow[col] = time.toDate().toString();
+                //  (hours > 9 ? hours : "0" + hours) + ":" + (minutes > 9 ? minutes : "0" + minutes);
+              }
+            }
+            return newRow;
+          });
+          // console.log('= brevet result export', JSON.stringify(toExport));
+ */
+
           // this.dataSource.paginator = this.paginator;
         });
     });
@@ -374,5 +437,25 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           this.snackBar.open(message, 'Закрыть');
         }
       });
+  }
+
+  startImporting() {
+    if (!this.auth.user?.strava) {
+      this.strava.login(`${window.location.origin}/brevet/${this.brevet?.uid}`);
+      return;
+    }
+    this.snackBar.open(`Поиск запущен`, 'Закрыть');
+    // chain possible token refreshing
+    Promise.resolve()
+      .then(() => {
+        if (tokenExpired(this.auth.user?.strava)) {
+          console.log('= expired strava tokens');
+          return this.strava.refreshToken();
+        }
+        return;
+      })
+      .then(() => console.log('= start importing'))
+      .then(() => this.strava
+        .searchActivities(this.brevet?.startDate.seconds, this.brevet?.endDate?.seconds));
   }
 }

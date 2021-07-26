@@ -84,13 +84,13 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
       this.checkpoint$ = this.storage.getCheckpoint(checkpointUid);
       this.storage.watchBarcodes('checkpoints', checkpointUid)
         .subscribe((codes: Barcode[]) => {
-          console.log('= got barcodes', codes);
+          // console.log('= got barcodes', codes);
           this.barcodes.data = codes;
           // this.dataSource.paginator = this.paginator;
         });
       this.storage.watchCheckpointProgress(brevetUid, checkpointUid)
         .subscribe((checkIns: RiderCheckIn[]) => {
-          console.log('got riders', checkIns);
+          // console.log('got riders', checkIns);
           this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
             ...checkIn,
             // TODO: rely on lastName presence (?) in the document

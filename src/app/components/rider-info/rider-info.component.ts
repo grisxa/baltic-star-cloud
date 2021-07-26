@@ -61,7 +61,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       this.url = window.location.origin + '/r/' + riderUid;
       this.storage.watchBarcodes('riders', riderUid)
         .subscribe((codes: Barcode[]) => {
-          console.log('= got barcodes', codes);
+          // console.log('= got barcodes', codes);
           this.barcodes.data = codes;
           // this.dataSource.paginator = this.paginator;
         });
