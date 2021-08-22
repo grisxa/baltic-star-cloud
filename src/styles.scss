@@ -46,7 +46,7 @@ div.row {
   margin: 5px;
 }
 
-span {
+span:not(.mat-button-ripple) {
   margin: 0 5px;
 }
 
