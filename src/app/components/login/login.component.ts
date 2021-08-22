@@ -33,7 +33,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
       .subscribe(user => {
         if (user) {
-          this.router.navigate(['after-login']);
+          this.router.navigate(['after-login'])
+            .then(() => console.log('Navigation succeeded'))
+            .catch(error => console.error('Navigation failed', error))
         }
       });
   }
