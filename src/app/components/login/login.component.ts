@@ -3,10 +3,11 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult} from 'firebaseui-angular';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
-import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {SettingService} from '../../services/setting.service';
 import firebase from 'firebase/app';
+import {takeUntil} from 'rxjs/operators';
+import {Rider} from '../../models/rider';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     });
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe(user => {
+      .subscribe((user?: Rider) => {
         if (user) {
           this.router.navigate(['after-login'])
             .then(() => console.log('Navigation succeeded'))

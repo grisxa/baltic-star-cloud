@@ -7,13 +7,14 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
 import firebase from 'firebase/app';
 import {Observable, of, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 
 
 import {Rider} from '../../models/rider';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {Barcode} from '../../models/barcode';
+import {environment} from '../../../environments/environment';
 import Timestamp = firebase.firestore.Timestamp;
 
 
@@ -30,8 +31,35 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
 
+  providers = [
+    {
+      name: 'oidc.balticstar',
+      disabled: false,
+      cssClass: 'baltic-star',
+      icon: "icon_baltic_star",
+      iconDisabled: "icon_baltic_star_bw",
+      framework: new firebase.auth.OAuthProvider('oidc.balticstar')
+    },
+    {
+      name: 'google.com',
+      disabled: false,
+      cssClass: 'google',
+      icon: "icon_google",
+      iconDisabled: "icon_google_bw",
+      framework: new firebase.auth.GoogleAuthProvider()
+    },
+    {
+      name: 'facebook.com',
+      disabled: false,
+      cssClass: 'facebook',
+      icon: "icon_facebook",
+      // the same
+      iconDisabled: "icon_facebook",
+      framework: new firebase.auth.FacebookAuthProvider()
+    },
+  ];
   private unsubscribe$ = new Subject();
-  private rider$: Observable<Rider> = of({} as Rider);
+  private rider$: Observable<Rider|undefined> = of(undefined);
 
   constructor(private route: ActivatedRoute,
               private titleService: Title,
@@ -67,11 +95,14 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         });
     });
     this.rider$
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(rider => {
-        this.titleService.setTitle(rider.displayName);
-        this.rider = Rider.fromDoc(rider);
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        filter<Rider|undefined>(Boolean),
+        // @ts-ignore
+      ).subscribe((rider: Rider) => {
+        rider.displayName ? this.titleService.setTitle(rider.displayName) : null;
         console.log('= rider found', rider);
+        this.rider = Rider.fromDoc(rider);
         this.formGroup.controls.firstName?.setValue(rider.firstName);
         this.formGroup.controls.lastName?.setValue(rider.lastName);
         this.formGroup.controls.country?.setValue(rider.country);
@@ -80,6 +111,12 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         this.formGroup.controls.birthDate?.setValue(rider.birthDate
           ? rider.birthDate.toDate()
           : null);
+        rider.providers?.forEach(linked => {
+          const provider = this.providers.find(p => p.name === linked.providerId);
+          if (provider) {
+            provider.disabled = true;
+          }
+        });
       });
   }
 
@@ -90,7 +127,21 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
 
   logout() {
-    this.auth.logout();
+    this.auth.logout()
+      .then(() => console.log('Logout finished'))
+      .catch(error => console.error('Logout error', error));
+  }
+
+  delete() {
+    if (this.rider) {
+      const currentUser = firebase.auth().currentUser;
+      const uid = this.rider.uid;
+      this.storage.deleteRider(uid)
+        .then(() => currentUser?.delete())
+        .then(() => this.auth.logout())
+        .then(() => console.log('Deletion finished'))
+        .catch(error => console.error(`User ${uid} deletion error`, error));
+    }
   }
 
   get isOwner(): boolean {
@@ -100,6 +151,28 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   get isEditable(): boolean {
     return this.auth.isAdmin ||
       (!!this.auth.user && !!this.rider && this.auth.user.uid === this.rider.owner);
+  }
+
+  providerDisabled(id: string): boolean {
+    return this.auth.hasProvider(id);
+  }
+
+  linkProvider(name: string, provider: firebase.auth.OAuthProvider|firebase.auth.GoogleAuthProvider|firebase.auth.FacebookAuthProvider|firebase.auth.EmailAuthProvider) {
+    const config = environment.auth.signInOptions?.find(
+        // @ts-ignore
+        (settings: unknown) => settings.provider === name
+      )
+    // @ts-ignore
+    config?.scopes?.forEach((scope: string) => provider.addScope(scope));
+    // @ts-ignore
+    if (config?.customParameters) { provider.setCustomParameters(config?.customParameters) }
+
+    this.auth.user?.auth?.linkWithRedirect(provider)
+      .catch(error => {
+        console.error('Error linking: ', error);
+        this.snackBar.open(`Не удалось подключить аккаунт. ${error.message}`,
+          'Закрыть');
+      });
   }
 
   updateField(field: string) {

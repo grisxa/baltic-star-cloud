@@ -24,7 +24,7 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
     this.settings.removeKey('info');
 
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user: Rider|null) => {
+      .subscribe((user?: Rider) => {
         // create a card for the new account and redirect to it
         if (user && !user.hasCard) {
           user.owner = user.uid;

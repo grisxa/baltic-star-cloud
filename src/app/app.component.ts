@@ -21,6 +21,26 @@ export class AppComponent {
       'icon_qr',
       this.domSanitizer
         .bypassSecurityTrustResourceUrl('/assets/icons/iconify-qr.svg')
-    );
+      ).addSvgIcon(
+        'icon_baltic_star',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/baltic-star.svg')
+      ).addSvgIcon(
+        'icon_baltic_star_bw',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/baltic-star-bw.svg')
+      ).addSvgIcon(
+        'icon_google',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/google.svg')
+      ).addSvgIcon(
+        'icon_google_bw',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/google-bw.svg')
+      ).addSvgIcon(
+        'icon_facebook',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/facebook.svg')
+      );
   }
 }

@@ -8,7 +8,7 @@ import {filter, map, mergeMap, tap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
 import firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {isNotNullOrUndefined} from '../utils';
 import GeoPoint = firebase.firestore.GeoPoint;
 import QuerySnapshot = firebase.firestore.QuerySnapshot;
@@ -232,7 +232,10 @@ export class StorageService {
       .delete();
   }
 
-  updateRider(rider: Rider) {
+  updateRider(rider?: Rider) {
+    if (!rider) {
+      return Promise.reject()
+    }
     // avoid storing User auth (managed by firebase)
     const {auth, ...doc} = rider;
     return this.firestore
@@ -241,13 +244,25 @@ export class StorageService {
       .update(doc);
   }
 
-  watchRider(uid: string) {
+  watchRider(uid?: string): Observable<Rider|undefined> {
+    if (!uid) {
+      return of(undefined)
+    }
     return this.firestore
       .collection<Rider>('riders')
       .doc(uid)
-      .valueChanges().pipe(
-        map((rider: Rider | undefined) => rider ? rider : {} as Rider)
-      );
+      .valueChanges();
+  }
+
+  getRider(uid?: string): Observable<Rider|undefined> {
+    if (!uid) {
+      return of(undefined)
+    }
+    return this.firestore
+      .collection<Rider>('riders')
+      .doc(uid)
+      .get()
+      .pipe(map(snapshot => snapshot.data()))
   }
 
   watchRiders() {
