@@ -91,7 +91,8 @@ export class AuthService implements OnDestroy {
                 }
               }
             }
-            this.storage.updateRider(user).then(() => {});
+            this.storage.updateRider(user)
+              .catch((error) => console.error('Rider update error', error));
             this.pendingProfiles = {};
           }
           this.user$.next(user);
@@ -132,7 +133,6 @@ export class AuthService implements OnDestroy {
     if (this.user === undefined) {
       this.user = this.settings.getValue('user');
     }
-    // console.log('=isAdmin', user, user !== null && user.admin);
     return this.user !== null && !!this.user?.admin;
   }
 

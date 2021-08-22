@@ -111,7 +111,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storage.watchCheckpoints(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoints: Checkpoint[]) => {
-          console.log('= checkpoints', checkpoints);
           this.checkpoints = checkpoints; // .map(doc => doc.data()) as Checkpoint[];
           this.columnsToDisplay = [firstColumn];
           this.checkpoints.forEach((cp, i) => {
@@ -133,7 +132,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           // FIXME: avoid self-assignment
           this.progress.data = this.progress.data ? this.progress.data : [];
 
-          console.log('got checkpoint', checkpoint);
           const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
           if (checkpointIndex === -1) {
             console.warn(`unknown checkpoint ${checkpoint.uid}`);
@@ -143,12 +141,10 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             const known = this.progress.data.find(row => row.uid === rider.uid);
             const checkIn = Array.isArray(rider.time) ? rider.time[0] : null;
             if (known) {
-              // console.log('known rider', rider);
               // a property with variable name: cp1, cp3, etc.
               // @ts-ignore
               known[`cp${checkpointIndex}`] = checkIn;
             } else {
-              // console.log('new rider', rider);
               const row = {
                 name: rider.name,
                 code: rider.code,
@@ -160,7 +156,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           });
           this.table?.renderRows();
-          // console.log('= updated table', this.progress.data);
           // this.dataSource.paginator = this.paginator;
         });
     });
@@ -268,18 +263,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
 
-      console.log(`= update ${field} with ${control.value}`);
       this.storage.updateBrevet(this.brevet)
-        .then(() => {
-          console.log(`= updated brevet ${this.brevet?.uid}`);
-        })
         .catch(error => {
           console.error('brevet update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
            'Закрыть');
         });
     } else {
-      // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
       // @ts-ignore
       control?.setValue(this.brevet[field] instanceof Timestamp ?
         // @ts-ignore
@@ -291,7 +281,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addCheckpoint() {
-    console.log('= add checkpoint');
     if (!this.brevet) {
       console.error('No brevet defined');
       return;
@@ -317,7 +306,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           this.queue.enqueueBarcode('riders', this.auth.user?.uid, barcode) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
         )
-        .then(uid => console.log('= barcode created', uid))
         .catch(error => {
           if (error instanceof CheckpointNotFound) {
             this.snackBar.open('Неверный контрольный пункт',
@@ -352,11 +340,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           this.auth.user?.uid,
           new Barcode(undefined, uid, undefined)) :
         Promise.reject('Не указан КП'))
-      .then(uid => {
-        console.log('= record created', uid);
-        this.snackBar.open('Координаты записаны',
-          'Закрыть');
-      })
+      .then(uid => this.snackBar.open('Координаты записаны',
+          'Закрыть')
+      )
       .catch(error => {
         if (error instanceof CheckpointNotFound) {
           this.snackBar.open('КП поблизости не найдено.',

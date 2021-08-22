@@ -84,13 +84,11 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
       this.checkpoint$ = this.storage.getCheckpoint(checkpointUid);
       this.storage.watchBarcodes('checkpoints', checkpointUid)
         .subscribe((codes: Barcode[]) => {
-          console.log('= got barcodes', codes);
           this.barcodes.data = codes;
           // this.dataSource.paginator = this.paginator;
         });
       this.storage.watchCheckpointProgress(brevetUid, checkpointUid)
         .subscribe((checkIns: RiderCheckIn[]) => {
-          console.log('got riders', checkIns);
           this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
             ...checkIn,
             // TODO: rely on lastName presence (?) in the document
@@ -128,13 +126,9 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
     }
     const control = this.formGroup.get(field);
     if (control && control.valid) {
-      console.log('new value of', field, control.value);
       // @ts-ignore
       this.checkpoint[field] = control.value;
       this.storage.updateCheckpoint(this.checkpoint)
-         .then(() => {
-          console.log(`= updated checkpoint ${this.checkpoint?.uid}`);
-        })
         .catch(error => {
           console.error('checkpoint update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
@@ -156,7 +150,6 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
     this.updateField('selfcheck');
   }
   addBarcode() {
-    console.log('= add barcode');
     this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode']);
   }
 
@@ -172,7 +165,6 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
           return;
         }
         this.queue.enqueueBarcode('checkpoints', this.checkpoint.uid, barcode)
-          .then(uid => console.log('= barcode created', uid))
           .catch(error => {
             if (error instanceof Offline) {
               this.snackBar.open('Нет интернета. Код записан в архив.',
@@ -200,9 +192,6 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
         if (data && data.latitude && data.longitude) {
           this.checkpoint.coordinates = new GeoPoint(data.latitude, data.longitude);
           this.storage.updateCheckpoint(this.checkpoint)
-            .then(() => {
-              console.log(`= updated checkpoint ${this.checkpoint?.uid}`);
-            })
             .catch(error => {
               console.error('checkpoint update has failed', error);
               this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,

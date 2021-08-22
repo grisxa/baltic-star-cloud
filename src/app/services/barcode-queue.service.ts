@@ -59,7 +59,6 @@ export class BarcodeQueueService {
   // try sending old codes again
   repeatSending(skip?: string) {
     const savedCodes: { [key: string]: SavedBarcode } = this.settings.getValue('barcodes');
-    console.log('= current barcodes', savedCodes);
 
     // check all the records
     /* eslint guard-for-in: "warn" */
@@ -83,7 +82,6 @@ export class BarcodeQueueService {
       const {seconds, nanoseconds} = savedCode.barcode.time;
       savedCode.barcode.time = new Timestamp(seconds, nanoseconds);
 
-      console.log('= resend code', oldUid);
       this.storage
         .createBarcode(savedCode.source, savedCode.sourceUid, savedCode.barcode, savedCode.authUid)
         .then((uid) => this.settings.replaceToken('barcodes', oldUid, uid));

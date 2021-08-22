@@ -27,7 +27,6 @@ export class BrevetListComponent implements OnInit {
   ngOnInit() {
     this.titleService.setTitle('Список бреветов');
     this.storage.listBrevets().subscribe(snapshot => {
-      console.log('= brevets', snapshot.docs);
       const today = new Date();
       const recently = new Date(today.getTime() - WEEK);
       snapshot.docs.map(doc => doc.data() as Brevet)

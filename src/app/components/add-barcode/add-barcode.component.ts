@@ -35,7 +35,6 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
               private storage: StorageService,
               public auth: AuthService) {
 
-    console.log('= init', this.barcode);
     // connect the form to a barcode object
     this.codeControl = new FormControl(this.barcode.code, Validators.required);
     this.codeControl.valueChanges.subscribe(code => this.barcode.code = code);
@@ -76,7 +75,6 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
    * Then return to the previous page (a checkpoint info).
    */
   onSave() {
-    console.log('= save');
     if (this.dateControl?.valid && this.codeControl?.valid) {
       this.storage.createBarcode('checkpoints',
         this.checkpoint?.uid, this.barcode, this.auth.user?.uid)

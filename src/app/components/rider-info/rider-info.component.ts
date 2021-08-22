@@ -89,7 +89,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       this.url = window.location.origin + '/r/' + riderUid;
       this.storage.watchBarcodes('riders', riderUid)
         .subscribe((codes: Barcode[]) => {
-          console.log('= got barcodes', codes);
           this.barcodes.data = codes;
           // this.dataSource.paginator = this.paginator;
         });
@@ -101,7 +100,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         // @ts-ignore
       ).subscribe((rider: Rider) => {
         rider.displayName ? this.titleService.setTitle(rider.displayName) : null;
-        console.log('= rider found', rider);
         this.rider = Rider.fromDoc(rider);
         this.formGroup.controls.firstName?.setValue(rider.firstName);
         this.formGroup.controls.lastName?.setValue(rider.lastName);
@@ -128,7 +126,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
   logout() {
     this.auth.logout()
-      .then(() => console.log('Logout finished'))
       .catch(error => console.error('Logout error', error));
   }
 
@@ -139,7 +136,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       this.storage.deleteRider(uid)
         .then(() => currentUser?.delete())
         .then(() => this.auth.logout())
-        .then(() => console.log('Deletion finished'))
         .catch(error => console.error(`User ${uid} deletion error`, error));
     }
   }
@@ -201,21 +197,16 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         }
       }
 
-      console.log(`= update ${field} with ${control.value}`);
       if (field === 'firstName' || field === 'lastName') {
         this.rider.updateDisplayName();
       }
       this.storage.updateRider(this.rider)
-        .then(() => {
-          console.log(`= updated rider ${this.rider?.uid}`);
-        })
         .catch(error => {
           console.error('rider update has failed', error);
           this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
             'Закрыть');
         });
     } else {
-      // console.log(`= backup form ${field} from ${control.value} to ${this.rider[field].toDate()}`);
       // @ts-ignore
       control?.setValue(this.rider[field] instanceof Timestamp ?
         // @ts-ignore

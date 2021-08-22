@@ -18,8 +18,6 @@ export class LocationService {
                    reject: (error: string) => void,
                    position: GeolocationPosition ) {
 
-    console.log('= current locaton', position);
-
     if (position.coords.accuracy > 500) {
       // allow to try again in 1 sec.
       LocationService.options.maximumAge = 1000;

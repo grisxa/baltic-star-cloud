@@ -18,11 +18,9 @@ export class OfflineSwitchComponent {
     this.status = this.online ? 'Онлайн' : 'Оффлайн';
     if (this.online) {
       firebase.firestore().enableNetwork()
-        .then(() => console.log('= went online'))
         .catch(error => console.error('= network switching failed', error));
     } else {
       firebase.firestore().disableNetwork()
-        .then(() => console.log('= went offline'))
         .catch(error => console.error('= network switching failed', error));
     }
   }

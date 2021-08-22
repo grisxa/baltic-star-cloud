@@ -29,10 +29,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Список участников');
     this.storage.watchRiders()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((riders: Rider[]) => {
-      console.log('= riders', riders);
-      this.riders$.next(riders);
-    });
+      .subscribe((riders: Rider[]) => this.riders$.next(riders))
   }
 
   // release watchers
@@ -48,7 +45,6 @@ export class RiderListComponent implements OnInit, OnDestroy {
     // admin creates new cards
     // new user creates own card
     const uid = this.auth.user.hasCard ? this.auth.isAdmin ? '' : owner : owner;
-    console.log('add rider', owner, uid);
     const rider = new Rider(owner, uid, this.auth.user.displayName);
     this.storage.createRider(rider).then(newUid => {
       this.router.navigate(['rider', newUid]);
@@ -56,11 +52,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
   }
 
   deleteRider(uid: string) {
-    console.log('= delete rider', uid);
     this.storage.deleteRider(uid)
-      .then(() => {
-        console.log(`= removed rider ${uid}`);
-      })
       .catch(error => {
         console.error('rider deletion has failed', error);
         this.snackBar.open(`Не удалось удалить КП. ${error.message}`,

@@ -4,7 +4,7 @@ import {Brevet} from '../models/brevet';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
 import {Rider} from '../models/rider';
 import {Barcode} from '../models/barcode';
-import {filter, map, mergeMap, tap} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
 import firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
@@ -42,17 +42,12 @@ export class StorageService {
         docRef.update({uid: docRef.id});
         return docRef.id;
       })
-      .then(uid => {
-        console.log('= document saved', uid);
-        return uid;
-      })
       .catch(error => {
         console.error('Error adding document: ', error);
       });
   }
 
   getBrevet(uid: string) {
-    console.log('= search brevet', uid);
     return this.firestore
       .collection<Brevet>('brevets')
       .doc(uid)
@@ -121,7 +116,6 @@ export class StorageService {
 
   createCheckpoint(brevet: Brevet, checkpoint: Checkpoint): Promise<string | void> {
     const {uid, name, length} = brevet;
-    console.log('= create checkpoint', brevet, checkpoint);
     return this.firestore
       .collection<Brevet>('brevets').doc(brevet.uid)
       .collection<Checkpoint>('checkpoints').add({
@@ -133,20 +127,17 @@ export class StorageService {
         docRef.update({uid: docRef.id});
         return docRef.id;
       })
-      .then(checkpointUid => {
-        console.log('= document saved', checkpointUid);
-        return this.geoCheckpoints.doc(checkpointUid).set({
+      .then(checkpointUid => this.geoCheckpoints.doc(checkpointUid).set({
           ...checkpoint,
           brevet: {uid, name, length}
-        }).then(() => checkpointUid);
-      })
+        }).then(() => checkpointUid)
+      )
       .catch(error => {
         console.error('Error adding document: ', error);
       });
   }
 
   getCheckpoint(checkpointUid: string) {
-    console.log('= search checkpoint', checkpointUid);
     return this.firestore
       .collection<Checkpoint>('checkpoints')
       .doc(checkpointUid)
@@ -169,7 +160,6 @@ export class StorageService {
   }
 
   getBarcodeRoot(checkpointUid: string): Observable<Checkpoint> {
-    console.log('= search checkpoint', checkpointUid);
     return this.firestore
       .collection<Checkpoint>('checkpoints')
       .doc(checkpointUid)
@@ -182,7 +172,6 @@ export class StorageService {
                 controlUid: string = NONE_CHECKPOINT,
                 barcode: Barcode,
                 authUid?: string) {
-    console.log('= save barcode', barcode);
     if (!authUid) {
       return Promise.reject('No authentication string');
     }
@@ -216,10 +205,7 @@ export class StorageService {
           return docRef.update(doc);
         });
     return docPromise
-      .then(() => {
-        console.log('= document saved', doc.uid);
-        return doc.uid;
-      })
+      .then(() => doc.uid)
       .catch(error => {
         console.error('Error adding document: ', error);
       });
@@ -297,12 +283,10 @@ export class StorageService {
           riders.forEach(rider => dictionary[rider.uid] = rider.code || '');
           return dictionary;
         }),
-        tap(data => console.log('riders', data)),
         mergeMap(dictionary => this.firestore
           .collection<Checkpoint>('checkpoints')
           .doc(checkpointUid)
           .valueChanges().pipe(
-            // tap(data => console.log('checkpoint change', data)),
             // skip deleted checkpoints
             filter(isNotNullOrUndefined),
             mergeMap((checkpoint: Checkpoint) => this.firestore
@@ -345,7 +329,6 @@ export class StorageService {
       .collection<Checkpoint>('checkpoints',
         ref => ref.orderBy('distance'))
       .valueChanges().pipe(
-        // tap(data => console.log('checkpoints change', data)),
         mergeMap((checkpoints: Checkpoint[]) => checkpoints),
         filter((checkpoint: Checkpoint) => !!checkpoint.uid),
         mergeMap((checkpoint: Checkpoint) => this.firestore
@@ -355,7 +338,6 @@ export class StorageService {
           .doc(checkpoint.uid)
           .collection<RiderCheckIn>('riders')
           .valueChanges().pipe(
-            // tap(data => console.log('riders change', data)),
             map((riders: RiderCheckIn[]) => ({
                 uid: checkpoint.uid,
                 riders: riders.map(rider => {
