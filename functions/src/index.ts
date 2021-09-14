@@ -105,7 +105,7 @@ interface Rider {
   displayName: string;
 }
 
-function duplicateBarcode(barcodeObj: Barcode, control: Control, collection: 'checkpoints' | 'riders'): Promise<void> {
+function duplicateBarcode(barcodeObj: Barcode, control: Control | Rider, collection: 'checkpoints' | 'riders'): Promise<void> {
   if (barcodeObj.copy) {
     console.warn('avoid creating a barcode copying loop');
     return Promise.resolve()
@@ -222,7 +222,7 @@ export const createRiderBarcode = functions.firestore.document('riders/{riderUid
       }))
       .then(() => console.log(`record for checkpoint ${barcode} updated`))
       .then(() => injectRiderDoc(db.doc(`riders/${riderUid}`)))
-      .then(rider => duplicateBarcode(barcodeObj, rider as Control, 'checkpoints'))
+      .then(rider => duplicateBarcode(barcodeObj, rider, 'checkpoints'))
       .then(() => console.log('a copy for checkpoint created'))
       .catch(e => {
         console.error(`barcode ${barcode} processing failed`, e.message);
