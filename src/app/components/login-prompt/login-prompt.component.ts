@@ -21,8 +21,8 @@ export class LoginPromptComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.cd.detach();
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user: Rider | null) => {
-        this.userName = user ? user.displayName : '';
+      .subscribe((user?: Rider) => {
+        this.userName = user?.displayName || '';
         if (user && user.hasCard) {
           this.url = `/rider/${user.uid}`;
         }

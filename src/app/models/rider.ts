@@ -2,12 +2,20 @@ import firebase from 'firebase/app';
 import {Buffer} from 'buffer';
 import Timestamp = firebase.firestore.Timestamp;
 import User = firebase.User;
+import UserInfo = firebase.UserInfo;
 
 export const NONE_RIDER = 'none';
 
-type ProviderDetails = {
+interface UserWithProfile extends User {
+
+  // optional collection of provider details
+  profile?: ProviderDetails;
+}
+
+export type ProviderDetails = {
   code: string;
   name: string;
+  email: string;
   /* eslint @typescript-eslint/naming-convention: "warn" */
   given_name?: string;
   /* eslint @typescript-eslint/naming-convention: "warn" */
@@ -16,11 +24,19 @@ type ProviderDetails = {
   city: string;
   country: string;
   sub: string;
+  id?: string;
 };
 
-class RiderDetails {
+export interface ProviderInfo {
+  displayName?: string|null;
+  email?: string|null;
+  uid?: string;
+  providerId?: string;
+}
+
+export class RiderDetails {
   code?: string;
-  displayName!: string;
+  displayName?: string;
   firstName?: string;
   lastName?: string;
   birthDate?: Timestamp;
@@ -28,56 +44,84 @@ class RiderDetails {
   country?: string;
 }
 
-export class Rider extends RiderDetails{
+export class Rider extends RiderDetails {
   // Google Auth unique user ID
   owner: string;
-  auth?: User;
+  auth: UserWithProfile | null = null;
+  providers: ProviderInfo[] = [];
   uid: string;
 
   hidden = false;
   admin = false;
 
-  // optional collection of provider details
-  profile?: ProviderDetails;
 
   constructor(owner: string, uid: string, displayName?: string) {
     super();
     this.owner = owner;
     this.uid = uid;
 
-    // put fallbacks for first/last name
-    displayName = displayName || '';
-    const name = displayName.split(/\s+/);
-    const lastName = name.pop() || '?';
-    const firstName = name.shift() || '?';
-
-    this.firstName = firstName;
-    this.lastName = lastName;
-
-    this.displayName = `${firstName} ${lastName}`;
+    [this.firstName, this.lastName] = Rider.splitName(displayName);
+    this.displayName = `${this.firstName} ${this.lastName}`;
 
     // empty transparent pixel
     // this.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
   }
 
-  static copyProviderDetails(profile: ProviderDetails): RiderDetails {
-    return profile ? {
-      city: profile.city,
-      country: profile.country,
-      displayName: profile.name,
-      firstName: profile.given_name,
-      lastName: profile.family_name,
-      code: profile.sub.padStart(6, '0'),
-      birthDate: Timestamp.fromDate(new Date(profile.birthDate))
-    } : {} as RiderDetails;
+  static splitName(displayName?: string|null) {
+    // put fallbacks for first/last name
+    displayName = displayName || '';
+    const name = displayName.split(/\s+/);
+    const lastName = name.pop() || '?';
+    const firstName = name.shift() || '?';
+    return [firstName, lastName];
+  }
+
+  static copyProviderProfile(profile?: ProviderDetails): RiderDetails {
+    const draft: RiderDetails = {
+      city: profile?.city,
+      country: profile?.country,
+      displayName: profile?.name,
+      firstName: profile?.given_name,
+      lastName: profile?.family_name,
+      code: profile?.sub?.padStart(6, '0'),
+      birthDate: profile?.birthDate ? Timestamp.fromDate(new Date(profile.birthDate)) : undefined
+    };
+    return copyDefinedProperties(draft);
+  };
+
+  static copyProviderInfo(profile?: UserInfo): ProviderInfo {
+    const draft: ProviderInfo = {
+      email: profile?.email,
+      displayName: profile?.displayName, // || profile?.name,
+      uid: profile?.uid, // || profile?.id,
+      providerId: profile?.providerId,
+    };
+    return copyDefinedProperties(draft);
+  };
+
+  static copyAdditionalInfo(profile?: ProviderDetails, providerId?: string): ProviderInfo {
+    const draft: ProviderInfo = {
+      email: profile?.email,
+      displayName: profile?.name,
+      uid: profile?.id || profile?.sub,
+      providerId: providerId,
+    };
+    return copyDefinedProperties(draft);
   };
 
   static fromDoc(doc: Rider) {
+    const providerInfo: UserInfo | null | undefined = doc.auth?.providerData?.shift();
+
     const rider = new Rider(doc.owner,
-      doc.uid || doc.auth?.uid || '',
-      doc.displayName || doc.auth?.displayName || '');
-    // @ts-ignore
-    const profile = Rider.copyProviderDetails(doc.auth?.profile);
+      doc.uid || doc.auth?.uid || providerInfo?.uid || '',
+      doc.displayName || providerInfo?.displayName || '');
+
+    if (providerInfo?.providerId &&
+      !rider.providers?.find(p => p.providerId === providerInfo?.providerId)) {
+      rider.providers.push(Rider.copyProviderInfo(providerInfo));
+    }
+
+    const profile: RiderDetails = Rider.copyProviderProfile(doc.auth?.profile);
     return Object.assign(rider, profile, doc);
   }
 
@@ -118,4 +162,13 @@ export class Rider extends RiderDetails{
   get hasCard(): boolean {
     return !!this.owner;
   }
+}
+
+function copyDefinedProperties(draft: object): object {
+  const result = {}
+  Object.keys(draft).forEach(
+    // @ts-ignore
+    (key: string) => draft[key] !== undefined ? result[key] = draft[key] : null
+  );
+  return result;
 }

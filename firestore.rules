@@ -9,7 +9,9 @@ service cloud.firestore {
 
     /* check for authentication UID match: avoid counterfeiting */
     function isOwner(request) {
-      return request.resource.data.owner == request.auth.token.sub
+      return resource.data.owner == request.auth.token.sub ||
+        request.resource.data.owner == request.auth.token.sub
+
     }
 
     match /users/{document} {
@@ -72,7 +74,7 @@ service cloud.firestore {
                     &&  resource.data.uid == rider)
                     || isAdmin();
       /* admin may delete a rider */
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() || isOwner(request);
       match /private/{document} {
         // TODO: compare to owner
         allow read, write: if isAdmin() || request.auth.token.sub == rider;

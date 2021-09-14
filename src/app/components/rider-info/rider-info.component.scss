@@ -16,8 +16,25 @@
     align-items: center;
   }
 
-  button.logout {
+  button {
     margin-left: 5px;
     margin-bottom: 5px;
+  }
+
+  .baltic-star {
+    background-color: #f79c10;
+  }
+
+  .facebook {
+    background-color: #3b5998;
+  }
+
+  button:disabled {
+    background-color: lightgray;
+  }
+
+  .provider-button {
+    min-width: 36px;
+    padding: 0;
   }
 }

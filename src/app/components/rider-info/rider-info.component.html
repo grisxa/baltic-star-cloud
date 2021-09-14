@@ -93,7 +93,19 @@
   </app-editable>
 </div>
 </form>
-<button class="logout" *ngIf="auth.isLoggedIn && isOwner" mat-raised-button (click)="logout()"><mat-icon>logout</mat-icon>Выйти</button>
+
+<div *ngIf="auth.isLoggedIn && isOwner">
+  <button class="logout" *ngIf="auth.isLoggedIn && isOwner" mat-raised-button (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    Выйти
+  </button>
+  <button *ngFor="let provider of providers" class="provider-button {{ provider.cssClass }}" mat-raised-button
+          [disabled]="provider.disabled"
+          (click)="linkProvider(provider.name, provider.framework)">
+    <mat-icon svgIcon="{{provider.iconDisabled}}" *ngIf="provider.disabled"></mat-icon>
+    <mat-icon svgIcon="{{provider.icon}}" *ngIf="!provider.disabled" title="Добавить аккаунт"></mat-icon>
+  </button>
+</div>
 
 <h3 *ngIf="auth.isLoggedIn">Журнал</h3>
 <table mat-table [dataSource]="barcodes" *ngIf="auth.isLoggedIn">
@@ -109,3 +121,7 @@
   <tr mat-header-row *matHeaderRowDef="barcodeColumnsToDisplay; sticky: true"></tr>
   <tr mat-row *matRowDef="let barcode; columns: barcodeColumnsToDisplay"></tr>
 </table>
+<button class="logout" *ngIf="auth.isLoggedIn && isOwner" mat-raised-button (click)="delete()">
+  <mat-icon>delete_forever</mat-icon>
+  Удалить
+</button>

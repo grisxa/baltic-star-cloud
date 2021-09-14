@@ -10,7 +10,6 @@ export class PlotarouteMapComponent implements OnChanges {
   url?: string;
 
   ngOnChanges(changes: SimpleChanges) {
-    // console.log('= map change', changes);
     this.mapId = changes.mapId.currentValue;
     this.url = `https://www.plotaroute.com/embedmap/${this.mapId}?units=km&hills=show`;
   }

@@ -20,11 +20,7 @@ export class BrevetListItemComponent implements OnInit {
   }
 
   deleteBrevet(uid: string) {
-    console.log('= delete brevet', uid);
     this.storage.deleteBrevet(uid)
-      .then(() => {
-        console.log(`= removed brevet ${uid}`);
-      })
       .catch(error => {
         console.error('brevet removal has failed', error);
         this.snackBar.open(`Не удалось удалить бревет. ${error.message}`,

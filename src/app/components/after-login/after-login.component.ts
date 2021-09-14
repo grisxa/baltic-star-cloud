@@ -24,25 +24,28 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
     this.settings.removeKey('info');
 
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user: Rider|null) => {
+      .subscribe((user?: Rider) => {
         // create a card for the new account and redirect to it
         if (user && !user.hasCard) {
           user.owner = user.uid;
           user.updateInfo(info);
           this.storage.createRider(user).then(newUid => {
-            this.router.navigate(['rider', newUid]);
+            this.router.navigate(['rider', newUid])
+              .catch(error => console.error('Navigation failed', error))
           });
 
         } else if (user && info) {
           // update existing user
           user.updateInfo(info);
           this.storage.updateRider(user).then(() => {
-            this.router.navigate(['rider', user.uid]);
+            this.router.navigate(['rider', user.uid])
+              .catch(error => console.error('Navigation failed', error))
           });
 
         } else {
           // or go back to the main page
-          this.router.navigate(['brevets']);
+          this.router.navigate(['brevets'])
+            .catch(error => console.error('Navigation failed', error))
         }
       });
   }
