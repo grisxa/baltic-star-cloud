@@ -102,10 +102,11 @@ interface Control {
 
 interface Rider {
   uid: string;
+  code: string;
   displayName: string;
 }
 
-function duplicateBarcode(barcodeObj: Barcode, control: Control, collection: 'checkpoints' | 'riders'): Promise<void> {
+function duplicateBarcode(barcodeObj: Barcode, control: Control | Rider, collection: 'checkpoints' | 'riders'): Promise<void> {
   if (barcodeObj.copy) {
     console.warn('avoid creating a barcode copying loop');
     return Promise.resolve()
@@ -125,8 +126,9 @@ function duplicateBarcode(barcodeObj: Barcode, control: Control, collection: 'ch
     .then(ref => ref.update({uid: ref.id})) as Promise<void>;
 }
 
-function updateRiderInfo(brevetUid: string, checkpointUid: string, riderUid: string,
-                         name: string, time: Timestamp) {
+function updateRiderInfo(args: {brevetUid: string, checkpointUid: string, riderUid: string,
+                         riderName: string, riderCode: string, time: Timestamp}) {
+  const {brevetUid, checkpointUid, riderUid, riderName, riderCode, time} = args;
   const ref = db.doc(`brevets/${brevetUid}/checkpoints/${checkpointUid}` +
     `/riders/${riderUid}`);
   return ref.get()
@@ -139,7 +141,8 @@ function updateRiderInfo(brevetUid: string, checkpointUid: string, riderUid: str
       console.log('= new times', JSON.stringify(timestamps.map((t: Timestamp) => t.toDate().toString()).join(',')));
       return {
         ...document,
-        name,
+        name: riderName,
+        code: riderCode,
         uid: riderUid,
         // code: riderUid,
         time: timestamps
@@ -171,9 +174,12 @@ export const createCheckpointBarcode = functions.firestore.document('checkpoints
 
     let riderName: string;
     let riderUid: string;
+    let riderCode: string;
 
     return injectRiderDoc(db.doc(`riders/${barcode}`), barcode)
       .then(rider => snapshot.ref.update({
+        // @ts-ignore : overwrite code with ...barcodeObj
+        code: (riderCode = rider.code),
         ...barcodeObj,
         name: (riderName = rider.displayName),
         // save the rider UID
@@ -183,8 +189,14 @@ export const createCheckpointBarcode = functions.firestore.document('checkpoints
       .then(() => console.log(`record for rider ${barcode} updated`))
       .then(() => injectCheckpointDoc(db.doc(`checkpoints/${checkpointUid}`)))
       // FIXME: brevet uid undefined
-      .then(checkpoint => updateRiderInfo(checkpoint.brevet.uid, checkpointUid,
-        riderUid, riderName, barcodeObj.time)
+      .then(checkpoint => updateRiderInfo({
+          brevetUid: checkpoint.brevet.uid,
+          checkpointUid,
+          riderUid,
+          riderName,
+          riderCode,
+          time: barcodeObj.time
+      })
         .then(() => duplicateBarcode({...barcodeObj, code: riderUid},
           checkpoint, 'riders'))
         .then(() => console.log('a copy for rider created'))
@@ -222,7 +234,7 @@ export const createRiderBarcode = functions.firestore.document('riders/{riderUid
       }))
       .then(() => console.log(`record for checkpoint ${barcode} updated`))
       .then(() => injectRiderDoc(db.doc(`riders/${riderUid}`)))
-      .then(rider => duplicateBarcode(barcodeObj, rider as Control, 'checkpoints'))
+      .then(rider => duplicateBarcode(barcodeObj, rider, 'checkpoints'))
       .then(() => console.log('a copy for checkpoint created'))
       .catch(e => {
         console.error(`barcode ${barcode} processing failed`, e.message);
