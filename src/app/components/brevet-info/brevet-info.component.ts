@@ -65,6 +65,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   firstHeader = [firstColumn.id];
   secondHeader = ['dist-' + firstColumn.id];
 
+  geoJSON = {};
+
   private unsubscribe$ = new Subject();
   private brevet$: Observable<Brevet> = of({} as Brevet);
 
@@ -234,6 +236,15 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((brevet: Brevet) => {
         this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
+        if (brevet.track) {
+          this.geoJSON = {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': brevet.track.map(point => [point.longitude, point.latitude])
+            }
+          }
+        }
         this.formGroup.controls.name?.setValue(brevet.name);
         this.formGroup.controls.length?.setValue(brevet.length);
         this.formGroup.controls.mapUrl?.setValue(brevet.mapUrl);

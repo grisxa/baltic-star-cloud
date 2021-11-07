@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import Timestamp = firebase.firestore.Timestamp;
+import GeoPoint = firebase.firestore.GeoPoint;
 
 export const NONE_BREVET = 'none';
 
@@ -10,6 +11,7 @@ export class Brevet {
   startDate: Timestamp;
   endDate?: Timestamp;
   mapUrl?: string;
+  track?: GeoPoint[];
 
   constructor(uid: string, name: string, length: number, startDate: Timestamp) {
     this.uid = uid;

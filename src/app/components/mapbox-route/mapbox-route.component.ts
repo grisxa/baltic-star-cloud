@@ -16,6 +16,7 @@ const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 })
 export class MapboxRouteComponent implements OnInit, OnDestroy {
   @Input() checkpoints?: Checkpoint[];
+  @Input() geoJSON: any;
   map!: mapboxGL.Map;
   shownControlIndex = 0;
   stopJumping = false;
@@ -43,6 +44,26 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
     } else {
       this.map.setCenter(DEFAULT_CENTER);
     }
+
+    this.map.on('load', () => {
+      this.map.addSource('route', {
+        'type': 'geojson',
+        'data': this.geoJSON
+      });
+      this.map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': 'route',
+        'layout': {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-color': 'red',
+          'line-width': 2
+        }
+      });
+    });
 
 //    center: validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,
 
