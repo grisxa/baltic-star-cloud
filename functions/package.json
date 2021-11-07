@@ -18,6 +18,7 @@
     "firebase": "^8.4.2",
     "firebase-admin": "^8.13.0",
     "firebase-functions": "^3.14.1",
+    "geofirestore": "^4.4.2",
     "pdfkit": "^0.11.0",
     "qrcode": "^1.4.4",
     "rxjs": "^6.4.0"

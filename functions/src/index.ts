@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import {GeoFirestore} from 'geofirestore';
 
 export * from './checkpoint-print';
 export * from './json-export';
@@ -17,6 +18,7 @@ import DocumentData = admin.firestore.DocumentData;
 
 // admin.initializeApp({name: 'test'}); // functions.config().firebase);
 const db = admin.firestore();
+const geo = new GeoFirestore(db);
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -271,7 +273,7 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
       return Promise.resolve()
     }
 
-    return db.doc(`checkpoints/${checkpointUid}`).set({
+    return geo.collection("checkpoints").doc(checkpointUid).set({
       displayName: data.displayName,
       distance: data.distance,
       coordinates: data.coordinates,
