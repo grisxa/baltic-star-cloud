@@ -241,7 +241,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             'type': 'Feature',
             'geometry': {
               'type': 'LineString',
-              'coordinates': brevet.track.map(point => [point.longitude, point.latitude])
+              'coordinates': brevet.track.map(point => [
+                point.coordinates?.longitude,
+                point.coordinates?.latitude])
             }
           }
         }

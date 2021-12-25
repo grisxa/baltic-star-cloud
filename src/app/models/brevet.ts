@@ -11,7 +11,10 @@ export class Brevet {
   startDate: Timestamp;
   endDate?: Timestamp;
   mapUrl?: string;
-  track?: GeoPoint[];
+  track?: {
+    distance: number;
+    coordinates: GeoPoint
+  }[];
 
   constructor(uid: string, name: string, length: number, startDate: Timestamp) {
     this.uid = uid;
