@@ -78,7 +78,7 @@ export class StorageService {
     return this.firestore
       .collection<Brevet>('brevets')
       .doc(brevet.uid)
-      .update(brevet);
+      .update({...brevet});
   }
 
   hasCheckpoint(brevetUid: string, checkpointUid: string) {
