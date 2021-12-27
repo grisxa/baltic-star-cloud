@@ -8,7 +8,6 @@ import {StorageService} from '../../services/storage.service';
 import {NONE_BREVET} from '../../models/brevet';
 import firebase from 'firebase/app';
 import {FormControl, Validators} from '@angular/forms';
-import {geoDistance} from '../../services/plotaroute-info.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import LngLat = mapboxGL.LngLat;
@@ -167,3 +166,24 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
     return uid && checkpoints.find(cp => cp.uid === uid) ? uid : checkpoints[0].uid;
   }
 }
+
+/**
+ * Generic geo distance calculation
+ *
+ * @param lat1 - Latitude of the first point
+ * @param lon1 - Longitude of the first point
+ * @param lat2 - Latitude of the second point
+ * @param lon2 - Longitude of the second point
+ */
+
+ export const geoDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0;
+  }
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  const R = 6371e3;
+  return Math.acos(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * R;
+};

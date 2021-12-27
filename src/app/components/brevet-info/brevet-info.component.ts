@@ -14,7 +14,6 @@ import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
 import {RoutePoint} from '../../models/route-point';
 import {LocationService} from '../../services/location.service';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
@@ -80,14 +79,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
               private queue: BarcodeQueueService,
               public dialog: MatDialog,
               public geoLocation: LocationService,
-              private routeService: PlotarouteInfoService,
               private strava: StravaActivityService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
       length: new FormControl(0, [Validators.required, Validators.pattern('[0-9]+')]),
       startDate: new FormControl(new Date(), Validators.required),
-      mapUrl: new FormControl('', Validators.required),
+      mapUrl: new FormControl('', [Validators.required, Validators.pattern('https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+')]),
     });
   }
 
@@ -276,48 +274,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     return 0;
   }
 
-  updateMapUrl() {
-    const control = this.formGroup.controls.mapUrl;
-    if (control && control.valid) {
-      const mapId = this.findMapId(control.value);
-      // ignore URL updates if map ID hasn't changed
-      if (mapId === this.findMapId(this.brevet?.mapUrl)) {
-        return;
-      }
-      this.routeService.retrieve(mapId)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe(data => {
-            if (this.brevet) {
-              this.brevet.name = data.name;
-              this.brevet.length = data.length;
-            }
-
-            this.formGroup.controls.name?.setValue(data.name);
-            this.formGroup.controls.length?.setValue(data.length);
-
-            if (data.checkpoints && data.checkpoints.length && this.brevet) {
-              data.checkpoints.forEach(checkpoint => this.storage
-                .createCheckpoint(this.brevet as Brevet,
-                  new Checkpoint({
-                    ...checkpoint,
-                    // Convert the distance from meters to kilometers
-                    distance: Math.round(checkpoint.distance / 1000)
-                  } as RoutePoint)));
-            }
-
-            this.updateField('mapUrl');
-          },
-          error => {
-            console.error(error);
-            // switch back in case of retrieval error
-            control.setValue(this.brevet?.mapUrl);
-          });
-    } else {
-      // switch back if new value is invalid
-      control?.setValue(this.brevet?.mapUrl);
-    }
-  }
-
   updateField(field: string) {
     const control = this.formGroup.get(field);
     if (this.brevet === undefined) {
@@ -376,6 +332,18 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
       this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid]);
     });
+  }
+
+  importCheckpoints() {
+    firebase.functions().useEmulator("localhost", 9090);
+
+    const createCheckpoints = firebase.functions().httpsCallable('create_checkpoints');
+    return createCheckpoints({brevetUid: this.brevet?.uid})
+      .then((result) => result.data)
+      .then((result) => {
+        console.log('= function result', result);
+        return result;
+      })
   }
 
   startScanner() {
