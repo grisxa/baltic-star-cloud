@@ -21,13 +21,13 @@ export class StravaActivityService {
     return stravaToken({ code })
       .then((result) => {
         console.log('= function result', result);
-        return result;
+        return result.data;
       });
   }
 
-  refreshToken() {
+  refreshToken(tokens: unknown) {
     const stravaToken = firebase.functions().httpsCallable('refreshStravaToken');
-    return stravaToken()
+    return stravaToken(tokens)
       .then((result) => {
         console.log('= function result', result);
         return result;

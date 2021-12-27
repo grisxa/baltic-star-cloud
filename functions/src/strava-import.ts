@@ -34,13 +34,16 @@ export const getStravaToken = functions.https.onCall((data, context) => {
   };
 
   return axios.post(authBaseUrl + '/token', body)
-    .then((reply: AxiosResponse) => reply.data)
+    .then((reply: AxiosResponse) => reply.data as StravaTokens)
     .then((reply: StravaTokens) => {
       reply.athlete_id = reply.athlete.id;
       delete reply.athlete;
       return reply;
     })
-    .then((tokens: StravaTokens) => riderRef.update({strava: tokens}))
+    .then((tokens: StravaTokens) => {
+      riderRef.update({strava: tokens});
+      return tokens
+    })
     .catch((error: Error) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);
     });
@@ -58,11 +61,11 @@ export const refreshStravaToken = functions.https.onCall((data, context) => {
         client_id: config.strava.client_id,
         client_secret: config.strava.client_secret,
         grant_type: 'refresh_token',
-        refresh_token: document.strava.refresh_token,
+        refresh_token: document.strava.refresh_token || data.tokens.refresh_token,
       };
       return axios.post(authBaseUrl + '/token', body);
     })
-    .then((reply: AxiosResponse) => reply.data)
+    .then((reply: AxiosResponse) => reply.data as StravaTokens)
     .then((tokens: StravaTokens) => riderRef.set({strava: tokens}, {merge: true}))
     .catch((error: Error) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);

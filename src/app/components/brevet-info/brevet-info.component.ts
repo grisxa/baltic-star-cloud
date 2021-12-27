@@ -29,6 +29,7 @@ import {Rider} from '../../models/rider';
 import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
 import {environment} from '../../../environments/environment';
 import Timestamp = firebase.firestore.Timestamp;
+import { StravaTokens } from 'src/app/models/strava-tokens';
 
 type ProgressColumn = {
   id: string;
@@ -126,8 +127,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         if (query.code) {
           this.snackBar.open(`Поиск запущен`, 'Закрыть');
           this.strava.getToken(query.code)
-            .then((reply: unknown) => console.log('= strava token', reply))
-            .then(() => console.log('= import strava'))
+            .then((tokens: StravaTokens) => this.startImporting(tokens))
             .then(() => this.router.navigate(['brevet', brevetUid]))
             .catch((error: Error) => {
               this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
@@ -452,8 +452,10 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  startImporting() {
-    if (!this.auth.user?.strava) {
+  startImporting(tokens?: StravaTokens) {
+    tokens = tokens || this.auth.user?.strava;
+
+    if (!tokens) {
       this.strava.login(`${window.location.origin}/brevet/${this.brevet?.uid}`);
       return;
     }
@@ -461,9 +463,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     // chain possible token refreshing
     Promise.resolve()
       .then(() => {
-        if (tokenExpired(this.auth.user?.strava)) {
+        if (tokenExpired(tokens)) {
           console.log('= expired strava tokens');
-          return this.strava.refreshToken();
+          return this.strava.refreshToken(tokens);
         }
         return;
       })
