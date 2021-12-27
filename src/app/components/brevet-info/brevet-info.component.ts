@@ -27,6 +27,7 @@ import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-lo
 import {Rider} from '../../models/rider';
 import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
 import {environment} from '../../../environments/environment';
+import {TrackNotFound} from '../../models/track-not-found';
 import Timestamp = firebase.firestore.Timestamp;
 import { StravaTokens } from 'src/app/models/strava-tokens';
 
@@ -437,8 +438,22 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         return;
       })
-      .then(() => console.log('= start importing'))
       .then(() => this.strava
-        .searchActivities(this.brevet?.startDate.seconds, this.brevet?.endDate?.seconds));
+        .searchActivities(this.brevet?.uid, this.auth.user?.uid))
+      .then((count: number) => {
+        this.snackBar.open(`Добавлено ${count} отметок`,
+          'Закрыть');
+      })
+      .catch(error => {
+        console.error("strava import error", error);
+        if (error instanceof TrackNotFound) {
+          this.snackBar.open(`Трек не найден. ${error.message}`,
+            'Закрыть');
+        } else {
+          this.snackBar.open(`Ошибка импорта. ${error.message}`,
+            'Закрыть');
+        }
+      });
   }
+
 }
