@@ -260,7 +260,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get allowCheckIn(): boolean {
-    return !!this.auth.user;
+    return !!this.auth.user && this.checkpoints.length > 0;
   }
 
   findMapId(url?: string): number {
