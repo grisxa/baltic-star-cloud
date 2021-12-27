@@ -46,6 +46,10 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
     }
 
     this.map.on('load', () => {
+      if (!this.validCoordinates(startPoint)) {
+        this.toTheRouteStart();
+      }
+
       this.map.addSource('route', {
         'type': 'geojson',
         'data': this.geoJSON
@@ -83,6 +87,13 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
         .addTo(this.map));
 
     this.map.once('idle', this.shiftMap.bind(this));
+  }
+
+  toTheRouteStart() {
+    const routeStart: number[] = this.geoJSON?.geometry?.coordinates[0];
+    if (routeStart) {
+      this.map.setCenter({lng: routeStart[0], lat: routeStart[1]});
+    }
   }
 
   shiftMap() {
