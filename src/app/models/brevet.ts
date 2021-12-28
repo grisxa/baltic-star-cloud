@@ -13,7 +13,7 @@ export class Brevet {
   mapUrl?: string;
   track?: {
     distance: number;
-    coordinates: GeoPoint
+    coordinates: GeoPoint;
   }[];
 
   constructor(uid: string, name: string, length: number, startDate: Timestamp) {

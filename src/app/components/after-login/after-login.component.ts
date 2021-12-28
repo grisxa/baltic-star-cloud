@@ -31,7 +31,7 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
           user.updateInfo(info);
           this.storage.createRider(user).then(newUid => {
             this.router.navigate(['rider', newUid])
-              .catch(error => console.error('Navigation failed', error))
+              .catch(error => console.error('Navigation failed', error));
           });
 
         } else if (user && info) {
@@ -39,13 +39,13 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
           user.updateInfo(info);
           this.storage.updateRider(user).then(() => {
             this.router.navigate(['rider', user.uid])
-              .catch(error => console.error('Navigation failed', error))
+              .catch(error => console.error('Navigation failed', error));
           });
 
         } else {
           // or go back to the main page
           this.router.navigate(['brevets'])
-            .catch(error => console.error('Navigation failed', error))
+            .catch(error => console.error('Navigation failed', error));
         }
       });
   }

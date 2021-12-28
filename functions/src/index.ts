@@ -48,8 +48,7 @@ function checkSignature(controlUid: string, document: Barcode) {
 }
 */
 
-function injectRiderDoc(riderRef: DocumentReference<DocumentData>, barcode?: string) {
-  return from(riderRef.get())
+const injectRiderDoc = (riderRef: DocumentReference<DocumentData>, barcode?: string) => from(riderRef.get())
     .pipe(
       switchMap(doc => doc.exists ? of(doc.data() as Rider) :
         db.collection('riders')
@@ -62,10 +61,8 @@ function injectRiderDoc(riderRef: DocumentReference<DocumentData>, barcode?: str
               return snapshot.docs[0].data() as Rider;
             }
           }))).toPromise();
-}
 
-function injectCheckpointDoc(checkpointRef: DocumentReference<DocumentData>) {
-  return checkpointRef.get()
+const injectCheckpointDoc = (checkpointRef: DocumentReference<DocumentData>) => checkpointRef.get()
     .then(checkpointDoc => {
       if (checkpointDoc.exists) {
         return checkpointDoc.data() as Control;
@@ -73,7 +70,6 @@ function injectCheckpointDoc(checkpointRef: DocumentReference<DocumentData>) {
         throw new Error('checkpoint not found');
       }
     });
-}
 
 interface Barcode {
   uid: string;
@@ -110,10 +106,10 @@ interface Rider {
   displayName: string;
 }
 
-function duplicateBarcode(barcodeObj: Barcode, control: Control | Rider, collection: 'checkpoints' | 'riders'): Promise<void> {
+const duplicateBarcode = (barcodeObj: Barcode, control: Control | Rider, collection: 'checkpoints' | 'riders'): Promise<void> => {
   if (barcodeObj.copy) {
     console.warn('avoid creating a barcode copying loop');
-    return Promise.resolve()
+    return Promise.resolve();
   }
 
   const barcode = barcodeObj.code.trim();
@@ -128,10 +124,10 @@ function duplicateBarcode(barcodeObj: Barcode, control: Control | Rider, collect
       // signature: makeSignature(barcode)
     } as Barcode)
     .then(ref => ref.update({uid: ref.id})) as Promise<void>;
-}
+};
 
-function updateRiderInfo(args: {brevetUid: string, checkpointUid: string, riderUid: string,
-                         riderName: string, riderCode: string, time: Timestamp}) {
+const updateRiderInfo = (args: {brevetUid: string; checkpointUid: string; riderUid: string;
+                         riderName: string; riderCode: string; time: Timestamp;}) => {
   const {brevetUid, checkpointUid, riderUid, riderName, riderCode, time} = args;
   const ref = db.doc(`brevets/${brevetUid}/checkpoints/${checkpointUid}` +
     `/riders/${riderUid}`);
@@ -153,11 +149,9 @@ function updateRiderInfo(args: {brevetUid: string, checkpointUid: string, riderU
       };
     })
     .then(document => ref.set(document, {merge: true}));
-}
+};
 
-function addCreated(barcodeObj: Barcode) {
-  return {...barcodeObj, created: Timestamp.now()} as Barcode;
-}
+const addCreated = (barcodeObj: Barcode) => ({...barcodeObj, created: Timestamp.now()} as Barcode);
 
 export const createCheckpointBarcode = functions.firestore.document('checkpoints/{checkpointUid}/barcodes/{documentUid}')
   .onCreate((snapshot, context) => {
@@ -284,10 +278,10 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
 
     if (data.copy) {
       console.warn('avoid creating a checkpoint copying loop');
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
-    return geo.collection("checkpoints").doc(checkpointUid).set({
+    return geo.collection('checkpoints').doc(checkpointUid).set({
       displayName: data.displayName,
       distance: data.distance,
       coordinates: data.coordinates,
@@ -309,7 +303,7 @@ export const updateCheckpoint = functions.firestore.document('checkpoints/{check
 
     if (data.copy) {
       console.warn('avoid creating a checkpoint copying loop');
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
     return db.doc(`brevets/${data.brevet.uid}/checkpoints/${checkpointUid}`).set({

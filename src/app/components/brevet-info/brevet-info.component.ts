@@ -28,8 +28,8 @@ import {Rider} from '../../models/rider';
 import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
 import {environment} from '../../../environments/environment';
 import {TrackNotFound} from '../../models/track-not-found';
+import {StravaTokens} from 'src/app/models/strava-tokens';
 import Timestamp = firebase.firestore.Timestamp;
-import { StravaTokens } from 'src/app/models/strava-tokens';
 
 type ProgressColumn = {
   id: string;
@@ -110,7 +110,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       const brevetUid = route.get('uid');
 
       if ('state' in query) {
-        console.log('= strava token', query);
+        console.log('= strava auth', query);
         if ('error' in query && query.error === 'access_denied') {
           this.snackBar.open(`Доступ запрещён`, 'Закрыть');
           this.router.navigate(['brevet', brevetUid])
@@ -232,14 +232,14 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         this.brevet = brevet;
         if (brevet.track) {
           this.geoJSON = {
-            'type': 'Feature',
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': brevet.track.map(point => [
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: brevet.track.map(point => [
                 point.coordinates?.longitude,
                 point.coordinates?.latitude])
             }
-          }
+          };
         }
         this.formGroup.controls.name?.setValue(brevet.name);
         this.formGroup.controls.length?.setValue(brevet.length);
@@ -325,15 +325,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   importCheckpoints() {
-    firebase.functions().useEmulator("localhost", 9090);
-
     const createCheckpoints = firebase.functions().httpsCallable('create_checkpoints');
     return createCheckpoints({brevetUid: this.brevet?.uid})
       .then((result) => result.data)
       .then((result) => {
         console.log('= function result', result);
         return result;
-      })
+      });
   }
 
   startScanner() {
@@ -431,7 +429,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           'Закрыть');
       })
       .catch(error => {
-        console.error("strava import error", error);
+        console.error('strava import error', error);
         if (error instanceof TrackNotFound) {
           this.snackBar.open(`Трек не найден. ${error.message}`,
             'Закрыть');

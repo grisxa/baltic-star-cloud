@@ -10,7 +10,7 @@ import {TrackNotFound} from '../models/track-not-found';
   providedIn: 'root'
 })
 export class StravaActivityService {
-  private baseUrl = 'https://www.strava.com/oauth'
+  private baseUrl = 'https://www.strava.com/oauth';
   constructor(private http: HttpClient) { }
 
   login(back: string) {
@@ -43,13 +43,11 @@ export class StravaActivityService {
       .then((result) => result.data)
       .then((data) => {
         if (data.error === 404) {
-          throw new TrackNotFound(data.message)
+          throw new TrackNotFound(data.message);
         }
         return data.message;
-      })
+      });
   }
 }
 
-export const tokenExpired = (tokens?: StravaTokens): boolean => {
-  return (Date.now() / 1000) >= (tokens?.expires_at || 0);
-};
+export const tokenExpired = (tokens?: StravaTokens): boolean => (Date.now() / 1000) >= (tokens?.expires_at || 0);

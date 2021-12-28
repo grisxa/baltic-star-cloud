@@ -3,6 +3,7 @@ import * as PDFDocument from 'pdfkit';
 import * as admin from 'firebase-admin';
 import * as QRCode from 'qrcode';
 
+/* eslint max-len: ["error", { "ignoreStrings": true, "code": 100 }] */
 export const printCheckpoint = functions.https.onRequest((request, response) => {
   const pdf = new PDFDocument({size: 'A4'});
 

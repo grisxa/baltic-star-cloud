@@ -14,8 +14,8 @@ type PendingProfiles = {
   [name: string]: {
     info: ProviderInfo;
     profile?: ProviderDetails;
-  }
-}
+  };
+};
 
 @Injectable({
   providedIn: 'root'
@@ -106,17 +106,6 @@ export class AuthService implements OnDestroy {
       });
   }
 
-  private addPendingProviders(user: firebase.User, rider: Rider) {
-    const providerInfo: UserInfo | null = user?.providerData[0];
-    if (providerInfo?.providerId &&
-      !rider.providers?.find(p => p.providerId === providerInfo?.providerId)) {
-      this.pendingProfiles[providerInfo.providerId] = {
-        info: providerInfo,
-        profile: undefined,
-      };
-    }
-  }
-
 // FIXME: when to destroy?
   ngOnDestroy() {
     this.unsubscribe$.next();
@@ -137,12 +126,23 @@ export class AuthService implements OnDestroy {
   }
 
   hasProvider(id: string): boolean {
-    return !!this.user?.providers?.find((p: ProviderInfo) => p.providerId === id)
+    return !!this.user?.providers?.find((p: ProviderInfo) => p.providerId === id);
   }
 
   async logout() {
     this.settings.removeKey('user');
     this.user$.next(undefined);
     await this.fireAuth.signOut();
+  }
+
+  private addPendingProviders(user: firebase.User, rider: Rider) {
+    const providerInfo: UserInfo | null = user?.providerData[0];
+    if (providerInfo?.providerId &&
+      !rider.providers?.find(p => p.providerId === providerInfo?.providerId)) {
+      this.pendingProfiles[providerInfo.providerId] = {
+        info: providerInfo,
+        profile: undefined,
+      };
+    }
   }
 }

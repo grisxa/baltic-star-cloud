@@ -12,13 +12,12 @@ interface UserWithProfile extends User {
   profile?: ProviderDetails;
 }
 
+/* eslint @typescript-eslint/naming-convention: "warn" */
 export type ProviderDetails = {
   code: string;
   name: string;
   email: string;
-  /* eslint @typescript-eslint/naming-convention: "warn" */
   given_name?: string;
-  /* eslint @typescript-eslint/naming-convention: "warn" */
   family_name?: string;
   birthDate: string;
   city: string;
@@ -36,7 +35,7 @@ export interface ProviderInfo {
 
 export class RiderDetails {
   code?: string;
-  displayName?: string;
+  displayName?: string|null;
   firstName?: string;
   lastName?: string;
   birthDate?: Timestamp;
@@ -107,7 +106,7 @@ export class Rider extends RiderDetails {
       email: profile?.email,
       displayName: profile?.name,
       uid: profile?.id || profile?.sub,
-      providerId: providerId,
+      providerId,
     };
     return copyDefinedProperties(draft);
   };
@@ -167,11 +166,11 @@ export class Rider extends RiderDetails {
   }
 }
 
-function copyDefinedProperties(draft: object): object {
-  const result = {}
+const copyDefinedProperties = (draft: RiderDetails|ProviderInfo): RiderDetails|ProviderInfo => {
+  const result = {};
   Object.keys(draft).forEach(
     // @ts-ignore
     (key: string) => draft[key] !== undefined ? result[key] = draft[key] : null
   );
   return result;
-}
+};

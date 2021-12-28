@@ -29,7 +29,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Список участников');
     this.storage.watchRiders()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((riders: Rider[]) => this.riders$.next(riders))
+      .subscribe((riders: Rider[]) => this.riders$.next(riders));
   }
 
   // release watchers

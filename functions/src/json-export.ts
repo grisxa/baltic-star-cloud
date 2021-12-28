@@ -55,7 +55,7 @@ export const jsonExport = functions.https.onRequest((request, response) => {
             checkIn[code] = rider.time[0];
           }
           if (rider.code) {
-            checkIn['code'] = rider.code;
+            checkIn.code = rider.code;
           }
           return checkIn;
         }))

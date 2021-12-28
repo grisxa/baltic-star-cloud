@@ -226,7 +226,7 @@ export class StorageService {
 
   updateRider(rider?: Rider) {
     if (!rider) {
-      return Promise.reject()
+      return Promise.reject();
     }
     // avoid storing User auth (managed by firebase)
     const {auth, ...doc} = rider;
@@ -238,7 +238,7 @@ export class StorageService {
 
   watchRider(uid?: string): Observable<Rider|undefined> {
     if (!uid) {
-      return of(undefined)
+      return of(undefined);
     }
     return this.firestore
       .collection<Rider>('riders')
@@ -248,13 +248,13 @@ export class StorageService {
 
   getRider(uid?: string): Observable<Rider|undefined> {
     if (!uid) {
-      return of(undefined)
+      return of(undefined);
     }
     return this.firestore
       .collection<Rider>('riders')
       .doc(uid)
       .get()
-      .pipe(map(snapshot => snapshot.data()))
+      .pipe(map(snapshot => snapshot.data()));
   }
 
   watchRiders() {

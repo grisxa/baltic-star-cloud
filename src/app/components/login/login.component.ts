@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe((user?: Rider) => {
         if (user) {
           this.router.navigate(['after-login'])
-            .catch(error => console.error('Navigation failed', error))
+            .catch(error => console.error('Navigation failed', error));
         }
       });
   }

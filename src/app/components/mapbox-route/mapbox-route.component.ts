@@ -51,18 +51,18 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
       }
 
       this.map.addSource('route', {
-        'type': 'geojson',
-        'data': this.geoJSON
+        type: 'geojson',
+        data: this.geoJSON
       });
       this.map.addLayer({
-        'id': 'route',
-        'type': 'line',
-        'source': 'route',
-        'layout': {
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
           'line-join': 'round',
           'line-cap': 'round'
         },
-        'paint': {
+        paint: {
           'line-color': 'red',
           'line-width': 2
         }

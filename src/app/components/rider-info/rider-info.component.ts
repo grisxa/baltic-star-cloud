@@ -36,25 +36,25 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       name: 'oidc.balticstar',
       disabled: false,
       cssClass: 'baltic-star',
-      icon: "icon_baltic_star",
-      iconDisabled: "icon_baltic_star_bw",
+      icon: 'icon_baltic_star',
+      iconDisabled: 'icon_baltic_star_bw',
       framework: new firebase.auth.OAuthProvider('oidc.balticstar')
     },
     {
       name: 'google.com',
       disabled: false,
       cssClass: 'google',
-      icon: "icon_google",
-      iconDisabled: "icon_google_bw",
+      icon: 'icon_google',
+      iconDisabled: 'icon_google_bw',
       framework: new firebase.auth.GoogleAuthProvider()
     },
     {
       name: 'facebook.com',
       disabled: false,
       cssClass: 'facebook',
-      icon: "icon_facebook",
+      icon: 'icon_facebook',
       // the same
-      iconDisabled: "icon_facebook",
+      iconDisabled: 'icon_facebook',
       framework: new firebase.auth.FacebookAuthProvider()
     },
   ];
@@ -99,7 +99,9 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         filter<Rider|undefined>(Boolean),
         // @ts-ignore
       ).subscribe((rider: Rider) => {
-        rider.displayName ? this.titleService.setTitle(rider.displayName) : null;
+        if (rider.displayName) {
+          this.titleService.setTitle(rider.displayName);
+        }
         this.rider = Rider.fromDoc(rider);
         this.formGroup.controls.firstName?.setValue(rider.firstName);
         this.formGroup.controls.lastName?.setValue(rider.lastName);
@@ -153,15 +155,20 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
     return this.auth.hasProvider(id);
   }
 
-  linkProvider(name: string, provider: firebase.auth.OAuthProvider|firebase.auth.GoogleAuthProvider|firebase.auth.FacebookAuthProvider|firebase.auth.EmailAuthProvider) {
+  linkProvider(
+    name: string,
+    provider: firebase.auth.OAuthProvider
+      | firebase.auth.GoogleAuthProvider
+      | firebase.auth.FacebookAuthProvider
+      | firebase.auth.EmailAuthProvider) {
     const config = environment.auth.signInOptions?.find(
         // @ts-ignore
         (settings: unknown) => settings.provider === name
-      )
+      );
     // @ts-ignore
     config?.scopes?.forEach((scope: string) => provider.addScope(scope));
     // @ts-ignore
-    if (config?.customParameters) { provider.setCustomParameters(config?.customParameters) }
+    if (config?.customParameters) { provider.setCustomParameters(config?.customParameters); }
 
     this.auth.user?.auth?.linkWithRedirect(provider)
       .catch(error => {

@@ -5,16 +5,17 @@ import {AxiosResponse} from 'axios';
 const axios = require('axios');
 const TWO_HOURS = 60 * 60 * 2;
 
+/* eslint @typescript-eslint/naming-convention: "warn" */
 type StravaTokens = {
-  access_token: string,
+  access_token: string;
   // the athlete's profile, don't keep
-  athlete?: any,
+  athlete?: any;
   // the only field to copy from the athlete's profile
-  athlete_id?: number,
-  expires_at: number,
-  expires_in: number,
-  refresh_token: string,
-  token_type: string,
+  athlete_id?: number;
+  expires_at: number;
+  expires_in: number;
+  refresh_token: string;
+  token_type: string;
 };
 
 admin.initializeApp(functions.config().firebase);
@@ -23,6 +24,7 @@ const authBaseUrl = 'https://www.strava.com/oauth';
 const apiBaseUrl = 'https://www.strava.com/api/v3';
 
 export const getStravaToken = functions.https.onCall((data, context) => {
+  // TODO: make data private
   const riderRef = db.doc(`riders/${context.auth?.uid}`);
   // firebase functions:config:get
   const config = functions.config();
@@ -42,7 +44,7 @@ export const getStravaToken = functions.https.onCall((data, context) => {
     })
     .then((tokens: StravaTokens) => {
       riderRef.update({strava: tokens});
-      return tokens
+      return tokens;
     })
     .catch((error: Error) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);
@@ -50,6 +52,7 @@ export const getStravaToken = functions.https.onCall((data, context) => {
 });
 
 export const refreshStravaToken = functions.https.onCall((data, context) => {
+  // TODO: make data private
   const riderRef = db.doc(`riders/${context.auth?.uid}`);
   // firebase functions:config:get
   const config = functions.config();
@@ -73,6 +76,7 @@ export const refreshStravaToken = functions.https.onCall((data, context) => {
 });
 
 export const searchActivities = functions.https.onCall((data, context) => {
+  // TODO: make data private
   const riderRef = db.doc(`riders/${context.auth?.uid}`);
 
   return riderRef.get()
@@ -81,7 +85,7 @@ export const searchActivities = functions.https.onCall((data, context) => {
       const headers = {
         Authorization: `${document.strava.token_type} ${document.strava.access_token}`
       };
-      const params: { after?: number, before?: number } = {};
+      const params: { after?: number; before?: number } = {};
       if (data.after) {
         params.after = data.after - TWO_HOURS;
       }
@@ -98,6 +102,7 @@ export const searchActivities = functions.https.onCall((data, context) => {
 });
 
 export const getStreams = functions.https.onCall((data, context) => {
+  // TODO: make data private
   const riderRef = db.doc(`riders/${context.auth?.uid}`);
 
   return riderRef.get()
@@ -106,7 +111,7 @@ export const getStreams = functions.https.onCall((data, context) => {
       const headers = {
         Authorization: `${document.strava.token_type} ${document.strava.access_token}`
       };
-      const params: { keys: string, key_by_type: boolean } = {
+      const params: { keys: string; key_by_type: boolean } = {
         keys: 'latlng,time',
         key_by_type: true,
       };
