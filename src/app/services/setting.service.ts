@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
   providedIn: 'root'
 })
 export class SettingService {
-  static prefix = 'brevet.online/';
+  static prefix = 'brevet.top/';
 
   getValue(key: string) {
     const value = localStorage.getItem(SettingService.prefix + key);
