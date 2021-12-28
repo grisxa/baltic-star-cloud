@@ -2,8 +2,11 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import {GeoFirestore} from 'geofirestore';
 
 export * from './checkpoint-print';
+export * from './json-export';
+export * from './strava-import';
 // import * as crypto from 'crypto';
 import GeoPoint = admin.firestore.GeoPoint;
 import Timestamp = admin.firestore.Timestamp;
@@ -13,8 +16,9 @@ import DocumentData = admin.firestore.DocumentData;
 // import secret from './secret';
 
 
-admin.initializeApp(functions.config().firebase);
+// admin.initializeApp({name: 'test'}); // functions.config().firebase);
 const db = admin.firestore();
+const geo = new GeoFirestore(db);
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -248,6 +252,8 @@ export const updateBrevet = functions.firestore.document('brevets/{brevetUid}')
     const {brevetUid} = context.params;
 
     console.log('= update brevet', brevetUid);
+    // field selection
+    const {name, length} = change.after.data();
 
     return change.after.ref
       .collection('checkpoints').get()
@@ -257,11 +263,11 @@ export const updateBrevet = functions.firestore.document('brevets/{brevetUid}')
         const checkpoint = checkpointDoc.data();
         console.log(`update /brevets/ ${brevetUid} /checkpoints/ ${checkpoint.uid}`);
         return checkpointDoc.ref.set({
-            brevet: change.after.data()
+            brevet: {uid: brevetUid, name, length}
           }, {merge: true}
           // FIXME: wait for inner promises
         ).then(() => db.doc(`checkpoints/${checkpoint.uid}`).set({
-            brevet: change.after.data()
+            brevet: {uid: brevetUid, name, length}
           }, {merge: true}
           )
         ).then(() => console.log(`updated /checkpoints/ ${checkpoint.uid}`));
@@ -281,12 +287,13 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
       return Promise.resolve()
     }
 
-    return db.doc(`checkpoints/${checkpointUid}`).set({
+    return geo.collection("checkpoints").doc(checkpointUid).set({
       displayName: data.displayName,
       distance: data.distance,
       coordinates: data.coordinates,
       selfcheck: data.selfcheck || false,
       sleep: data.sleep || false,
+      brevet: data.brevet,
       copy: true
     }, {merge: true})
       .then(() => console.log(`updated /checkpoints/ ${checkpointUid}`))

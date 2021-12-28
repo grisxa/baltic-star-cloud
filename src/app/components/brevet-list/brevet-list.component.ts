@@ -34,6 +34,7 @@ export class BrevetListComponent implements OnInit {
           this.oldBrevets.push(brevet) :
           this.newBrevets.push(brevet)
         );
+      console.log('= brevets', this.oldBrevets, this.newBrevets);
     });
   }
 

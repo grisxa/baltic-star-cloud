@@ -57,6 +57,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             'Закрыть');
         });
     }
+    console.log('= user', event.authResult);
     if (info?.isNewUser && info?.providerId === 'oidc.balticstar') {
       // @ts-ignore
       event.authResult.user.profile = info.profile;

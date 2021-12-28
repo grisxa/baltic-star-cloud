@@ -16,6 +16,7 @@ const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 })
 export class MapboxRouteComponent implements OnInit, OnDestroy {
   @Input() checkpoints?: Checkpoint[];
+  @Input() geoJSON: any;
   map!: mapboxGL.Map;
   shownControlIndex = 0;
   stopJumping = false;
@@ -44,6 +45,30 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
       this.map.setCenter(DEFAULT_CENTER);
     }
 
+    this.map.on('load', () => {
+      if (!this.validCoordinates(startPoint)) {
+        this.toTheRouteStart();
+      }
+
+      this.map.addSource('route', {
+        'type': 'geojson',
+        'data': this.geoJSON
+      });
+      this.map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': 'route',
+        'layout': {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-color': 'red',
+          'line-width': 2
+        }
+      });
+    });
+
 //    center: validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,
 
     this
@@ -62,6 +87,13 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
         .addTo(this.map));
 
     this.map.once('idle', this.shiftMap.bind(this));
+  }
+
+  toTheRouteStart() {
+    const routeStart: number[] = this.geoJSON?.geometry?.coordinates[0];
+    if (routeStart) {
+      this.map.setCenter({lng: routeStart[0], lat: routeStart[1]});
+    }
   }
 
   shiftMap() {

@@ -20,6 +20,7 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
 import {MatTableModule} from '@angular/material/table';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {AngularFireAuthModule, USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/auth';
+import {USE_EMULATOR as USE_FUNCTIONS_EMULATOR} from '@angular/fire/functions';
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
 import {RiderInfoComponent} from './components/rider-info/rider-info.component';
@@ -153,6 +154,10 @@ const appRoutes: Routes = [
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {verticalPosition: 'top', duration: 5000}
+    },
+    {
+      provide: USE_FUNCTIONS_EMULATOR,
+      useValue: environment.useEmulators ? ['localhost', 5001] : undefined
     },
     {
       provide: USE_FIRESTORE_EMULATOR,

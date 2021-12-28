@@ -18,9 +18,9 @@ export class AppComponent {
         this.domSanitizer
           .bypassSecurityTrustResourceUrl('/assets/icons/iconify-bed.svg')
       ).addSvgIcon(
-      'icon_qr',
-      this.domSanitizer
-        .bypassSecurityTrustResourceUrl('/assets/icons/iconify-qr.svg')
+        'icon_qr',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/iconify-qr.svg')
       ).addSvgIcon(
         'icon_baltic_star',
         this.domSanitizer
@@ -41,6 +41,10 @@ export class AppComponent {
         'icon_facebook',
         this.domSanitizer
           .bypassSecurityTrustResourceUrl('/assets/icons/facebook.svg')
+      ).addSvgIcon(
+        'icon_strava',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/strava.svg')
       );
   }
 }

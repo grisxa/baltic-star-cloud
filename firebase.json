@@ -10,7 +10,7 @@
     ]
   },
   "hosting": {
-    "site": "baltic-star-cloud",
+    "site": "beta-brevet-online", /* "baltic-star-cloud", "beta-brevet-online", */
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -25,6 +25,14 @@
       {
         "source": "/print/**",
         "function": "printCheckpoint"
+      },
+      {
+        "source": "/json/**",
+        "function": "jsonExport"
+      },
+      {
+        "source": "/strava/**",
+        "function": "stravaImport"
       },
       {
         "source": "**",

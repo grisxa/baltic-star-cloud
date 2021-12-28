@@ -22,6 +22,11 @@ export class StorageService {
   geoCheckpoints: geofirestore.GeoCollectionReference;
 
   constructor(private firestore: AngularFirestore) {
+    /*
+    firebase.firestore().clearPersistence().catch((error) => {
+      console.error('Firestore cache cleaning error', error.code, error.message);
+    });
+     */
     this.geoCheckpoints = geofirestore
       .initializeApp(firebase.firestore())
       .collection('checkpoints');
@@ -52,7 +57,8 @@ export class StorageService {
       .collection<Brevet>('brevets')
       .doc(uid)
       .valueChanges().pipe(
-        filter(isNotNullOrUndefined)
+        filter(isNotNullOrUndefined),
+        map(doc => Brevet.fromDoc(doc))
       );
   }
 
@@ -67,7 +73,7 @@ export class StorageService {
     return this.firestore
       .collection<Brevet>('brevets')
       .doc(brevet.uid)
-      .update(brevet);
+      .update({...brevet});
   }
 
   hasCheckpoint(brevetUid: string, checkpointUid: string) {

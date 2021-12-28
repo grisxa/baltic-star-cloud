@@ -7,14 +7,13 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 import firebase from 'firebase/app';
-import {Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Brevet, NONE_BREVET} from '../../models/brevet';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {PlotarouteInfoService} from '../../services/plotaroute-info.service';
 import {RoutePoint} from '../../models/route-point';
 import {LocationService} from '../../services/location.service';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
@@ -25,7 +24,12 @@ import {isNotNullOrUndefined} from '../../utils';
 import {BarcodeQueueService} from '../../services/barcode-queue.service';
 import {Offline} from '../../models/offline';
 import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-location-dialog.component';
+import {Rider} from '../../models/rider';
+import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
+import {environment} from '../../../environments/environment';
+import {TrackNotFound} from '../../models/track-not-found';
 import Timestamp = firebase.firestore.Timestamp;
+import { StravaTokens } from 'src/app/models/strava-tokens';
 
 type ProgressColumn = {
   id: string;
@@ -49,9 +53,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   mapId?: number;
   formGroup: FormGroup;
   showMap = false;
+  stravaClientId: string = environment.strava.clientId;
 
   checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[] = [];
+  riders: Rider[] = [];
 
   // FIXME: consider pre-defined
   // dynamic column names like cp, cp3 (no pre-defined count)
@@ -59,6 +65,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   columnsToDisplay: ProgressColumn[] = [firstColumn];
   firstHeader = [firstColumn.id];
   secondHeader = ['dist-' + firstColumn.id];
+
+  geoJSON = {};
 
   private unsubscribe$ = new Subject();
   private brevet$: Observable<Brevet> = of({} as Brevet);
@@ -72,13 +80,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
               private queue: BarcodeQueueService,
               public dialog: MatDialog,
               public geoLocation: LocationService,
-              private routeService: PlotarouteInfoService,
+              private strava: StravaActivityService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
       length: new FormControl(0, [Validators.required, Validators.pattern('[0-9]+')]),
       startDate: new FormControl(new Date(), Validators.required),
-      mapUrl: new FormControl('', Validators.required),
+      mapUrl: new FormControl('', [Validators.required, Validators.pattern('https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+')]),
     });
   }
 
@@ -96,7 +104,41 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.titleService.setTitle('Бревет');
+    combineLatest([this.route.queryParams, this.route.paramMap])
+    .subscribe(params => {
+      const [query, route] = params;
+      const brevetUid = route.get('uid');
 
+      if ('state' in query) {
+        console.log('= strava token', query);
+        if ('error' in query && query.error === 'access_denied') {
+          this.snackBar.open(`Доступ запрещён`, 'Закрыть');
+          this.router.navigate(['brevet', brevetUid])
+            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
+          return;
+        }
+        if ('scope' in query && !query.scope.includes('activity:read')) {
+          this.snackBar.open(`Не достаточно разрешений`, 'Закрыть');
+          this.router.navigate(['brevet', brevetUid])
+            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
+          return;
+        }
+        if (query.code) {
+          this.strava.getToken(query.code)
+            .then((tokens: StravaTokens) => this.startImporting(tokens))
+            .then(() => this.router.navigate(['brevet', brevetUid]))
+            .catch((error: Error) => {
+              this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
+              console.error(error);
+            });
+        }
+      }
+    });
+    this.storage.watchRiders()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((riders: Rider[]) => {
+        this.riders = riders;
+      });
     this.storage.listCheckpoints()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((snapshot) => {
@@ -156,6 +198,28 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           });
           this.table?.renderRows();
+/*
+          const toExport = this.progress.data.map(row => {
+            const newRow = {
+              code: (this.riders.find(r => r.uid === row.uid) || {})['code'],
+              name: row.name
+            };
+            for (const col in row) {
+              // @ts-ignore
+              const time = row[col];
+              if (time instanceof Timestamp) {
+                const hours = time.toDate().getHours()
+                const minutes = time.toDate().getMinutes();
+                // @ts-ignore
+                newRow[col] = time.toDate().toString();
+                //  (hours > 9 ? hours : "0" + hours) + ":" + (minutes > 9 ? minutes : "0" + minutes);
+              }
+            }
+            return newRow;
+          });
+          // console.log('= brevet result export', JSON.stringify(toExport));
+ */
+
           // this.dataSource.paginator = this.paginator;
         });
     });
@@ -166,6 +230,17 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((brevet: Brevet) => {
         this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
+        if (brevet.track) {
+          this.geoJSON = {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': brevet.track.map(point => [
+                point.coordinates?.longitude,
+                point.coordinates?.latitude])
+            }
+          }
+        }
         this.formGroup.controls.name?.setValue(brevet.name);
         this.formGroup.controls.length?.setValue(brevet.length);
         this.formGroup.controls.mapUrl?.setValue(brevet.mapUrl);
@@ -181,7 +256,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get allowCheckIn(): boolean {
-    return !!this.auth.user;
+    return !!this.auth.user && this.checkpoints.length > 0;
   }
 
   findMapId(url?: string): number {
@@ -193,48 +268,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       return parseInt(idSearch[1], 10);
     }
     return 0;
-  }
-
-  updateMapUrl() {
-    const control = this.formGroup.controls.mapUrl;
-    if (control && control.valid) {
-      const mapId = this.findMapId(control.value);
-      // ignore URL updates if map ID hasn't changed
-      if (mapId === this.findMapId(this.brevet?.mapUrl)) {
-        return;
-      }
-      this.routeService.retrieve(mapId)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe(data => {
-            if (this.brevet) {
-              this.brevet.name = data.name;
-              this.brevet.length = data.length;
-            }
-
-            this.formGroup.controls.name?.setValue(data.name);
-            this.formGroup.controls.length?.setValue(data.length);
-
-            if (data.checkpoints && data.checkpoints.length && this.brevet) {
-              data.checkpoints.forEach(checkpoint => this.storage
-                .createCheckpoint(this.brevet as Brevet,
-                  new Checkpoint({
-                    ...checkpoint,
-                    // Convert the distance from meters to kilometers
-                    distance: Math.round(checkpoint.distance / 1000)
-                  } as RoutePoint)));
-            }
-
-            this.updateField('mapUrl');
-          },
-          error => {
-            console.error(error);
-            // switch back in case of retrieval error
-            control.setValue(this.brevet?.mapUrl);
-          });
-    } else {
-      // switch back if new value is invalid
-      control?.setValue(this.brevet?.mapUrl);
-    }
   }
 
   updateField(field: string) {
@@ -289,6 +322,18 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
       this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid]);
     });
+  }
+
+  importCheckpoints() {
+    firebase.functions().useEmulator("localhost", 9090);
+
+    const createCheckpoints = firebase.functions().httpsCallable('create_checkpoints');
+    return createCheckpoints({brevetUid: this.brevet?.uid})
+      .then((result) => result.data)
+      .then((result) => {
+        console.log('= function result', result);
+        return result;
+      })
   }
 
   startScanner() {
@@ -361,4 +406,40 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
+
+  startImporting(tokens?: StravaTokens) {
+    tokens = tokens || this.auth.user?.strava;
+
+    if (!tokens) {
+      this.strava.login(`${window.location.origin}/brevet/${this.brevet?.uid}`);
+      return;
+    }
+    this.snackBar.open(`Поиск запущен`, 'Закрыть');
+    // chain possible token refreshing
+    Promise.resolve()
+      .then(() => {
+        if (tokenExpired(tokens)) {
+          console.log('= expired strava tokens');
+          return this.strava.refreshToken(tokens);
+        }
+        return;
+      })
+      .then(() => this.strava
+        .searchActivities(this.brevet?.uid, this.auth.user?.uid))
+      .then((count: number) => {
+        this.snackBar.open(`Добавлено ${count} отметок`,
+          'Закрыть');
+      })
+      .catch(error => {
+        console.error("strava import error", error);
+        if (error instanceof TrackNotFound) {
+          this.snackBar.open(`Трек не найден. ${error.message}`,
+            'Закрыть');
+        } else {
+          this.snackBar.open(`Ошибка импорта. ${error.message}`,
+            'Закрыть');
+        }
+      });
+  }
+
 }
