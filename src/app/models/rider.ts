@@ -57,7 +57,7 @@ export class Rider extends RiderDetails {
   // optional Strava connection
   strava?: any;
 
-  constructor(owner: string, uid: string, displayName?: string) {
+  constructor(owner: string, uid: string, displayName?: string|null) {
     super();
     this.owner = owner;
     this.uid = uid;
