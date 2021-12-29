@@ -282,6 +282,7 @@ export const updateBrevetCheckpoint = functions.firestore.document('brevets/{bre
     }
 
     return geo.collection('checkpoints').doc(checkpointUid).set({
+      uid: data.uid,
       displayName: data.displayName,
       distance: data.distance,
       coordinates: data.coordinates,
@@ -307,6 +308,7 @@ export const updateCheckpoint = functions.firestore.document('checkpoints/{check
     }
 
     return db.doc(`brevets/${data.brevet.uid}/checkpoints/${checkpointUid}`).set({
+      uid: data.uid,
       displayName: data.displayName,
       distance: data.distance,
       coordinates: data.coordinates,
