@@ -3,7 +3,6 @@ import * as functions from 'firebase-functions';
 import {AxiosResponse} from 'axios';
 
 const axios = require('axios');
-const TWO_HOURS = 60 * 60 * 2;
 
 /* eslint @typescript-eslint/naming-convention: "warn" */
 type StravaTokens = {
@@ -21,7 +20,6 @@ type StravaTokens = {
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 const authBaseUrl = 'https://www.strava.com/oauth';
-const apiBaseUrl = 'https://www.strava.com/api/v3';
 
 export const getStravaToken = functions.https.onCall((data, context) => {
   const riderRef = db.doc(`private/${context.auth?.uid}`);
@@ -72,53 +70,3 @@ export const refreshStravaToken = functions.https.onCall((data, context) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);
     });
 });
-
-export const searchActivities = functions.https.onCall((data, context) => {
-  // TODO: make data private
-  const riderRef = db.doc(`riders/${context.auth?.uid}`);
-
-  return riderRef.get()
-    .then(snapshot => snapshot.data() || {})
-    .then(document => {
-      const headers = {
-        Authorization: `${document.strava.token_type} ${document.strava.access_token}`
-      };
-      const params: { after?: number; before?: number } = {};
-      if (data.after) {
-        params.after = data.after - TWO_HOURS;
-      }
-      if (data.before) {
-        params.before = data.before + TWO_HOURS;
-      }
-      return axios.get(apiBaseUrl + '/athlete/activities', {headers, params});
-    })
-    .then((reply: AxiosResponse) => reply.data)
-    .catch((error: Error) => {
-      console.error(`= failure ${error.message}`);
-      throw new functions.https.HttpsError('unavailable', error.message);
-    });
-});
-
-export const getStreams = functions.https.onCall((data, context) => {
-  // TODO: make data private
-  const riderRef = db.doc(`riders/${context.auth?.uid}`);
-
-  return riderRef.get()
-    .then(snapshot => snapshot.data() || {})
-    .then(document => {
-      const headers = {
-        Authorization: `${document.strava.token_type} ${document.strava.access_token}`
-      };
-      const params: { keys: string; key_by_type: boolean } = {
-        keys: 'latlng,time',
-        key_by_type: true,
-      };
-      return axios.get(apiBaseUrl + `/activities/${data.id}/streams`, {headers, params});
-    })
-    .then((reply: AxiosResponse) => reply.data)
-    .catch((error: Error) => {
-      console.error(`= failure ${error.message}`);
-      throw new functions.https.HttpsError('unavailable', error.message);
-    });
-});
-
