@@ -47,12 +47,14 @@ export class RiderListComponent implements OnInit, OnDestroy {
     const uid = this.auth.user.hasCard ? this.auth.isAdmin ? '' : owner : owner;
     const rider = new Rider(owner, uid, this.auth.user.displayName);
     this.storage.createRider(rider).then(newUid => {
-      this.router.navigate(['rider', newUid]);
+      this.router.navigate(['rider', newUid])
+        .catch(error => console.error('Navigation failed', error));
     });
   }
 
   deleteRider(uid: string) {
     this.storage.deleteRider(uid)
+      .then(() => console.log(`rider ${uid} has been removed`))
       .catch(error => {
         console.error('rider deletion has failed', error);
         this.snackBar.open(`Не удалось удалить КП. ${error.message}`,

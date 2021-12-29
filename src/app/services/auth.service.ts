@@ -2,7 +2,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
-import {ProviderDetails, ProviderInfo, Rider, RiderDetails} from '../models/rider';
+import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails} from '../models/rider';
 import {switchMap, takeUntil} from 'rxjs/operators';
 import firebase from 'firebase/app';
 import {SettingService} from './setting.service';
@@ -56,7 +56,7 @@ export class AuthService implements OnDestroy {
       switchMap((user: User | null) => user !== null
         ? storage.getRider(user?.uid).pipe(
           switchMap((rider?: Rider) => {
-            if (rider !== undefined) {
+            if (rider !== undefined && Object.keys(rider).length > 0) {
               const providerInfo: UserInfo | null = user?.providerData[0];
               if (providerInfo?.providerId) {
                 this.pendingProfiles[providerInfo.providerId] = {
@@ -85,7 +85,7 @@ export class AuthService implements OnDestroy {
                   const [firstName, lastName] = Rider.splitName(data.info?.displayName);
                   Object.assign(user, {firstName, lastName});
                   if (data.profile) {
-                    const overwrite: RiderDetails = Rider.copyProviderProfile(data.profile);
+                    const overwrite: RiderPublicDetails = Rider.copyProviderProfile(data.profile);
                     Object.assign(user, overwrite);
                   }
                 }

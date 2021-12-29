@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Brevet} from '../models/brevet';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
-import {Rider} from '../models/rider';
+import {Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
 import {Barcode} from '../models/barcode';
-import {filter, map, mergeMap} from 'rxjs/operators';
+import {catchError, filter, map, mergeMap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
 import firebase from 'firebase/app';
 import * as geofirestore from 'geofirestore';
-import {Observable, of} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {isNotNullOrUndefined} from '../utils';
 import GeoPoint = firebase.firestore.GeoPoint;
 import QuerySnapshot = firebase.firestore.QuerySnapshot;
@@ -196,22 +196,30 @@ export class StorageService {
   }
 
   createRider(rider: Rider) {
-    // avoid storing User auth (managed by firebase)
-    const {auth, ...doc} = rider;
-    const docPromise: Promise<void> = rider.uid ?
-      this.firestore
-        .collection<Rider>('riders')
-        .doc(rider.uid)
-        .set(doc as Rider, {merge: true}) :
-      this.firestore
-        .collection<Rider>('riders')
-        .add(doc as Rider)
+    const publicDetails = rider.toPublicDoc();
+
+    let docPromise: Promise<void>;
+    if (rider.uid) {
+      docPromise = this.firestore
+          .collection<RiderPublicDetails>('riders')
+          .doc(rider.uid)
+          .set(publicDetails, {merge: true});
+    }
+    else {
+      docPromise = this.firestore
+        .collection<RiderPublicDetails>('riders')
+        .add(rider.toPublicDoc())
         .then(docRef => {
-          doc.uid = docRef.id;
-          return docRef.update(doc);
+          publicDetails.uid = docRef.id;
+          return docRef.update(publicDetails);
         });
+    }
     return docPromise
-      .then(() => doc.uid)
+      .then(() => this.firestore
+        .collection<RiderPrivateDetails>('private')
+        .doc(publicDetails.uid)
+        .set(rider.toPrivateDoc({uid: publicDetails.uid}), {merge: true}))
+      .then(() => publicDetails.uid)
       .catch(error => {
         console.error('Error adding document: ', error);
       });
@@ -219,42 +227,70 @@ export class StorageService {
 
   deleteRider(uid: string): Promise<void> {
     return this.firestore
-      .collection<Rider>('riders')
+      .collection<RiderPrivateDetails>('private')
       .doc(uid)
-      .delete();
+      .delete()
+      .then(() =>this.firestore
+        .collection<RiderPublicDetails>('riders')
+        .doc(uid)
+        .delete()
+      );
   }
 
   updateRider(rider?: Rider) {
     if (!rider) {
       return Promise.reject();
     }
-    // avoid storing User auth (managed by firebase)
-    const {auth, ...doc} = rider;
     return this.firestore
-      .collection<Rider>('riders')
+      .collection<RiderPublicDetails>('riders')
       .doc(rider.uid)
-      .update(doc);
+      .update(rider.toPublicDoc())
+      .then(() => this.firestore
+        .collection<RiderPrivateDetails>('private')
+        .doc(rider.uid)
+        .update(rider.toPrivateDoc())
+      );
   }
 
   watchRider(uid?: string): Observable<Rider|undefined> {
     if (!uid) {
       return of(undefined);
     }
-    return this.firestore
-      .collection<Rider>('riders')
+    const publicDetails$ = this.firestore
+      .collection<RiderPublicDetails>('riders')
       .doc(uid)
       .valueChanges();
+    const privateDetails$ = this.firestore
+      .collection<RiderPrivateDetails>('private')
+      .doc(uid)
+      .valueChanges()
+      // test for access error
+      .pipe(catchError(error => of(undefined)));
+
+    return combineLatest([publicDetails$, privateDetails$])
+      .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));
   }
 
   getRider(uid?: string): Observable<Rider|undefined> {
     if (!uid) {
       return of(undefined);
     }
-    return this.firestore
-      .collection<Rider>('riders')
+    const publicDetails$ = this.firestore
+      .collection<RiderPublicDetails>('riders')
       .doc(uid)
       .get()
       .pipe(map(snapshot => snapshot.data()));
+    const privateDetails$ = this.firestore
+      .collection<RiderPrivateDetails>('private')
+      .doc(uid)
+      .get()
+      .pipe(
+        map(snapshot => snapshot.data()),
+        // test for access error
+        catchError(error => of(undefined))
+      );
+    return combineLatest([publicDetails$, privateDetails$])
+      .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));
   }
 
   watchRiders() {

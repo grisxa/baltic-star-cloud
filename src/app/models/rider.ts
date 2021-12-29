@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import {Buffer} from 'buffer';
+import {StravaTokens} from './strava-tokens';
 import Timestamp = firebase.firestore.Timestamp;
 import User = firebase.User;
 import UserInfo = firebase.UserInfo;
@@ -26,14 +27,17 @@ export type ProviderDetails = {
   id?: string;
 };
 
-export interface ProviderInfo {
+export type ProviderInfo = {
   displayName?: string|null;
   email?: string|null;
   uid?: string;
   providerId?: string;
-}
+};
 
-export class RiderDetails {
+export type RiderPublicDetails = {
+  // Google Auth unique user ID
+  uid?: string;
+  owner?: string;
   code?: string;
   displayName?: string|null;
   firstName?: string;
@@ -41,9 +45,23 @@ export class RiderDetails {
   birthDate?: Timestamp;
   city?: string;
   country?: string;
-}
+  hidden?: boolean;
+};
 
-export class Rider extends RiderDetails {
+export type RiderPrivateDetails = {
+  // Google Auth unique user ID
+  uid?: string;
+  owner?: string;
+  admin: boolean;
+
+  // linked OAuth accounts
+  providers?: ProviderInfo[];
+
+  // optional Strava connection
+  strava?: StravaTokens;
+};
+
+export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   // Google Auth unique user ID
   owner: string;
   auth: UserWithProfile | null = null;
@@ -53,12 +71,18 @@ export class Rider extends RiderDetails {
   hidden = false;
   admin = false;
 
+  code?: string;
+  displayName?: string|null;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: Timestamp;
+  city?: string;
+  country?: string;
 
   // optional Strava connection
-  strava?: any;
+  strava?: StravaTokens;
 
   constructor(owner: string, uid: string, displayName?: string|null) {
-    super();
     this.owner = owner;
     this.uid = uid;
 
@@ -78,8 +102,8 @@ export class Rider extends RiderDetails {
     return [firstName, lastName];
   }
 
-  static copyProviderProfile(profile?: ProviderDetails): RiderDetails {
-    const draft: RiderDetails = {
+  static copyProviderProfile(profile?: ProviderDetails): RiderPublicDetails {
+    const draft: RiderPublicDetails = {
       city: profile?.city,
       country: profile?.country,
       displayName: profile?.name,
@@ -123,8 +147,48 @@ export class Rider extends RiderDetails {
       rider.providers.push(Rider.copyProviderInfo(providerInfo));
     }
 
-    const profile: RiderDetails = Rider.copyProviderProfile(doc.auth?.profile);
+    const profile: RiderPublicDetails = Rider.copyProviderProfile(doc.auth?.profile);
     return Object.assign(rider, profile, doc);
+  }
+
+  toPublicDoc(): RiderPublicDetails {
+    const fields = [
+      'owner',
+      'uid',
+      'code',
+      'displayName',
+      'firstName',
+      'lastName',
+      'birthDate',
+      'city',
+      'country',
+      'hidden',
+    ];
+    const result = {} as RiderPublicDetails;
+    fields.forEach(
+      // @ts-ignore
+      (key: string) => this[key] !== undefined ? result[key] = this[key] : null
+    );
+    return result;
+  }
+
+  toPrivateDoc(extra?: {[key: string]: string|undefined}): RiderPrivateDetails {
+    const fields = [
+      'owner',
+      'uid',
+      'admin',
+      'providers',
+      'strava',
+    ];
+    const result = {} as RiderPrivateDetails;
+    fields.forEach(
+      // @ts-ignore
+      (key: string) => this[key] !== undefined ? result[key] = this[key] : null
+    );
+    if (extra) {
+      Object.assign(result, extra);
+    }
+    return result;
   }
 
   updateInfo(encoded: string) {
@@ -166,7 +230,7 @@ export class Rider extends RiderDetails {
   }
 }
 
-const copyDefinedProperties = (draft: RiderDetails|ProviderInfo): RiderDetails|ProviderInfo => {
+const copyDefinedProperties = (draft: RiderPublicDetails|ProviderInfo): RiderPublicDetails|ProviderInfo => {
   const result = {};
   Object.keys(draft).forEach(
     // @ts-ignore

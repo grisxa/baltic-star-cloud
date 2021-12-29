@@ -4,7 +4,7 @@ service cloud.firestore {
 
     /* check a rider record for a boolean admin property */
     function isAdmin() {
-      return get(/databases/$(database)/documents/riders/$(request.auth.token.sub)).data.admin == true;
+      return get(/databases/$(database)/documents/private/$(request.auth.token.sub)).data.admin == true;
     }
 
     /* check for authentication UID match: avoid counterfeiting */
@@ -69,23 +69,32 @@ service cloud.firestore {
       allow create: if isAdmin() || request.auth.uid != null;
       /* edit self profile - match by JWT token, forbid uid change */
       allow update: if (resource.data.owner == request.auth.token.sub
-                    /* forbid changing code: rename the whole document */
+                    /* forbid changing uid: rename the whole document */
                     &&  resource.data.uid == request.resource.data.uid
                     &&  resource.data.uid == rider)
                     || isAdmin();
-      /* admin may delete a rider */
+      /* admin may delete a rider or the rider himself */
       allow delete: if isAdmin() || isOwner(request);
-      match /private/{document} {
-        // TODO: compare to owner
-        allow read, write: if isAdmin() || request.auth.token.sub == rider;
-      }
       match /barcodes/{barcode} {
         allow read;
-        allow create: if request.auth.uid != null || request.resource.data.signature != null;
+        allow create: if request.auth.uid != null;
         allow update: if request.auth.uid != null;
         /* delete barcode reports in console only */
         allow delete: if false;
       }
     }
+    match /private/{rider} {
+      allow create: if isAdmin() || request.auth.uid != null;
+      /* edit self profile - match by JWT token, forbid uid change */
+      allow update: if (isOwner(request)
+                    /* forbid changing uid: rename the whole document */
+                    &&  resource.data.uid == request.resource.data.uid
+                    &&  resource.data.uid == rider)
+                    || isAdmin();
+      /* admin may delete a rider or the rider himself */
+      allow delete: if isAdmin() || isOwner(request);
+      allow read, write: if isAdmin() || request.auth.token.sub == rider;
+    }
+
   }
 }

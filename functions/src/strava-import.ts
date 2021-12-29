@@ -24,8 +24,7 @@ const authBaseUrl = 'https://www.strava.com/oauth';
 const apiBaseUrl = 'https://www.strava.com/api/v3';
 
 export const getStravaToken = functions.https.onCall((data, context) => {
-  // TODO: make data private
-  const riderRef = db.doc(`riders/${context.auth?.uid}`);
+  const riderRef = db.doc(`private/${context.auth?.uid}`);
   // firebase functions:config:get
   const config = functions.config();
   const body = {
@@ -52,8 +51,7 @@ export const getStravaToken = functions.https.onCall((data, context) => {
 });
 
 export const refreshStravaToken = functions.https.onCall((data, context) => {
-  // TODO: make data private
-  const riderRef = db.doc(`riders/${context.auth?.uid}`);
+  const riderRef = db.doc(`private/${context.auth?.uid}`);
   // firebase functions:config:get
   const config = functions.config();
 
