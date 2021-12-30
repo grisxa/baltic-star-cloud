@@ -6,7 +6,7 @@ import {Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
 import {Barcode} from '../models/barcode';
 import {catchError, filter, map, mergeMap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import * as geofirestore from 'geofirestore';
 import {combineLatest, Observable, of} from 'rxjs';
 import {isNotNullOrUndefined} from '../utils';

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-offline-switch',

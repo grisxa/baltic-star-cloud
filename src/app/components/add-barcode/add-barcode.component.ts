@@ -6,7 +6,7 @@ import {AuthService} from '../../services/auth.service';
 import {Observable, of, Subject} from 'rxjs';
 import {Checkpoint} from '../../models/checkpoint';
 import {FormControl, Validators} from '@angular/forms';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {Barcode} from '../../models/barcode';
 import {MatInput} from '@angular/material/input';
 import {takeUntil} from 'rxjs/operators';

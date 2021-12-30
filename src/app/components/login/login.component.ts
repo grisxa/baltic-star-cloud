@@ -5,7 +5,7 @@ import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {Subject} from 'rxjs';
 import {SettingService} from '../../services/setting.service';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {takeUntil} from 'rxjs/operators';
 import {Rider} from '../../models/rider';
 

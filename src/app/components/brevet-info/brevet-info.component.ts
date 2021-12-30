@@ -6,7 +6,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Brevet, NONE_BREVET} from '../../models/brevet';

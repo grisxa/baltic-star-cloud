@@ -5,7 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {AuthService} from '../../services/auth.service';
 import {Brevet} from '../../models/brevet';
 import {StorageService} from '../../services/storage.service';

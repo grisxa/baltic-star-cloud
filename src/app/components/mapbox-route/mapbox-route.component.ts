@@ -3,7 +3,7 @@ import {Checkpoint} from '../../models/checkpoint';
 import * as mapboxGL from 'mapbox-gl';
 import {Popup} from 'mapbox-gl';
 import {environment} from '../../../environments/environment';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import LngLat = mapboxGL.LngLat;
 import GeoPoint = firebase.firestore.GeoPoint;
 

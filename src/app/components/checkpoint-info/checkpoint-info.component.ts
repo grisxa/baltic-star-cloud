@@ -13,7 +13,7 @@ import {RiderCheckIn} from '../../models/rider-check-in';
 import {takeUntil} from 'rxjs/operators';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';

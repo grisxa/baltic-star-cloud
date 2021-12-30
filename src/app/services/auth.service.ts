@@ -4,7 +4,7 @@ import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
 import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails} from '../models/rider';
 import {switchMap, takeUntil} from 'rxjs/operators';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {SettingService} from './setting.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import User = firebase.User;

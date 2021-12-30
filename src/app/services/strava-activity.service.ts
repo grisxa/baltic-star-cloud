@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
-import firebase from 'firebase/app';
-import 'firebase/functions';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/functions';
 import {StravaTokens} from '../models/strava-tokens';
 import {TrackNotFound} from '../models/track-not-found';
 

@@ -6,7 +6,7 @@ import {environment} from '../../../environments/environment';
 import {Checkpoint} from '../../models/checkpoint';
 import {StorageService} from '../../services/storage.service';
 import {NONE_BREVET} from '../../models/brevet';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {FormControl, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';

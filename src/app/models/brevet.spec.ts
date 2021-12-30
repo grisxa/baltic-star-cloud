@@ -1,5 +1,5 @@
 import {Brevet} from './brevet';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import Timestamp = firebase.firestore.Timestamp;
 
 describe('Brevet', () => {

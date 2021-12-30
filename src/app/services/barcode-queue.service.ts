@@ -5,7 +5,7 @@ import {Barcode} from '../models/barcode';
 import {Offline} from '../models/offline';
 import {SettingService} from './setting.service';
 import {NONE_CHECKPOINT} from '../models/checkpoint';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import Timestamp = firebase.firestore.Timestamp;
 
 type SavedBarcode = {
