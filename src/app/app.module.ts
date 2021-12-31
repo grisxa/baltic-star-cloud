@@ -1,8 +1,8 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AngularFireModule} from '@angular/fire';
-import {AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR} from '@angular/fire/firestore';
+import {AngularFireModule} from '@angular/fire/compat';
+import {AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR} from '@angular/fire/compat/firestore';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
@@ -19,8 +19,8 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {AngularFireAuthModule, USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/auth';
-import {USE_EMULATOR as USE_FUNCTIONS_EMULATOR} from '@angular/fire/functions';
+import {AngularFireAuthModule, USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/compat/auth';
+import {USE_EMULATOR as USE_FUNCTIONS_EMULATOR} from '@angular/fire/compat/functions';
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
 import {RiderInfoComponent} from './components/rider-info/rider-info.component';
@@ -46,7 +46,7 @@ import {MapboxDialogComponent} from './components/mapbox-dialog/mapbox-dialog.co
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
-import {canActivate, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
+import {canActivate, redirectUnauthorizedTo} from '@angular/fire/compat/auth-guard';
 import {FirebaseUIModule} from 'firebaseui-angular';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
@@ -165,7 +165,7 @@ const appRoutes: Routes = [
     },
     {
       provide: USE_AUTH_EMULATOR,
-      useValue: environment.useEmulators ? ['localhost', 9099] : undefined
+      useValue: environment.useEmulators ? 'http://localhost:9099' : undefined
     },
   ],
   entryComponents: [

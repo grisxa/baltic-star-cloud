@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
+import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
 import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails} from '../models/rider';

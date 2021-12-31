@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore} from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/compat/firestore';
 import {Brevet} from '../models/brevet';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
 import {Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
@@ -28,6 +28,7 @@ export class StorageService {
     });
      */
     this.geoCheckpoints = geofirestore
+      // @ts-ignore
       .initializeApp(firebase.firestore())
       .collection('checkpoints');
 
