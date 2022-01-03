@@ -165,7 +165,7 @@ const appRoutes: Routes = [
     },
     {
       provide: USE_AUTH_EMULATOR,
-      useValue: environment.useEmulators ? 'http://localhost:9099' : undefined
+      useValue: environment.useEmulators ? ['http://localhost:9099'] : undefined
     },
   ],
   entryComponents: [
