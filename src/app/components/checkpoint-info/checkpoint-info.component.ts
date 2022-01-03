@@ -150,7 +150,8 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
     this.updateField('selfcheck');
   }
   addBarcode() {
-    this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode']);
+    this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode'])
+      .catch(error => console.error('Navigation failed', error));
   }
 
   startScanner(): void {

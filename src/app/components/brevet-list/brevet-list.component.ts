@@ -41,7 +41,8 @@ export class BrevetListComponent implements OnInit {
   addBrevet() {
     const brevet = new Brevet('', 'Новый', 0, Timestamp.now());
     this.storage.createBrevet(brevet).then(uid => {
-      this.router.navigate(['brevet', uid]);
+      this.router.navigate(['brevet', uid])
+        .catch(error => console.error('Navigation failed', error));
     });
   }
 }

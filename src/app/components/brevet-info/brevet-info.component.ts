@@ -320,7 +320,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     const checkpoint = new Checkpoint({name: 'Новый', distance: 0} as RoutePoint);
     this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
-      this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid]);
+      this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid])
+        .catch(error => console.error('Navigation failed', error));
     });
   }
 

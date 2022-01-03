@@ -62,7 +62,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       // @ts-ignore
       event.authResult.user.profile = info.profile;
     }
-    this.router.navigate(['after-login']);
+    this.router.navigate(['after-login'])
+      .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
     return true;
   }
 
