@@ -47,7 +47,7 @@ export class AuthService implements OnDestroy {
   stateObserver(user: User|null) {
     if (user) {
       // retrieve additional rider info
-      this.storage.getRider(user?.uid).pipe(
+      this.storage.getRider(user.uid).pipe(
         takeUntil(this.unsubscribe$),
         map((rider: Rider) => Rider.fromDoc({...rider, auth: user} as Rider))
       ).subscribe(
@@ -69,8 +69,8 @@ export class AuthService implements OnDestroy {
     let needUpdate: boolean = false;
     for (const data of user.providerData) {
       if (data?.providerId &&
-        !rider.providers?.find((p: ProviderInfo) => p.providerId === data.providerId)) {
-        rider.providers?.push(data);
+        !rider.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
+        rider.providers.push(data);
         needUpdate = true;
 
         // special case of Baltic star
@@ -82,8 +82,8 @@ export class AuthService implements OnDestroy {
 
   overwriteBalticStar(rider: Rider, info?: ProviderInfo, profile?: ProviderDetails): Rider {
     if (info?.providerId === 'oidc.balticstar') {
-      const [firstName, lastName] = Rider.splitName(info?.displayName);
-      Object.assign(rider, {firstName, lastName, displayName: info?.displayName});
+      const [firstName, lastName] = Rider.splitName(info.displayName);
+      Object.assign(rider, {firstName, lastName, displayName: info.displayName});
 
       if (profile) {
         const overwrite: RiderPublicDetails = Rider.copyProviderProfile(profile);

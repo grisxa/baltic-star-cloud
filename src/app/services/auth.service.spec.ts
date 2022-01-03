@@ -7,10 +7,13 @@ import firebase from 'firebase/compat/app';
 import {environment} from '../../environments/environment.test';
 import {SettingService} from './setting.service';
 import {ProviderDetails, ProviderInfo, Rider} from '../models/rider';
+import {of} from 'rxjs';
 import User = firebase.User;
 
 
 class MockStorageService {
+  getRider = (uid: string) => of(new Rider('e5', 'f6'));
+  updateRider = (rider?: Rider) => Promise.resolve();
 }
 
 class MockSettingService {
@@ -148,6 +151,16 @@ describe('AuthService', () => {
       expect(service.overwriteBalticStar).not.toHaveBeenCalled();
     });
 
+    it('should ignore undefined data', () => {
+      const rider = new Rider('a1', 'b2');
+      const user = {providerData: [undefined]} as unknown as User;
+
+      service.copyProviders(rider, user);
+
+      expect(rider.providers).toEqual([]);
+      expect(service.overwriteBalticStar).not.toHaveBeenCalled();
+    });
+
     it('should add missing provider', () => {
       const rider = new Rider('a1', 'b2');
       const user = { providerData: [{providerId: "any"}]} as User;
@@ -219,6 +232,55 @@ describe('AuthService', () => {
       } as Rider);
 
       expect(service.overwriteBalticStar(rider, info, profile)).toEqual(expected);
+    });
+  });
+
+  describe('stateObserver', () => {
+    let rider: Rider;
+
+    beforeEach(() => {
+      rider = new Rider('c3', 'd4');
+      spyOn(service, 'logout').and.resolveTo();
+      spyOn(service, 'setCurrentUser').and.returnValue();
+      spyOn(service.storage, 'getRider').and.returnValue(of(rider));
+      spyOn(service.storage, 'updateRider').and.resolveTo();
+    });
+
+    it('should skip null user', () => {
+      service.stateObserver(null);
+
+      expect(service.storage.getRider).not.toHaveBeenCalled();
+      expect(service.setCurrentUser).not.toHaveBeenCalled();
+      expect(service.logout).toHaveBeenCalled();
+    });
+
+    it('should search for user', () => {
+      const user = {uid: 'abc'} as User;
+      rider.owner = '';
+      const expected = Rider.fromDoc({ owner: '', uid: 'd4', auth: user} as Rider);
+      spyOn(service, 'copyProviders').and.returnValue(false);
+
+      service.stateObserver(user);
+
+      expect(service.storage.getRider).toHaveBeenCalledOnceWith('abc');
+      expect(service.copyProviders).not.toHaveBeenCalled();
+      expect(service.storage.updateRider).not.toHaveBeenCalled();
+      expect(service.setCurrentUser).toHaveBeenCalledOnceWith(expected);
+      expect(service.logout).not.toHaveBeenCalled();
+    });
+
+    it('should find and update the user', () => {
+      const user = {uid: 'abc'} as User;
+      const expected = Rider.fromDoc({ owner: 'c3', uid: 'd4', auth: user} as Rider);
+      spyOn(service, 'copyProviders').and.returnValue(true);
+
+      service.stateObserver(user);
+
+      expect(service.storage.getRider).toHaveBeenCalledOnceWith('abc');
+      expect(service.copyProviders).toHaveBeenCalledOnceWith(expected, user);
+      expect(service.storage.updateRider).toHaveBeenCalledOnceWith(expected);
+      expect(service.setCurrentUser).toHaveBeenCalledOnceWith(expected);
+      expect(service.logout).not.toHaveBeenCalled();
     });
   });
 });
