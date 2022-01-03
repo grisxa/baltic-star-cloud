@@ -171,8 +171,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storage.watchBrevetProgress(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoint: Checkpoint) => {
-          // FIXME: avoid self-assignment
-          this.progress.data = this.progress.data ? this.progress.data : [];
+          this.progress.data ||= [];
 
           const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
           if (checkpointIndex === -1) {

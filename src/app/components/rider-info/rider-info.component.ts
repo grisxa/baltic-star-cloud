@@ -162,8 +162,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       | firebase.auth.FacebookAuthProvider
       | firebase.auth.EmailAuthProvider) {
     const config = environment.auth.signInOptions?.find(
-        // @ts-ignore
-        (settings: unknown) => settings.provider === name
+        (settings: any) => settings.provider === name
       );
     // @ts-ignore
     config?.scopes?.forEach((scope: string) => provider.addScope(scope));
