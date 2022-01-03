@@ -7,7 +7,7 @@ import UserInfo = firebase.UserInfo;
 
 export const NONE_RIDER = 'none';
 
-interface UserWithProfile extends User {
+export interface UserWithProfile extends User {
 
   // optional collection of provider details
   profile?: ProviderDetails;
@@ -115,7 +115,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return copyDefinedProperties(draft);
   };
 
-  static copyProviderInfo(profile?: UserInfo): ProviderInfo {
+  static copyProviderInfo(profile?: UserInfo|null): ProviderInfo {
     const draft: ProviderInfo = {
       email: profile?.email,
       displayName: profile?.displayName, // || profile?.name,
@@ -136,6 +136,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   };
 
   static fromDoc(doc: Rider) {
+    // the first provider data goes to the 'providers' list below
     const providerInfo: UserInfo | null | undefined = doc.auth?.providerData?.shift();
 
     const rider = new Rider(doc.owner,
@@ -172,7 +173,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return result;
   }
 
-  toPrivateDoc(extra?: {[key: string]: string|undefined}): RiderPrivateDetails {
+  toPrivateDoc(extra?: {[key: string]: any}): RiderPrivateDetails {
     const fields = [
       'owner',
       'uid',

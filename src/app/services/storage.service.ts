@@ -238,7 +238,7 @@ export class StorageService {
       );
   }
 
-  updateRider(rider?: Rider) {
+  updateRider(rider?: Rider): Promise<void> {
     if (!rider) {
       return Promise.reject();
     }
@@ -272,9 +272,9 @@ export class StorageService {
       .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));
   }
 
-  getRider(uid?: string): Observable<Rider|undefined> {
+  getRider(uid?: string): Observable<Rider> {
     if (!uid) {
-      return of(undefined);
+      return of({} as Rider);
     }
     const publicDetails$ = this.firestore
       .collection<RiderPublicDetails>('riders')
@@ -288,7 +288,7 @@ export class StorageService {
       .pipe(
         map(snapshot => snapshot.data()),
         // test for access error
-        catchError(error => of(undefined))
+        catchError(error => of({} as Rider))
       );
     return combineLatest([publicDetails$, privateDetails$])
       .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));

@@ -47,7 +47,6 @@ import {OfflineSwitchComponent} from './components/offline-switch/offline-switch
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
 import {canActivate, redirectUnauthorizedTo} from '@angular/fire/compat/auth-guard';
-import {FirebaseUIModule} from 'firebaseui-angular';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
@@ -123,7 +122,6 @@ const appRoutes: Routes = [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
     AngularFireAuthModule,
-    FirebaseUIModule.forRoot(environment.auth),
     BrowserAnimationsModule,
     HttpClientModule,
     MatButtonModule,
