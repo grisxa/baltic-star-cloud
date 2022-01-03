@@ -2,7 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import {firebase, firebaseui} from 'firebaseui-angular';
+import firebase from 'firebase/compat/app';
+import * as firebaseui from 'firebaseui';
 
 export const environment = {
   production: false,
