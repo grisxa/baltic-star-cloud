@@ -31,7 +31,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   geoLocate!: mapboxGL.GeolocateControl;
   checkpointsAround?: Checkpoint[];
   checkpointControl: FormControl;
-  errorTimeout?: number;
+  errorTimeout?: any;
 
   private locationStarted = false;
   private selectedCheckpointUid?: string;
