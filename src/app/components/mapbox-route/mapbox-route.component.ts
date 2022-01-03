@@ -3,9 +3,9 @@ import {Checkpoint} from '../../models/checkpoint';
 import * as mapboxGL from 'mapbox-gl';
 import {Popup} from 'mapbox-gl';
 import {environment} from '../../../environments/environment';
-import firebase from 'firebase/compat/app';
+import {GeoPoint} from 'firebase/firestore';
 import LngLat = mapboxGL.LngLat;
-import GeoPoint = firebase.firestore.GeoPoint;
+
 
 const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 

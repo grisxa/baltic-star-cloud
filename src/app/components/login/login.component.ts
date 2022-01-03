@@ -1,19 +1,16 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {Subject} from 'rxjs';
 import {SettingService} from '../../services/setting.service';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
 import {takeUntil} from 'rxjs/operators';
 import {ProviderDetails, Rider} from '../../models/rider';
 import * as firebaseui from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
 import {environment} from 'src/environments/environment';
-import UserCredential = firebase.auth.UserCredential;
+import {EmailAuthProvider, getAuth, sendEmailVerification, UserInfo} from 'firebase/auth';
 import AuthUIError = firebaseui.auth.AuthUIError;
-import UserInfo = firebase.UserInfo;
 
 @Component({
   selector: 'app-login',
@@ -25,6 +22,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private authUI?: firebaseui.auth.AuthUI;
 
   constructor(private route: ActivatedRoute,
+              private zone: NgZone,
               private router: Router,
               private auth: AuthService,
               private settings: SettingService,
@@ -32,13 +30,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.authUI = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
+    this.authUI = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(getAuth());
     this.authUI?.start('#firebaseui-auth', {
         ...environment.auth,
         callbacks: {
           signInSuccessWithAuthResult: this.onSuccess.bind(this),
           signInFailure: this.onError.bind(this),
         },
+        signInSuccessUrl: '/after-login',
       }
     );
 
@@ -50,8 +49,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
       .subscribe((user?: Rider) => {
         if (user) {
-          this.router.navigate(['after-login'])
-            .catch(error => console.error('Navigation failed', error));
+          this.zone.run(() => this.router.navigate(['after-login'])
+            .catch(error => console.error('Navigation failed', error)));
         }
       });
   }
@@ -62,11 +61,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authUI?.delete();
   }
 
-  onSuccess(authResult: UserCredential, redirectUrl: string): boolean {
+  onSuccess(authResult: any, redirectUrl: string): boolean {
     // GoogleAdditionalUserInfo / GenericAdditionalUserInfo
     const info = authResult.additionalUserInfo;
-    if (info?.isNewUser && info?.providerId === firebase.auth.EmailAuthProvider.PROVIDER_ID) {
-      authResult.user?.sendEmailVerification()
+    if (info?.isNewUser && info?.providerId === EmailAuthProvider.PROVIDER_ID) {
+      sendEmailVerification(authResult.user)
         .then(() => this.snackBar.open('Отправлено письмо с подтверждением',
           'Закрыть'))
         .catch((error: Error) => {
@@ -82,12 +81,14 @@ export class LoginComponent implements OnInit, OnDestroy {
       );
       authResult.user?.providerData?.push(provider);
     }
+
     this.router.navigate(['after-login'])
       .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
     return true;
   }
 
   onError(error: AuthUIError) {
+    console.error('= login error', error);
     if (!(error instanceof TypeError)) {
       this.snackBar.open(`Ошибка входа. ${error.code}`,
         'Закрыть');

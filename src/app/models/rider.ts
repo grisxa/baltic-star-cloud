@@ -1,9 +1,8 @@
-import firebase from 'firebase/compat/app';
 import {Buffer} from 'buffer';
 import {StravaTokens} from './strava-tokens';
-import Timestamp = firebase.firestore.Timestamp;
-import User = firebase.User;
-import UserInfo = firebase.UserInfo;
+import {Timestamp} from 'firebase/firestore';
+import {User, UserInfo} from 'firebase/auth';
+
 
 export const NONE_RIDER = 'none';
 

@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import firebase from 'firebase/compat/app';
+import {disableNetwork, enableNetwork, getFirestore} from '@angular/fire/firestore';
+
 
 @Component({
   selector: 'app-offline-switch',
@@ -17,10 +18,10 @@ export class OfflineSwitchComponent {
     this.online = !this.online;
     this.status = this.online ? 'Онлайн' : 'Оффлайн';
     if (this.online) {
-      firebase.firestore().enableNetwork()
+      enableNetwork(getFirestore())
         .catch(error => console.error('= network switching failed', error));
     } else {
-      firebase.firestore().disableNetwork()
+      disableNetwork(getFirestore())
         .catch(error => console.error('= network switching failed', error));
     }
   }

@@ -4,7 +4,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {AuthService} from '../../services/auth.service';
 import {Subject} from 'rxjs';
 import {Rider} from '../../models/rider';
-import firebase from 'firebase/compat/app';
+import {connectAuthEmulator, getAuth} from 'firebase/auth';
+import {initializeApp} from 'firebase/app';
 import {environment} from '../../../environments/environment.test';
 
 class MockAuthService {
@@ -15,12 +16,9 @@ describe('LoginPromptComponent', () => {
   let component: LoginPromptComponent;
   let fixture: ComponentFixture<LoginPromptComponent>;
   let mockAuth: MockAuthService;
-  let auth;
 
   beforeAll(waitForAsync( () => {
-    firebase.initializeApp(environment.firebase);
-    auth = firebase.auth();
-    auth.useEmulator("http://localhost:9099");
+    connectAuthEmulator(getAuth(initializeApp(environment.firebase)), 'http://localhost:9099');
 
     mockAuth = new MockAuthService();
   }));

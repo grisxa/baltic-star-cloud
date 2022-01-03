@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/compat/app';
 import {AuthService} from '../../services/auth.service';
 import {Brevet} from '../../models/brevet';
 import {StorageService} from '../../services/storage.service';
-import Timestamp = firebase.firestore.Timestamp;
+import {Timestamp} from 'firebase/firestore';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -26,11 +25,11 @@ export class BrevetListComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Список бреветов');
-    this.storage.listBrevets().subscribe(snapshot => {
+    this.storage.listBrevets()
+      .then((brevets) => {
       const today = new Date();
       const recently = new Date(today.getTime() - WEEK);
-      snapshot.docs.map(doc => doc.data() as Brevet)
-        .forEach(brevet => brevet.startDate.toDate() < recently ?
+      brevets.forEach((brevet: Brevet) => brevet.startDate.toDate() < recently ?
           this.oldBrevets.push(brevet) :
           this.newBrevets.push(brevet)
         );

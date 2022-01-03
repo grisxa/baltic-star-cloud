@@ -1,6 +1,5 @@
 import {Brevet} from './brevet';
-import firebase from 'firebase/compat/app';
-import Timestamp = firebase.firestore.Timestamp;
+import {Timestamp} from 'firebase/firestore';
 
 describe('Brevet', () => {
   it('should create an instance', () => {

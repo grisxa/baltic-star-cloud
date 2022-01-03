@@ -1,6 +1,4 @@
-import firebase from 'firebase/compat/app';
-import Timestamp = firebase.firestore.Timestamp;
-import GeoPoint = firebase.firestore.GeoPoint;
+import {GeoPoint, Timestamp} from 'firebase/firestore';
 
 export const NONE_BREVET = 'none';
 

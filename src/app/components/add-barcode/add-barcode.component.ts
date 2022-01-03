@@ -3,14 +3,14 @@ import {Location} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {StorageService} from '../../services/storage.service';
 import {AuthService} from '../../services/auth.service';
-import {Observable, of, Subject} from 'rxjs';
+import {from, Observable, of, Subject} from 'rxjs';
 import {Checkpoint} from '../../models/checkpoint';
 import {FormControl, Validators} from '@angular/forms';
-import firebase from 'firebase/compat/app';
 import {Barcode} from '../../models/barcode';
 import {MatInput} from '@angular/material/input';
-import {takeUntil} from 'rxjs/operators';
-import Timestamp = firebase.firestore.Timestamp;
+import {filter, takeUntil} from 'rxjs/operators';
+import {Timestamp} from 'firebase/firestore';
+import {isNotNullOrUndefined} from '../../utils';
 
 /**
  * Manual barcode filling
@@ -53,7 +53,8 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
       if (!checkpointUid) {
         return;
       }
-      this.checkpoint$ = this.storage.getBarcodeRoot(checkpointUid);
+      this.checkpoint$ = from(this.storage.getBarcodeRoot(checkpointUid))
+        .pipe(filter(isNotNullOrUndefined));
       this.checkpoint$.pipe(takeUntil(this.unsubscribe$))
         .subscribe(checkpoint => this.checkpoint = checkpoint);
     });

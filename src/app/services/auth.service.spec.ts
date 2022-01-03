@@ -3,16 +3,16 @@ import {TestBed, waitForAsync} from '@angular/core/testing';
 import {AuthService} from './auth.service';
 import {StorageService} from './storage.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import firebase from 'firebase/compat/app';
-import {environment} from '../../environments/environment.test';
 import {SettingService} from './setting.service';
 import {ProviderDetails, ProviderInfo, Rider} from '../models/rider';
 import {of} from 'rxjs';
-import User = firebase.User;
+import {connectAuthEmulator, getAuth, User} from 'firebase/auth';
+import {initializeApp} from 'firebase/app';
+import {environment} from '../../environments/environment.test';
 
 
 class MockStorageService {
-  getRider = (uid: string) => of(new Rider('e5', 'f6'));
+  watchRider = (uid: string) => of(new Rider('e5', 'f6'));
   updateRider = (rider?: Rider) => Promise.resolve();
 }
 
@@ -24,22 +24,24 @@ class MockSettingService {
 }
 
 describe('AuthService', () => {
-  let auth;
   let service: AuthService;
+
+  beforeAll(waitForAsync( () => {
+    connectAuthEmulator(getAuth(initializeApp(environment.firebase)), 'http://localhost:9099');
+  }));
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatSnackBarModule],
+      imports: [
+
+        MatSnackBarModule,
+      ],
       providers: [
         {provide: StorageService, useClass: MockStorageService},
         {provide: SettingService, useClass: MockSettingService},
       ],
       declarations: []
     }).compileComponents();
-
-    firebase.initializeApp(environment.firebase);
-    auth = firebase.auth();
-    auth.useEmulator("http://localhost:9099");
   }));
 
   beforeEach(() => {
@@ -95,30 +97,6 @@ describe('AuthService', () => {
       service.user = new Rider('a1', 'b2');
       service.user.admin = true;
       expect(service.isAdmin).toBeTruthy();
-    });
-  });
-
-  describe('hasProvider', () => {
-    it('should ignore undefined', () => {
-      service.user = undefined;
-      expect(service.hasProvider('any')).toBeFalsy();
-    });
-
-    it('should ignore empty list', () => {
-      service.user = new Rider('a1', 'b2');
-      expect(service.hasProvider('any')).toBeFalsy();
-    });
-
-    it('should ignore missing provider', () => {
-      service.user = new Rider('a1', 'b2');
-      service.user.providers = [{providerId: "first"}];
-      expect(service.hasProvider('second')).toBeFalsy();
-    });
-
-    it('should report matching provider', () => {
-      service.user = new Rider('a1', 'b2');
-      service.user.providers = [{providerId: "first"}, {providerId: "second"}];
-      expect(service.hasProvider('second')).toBeTruthy();
     });
   });
 
@@ -242,45 +220,44 @@ describe('AuthService', () => {
       rider = new Rider('c3', 'd4');
       spyOn(service, 'logout').and.resolveTo();
       spyOn(service, 'setCurrentUser').and.returnValue();
-      spyOn(service.storage, 'getRider').and.returnValue(of(rider));
+      spyOn(service.storage, 'watchRider').and.returnValue(of(rider));
       spyOn(service.storage, 'updateRider').and.resolveTo();
     });
+
+    afterEach(async () => await service.user$.complete());
 
     it('should skip null user', () => {
       service.stateObserver(null);
 
-      expect(service.storage.getRider).not.toHaveBeenCalled();
+      expect(service.storage.watchRider).not.toHaveBeenCalled();
       expect(service.setCurrentUser).not.toHaveBeenCalled();
-      expect(service.logout).toHaveBeenCalled();
     });
 
-    it('should search for user', () => {
+    it('should search for user', async () => {
       const user = {uid: 'abc'} as User;
       rider.owner = '';
       const expected = Rider.fromDoc({ owner: '', uid: 'd4', auth: user} as Rider);
       spyOn(service, 'copyProviders').and.returnValue(false);
 
-      service.stateObserver(user);
+      await service.stateObserver(user);
 
-      expect(service.storage.getRider).toHaveBeenCalledOnceWith('abc');
+      expect(service.storage.watchRider).toHaveBeenCalledOnceWith('abc');
       expect(service.copyProviders).not.toHaveBeenCalled();
       expect(service.storage.updateRider).not.toHaveBeenCalled();
       expect(service.setCurrentUser).toHaveBeenCalledOnceWith(expected);
-      expect(service.logout).not.toHaveBeenCalled();
     });
 
-    it('should find and update the user', () => {
+    it('should find and update the user', async () => {
       const user = {uid: 'abc'} as User;
       const expected = Rider.fromDoc({ owner: 'c3', uid: 'd4', auth: user} as Rider);
       spyOn(service, 'copyProviders').and.returnValue(true);
 
-      service.stateObserver(user);
+      await service.stateObserver(user);
 
-      expect(service.storage.getRider).toHaveBeenCalledOnceWith('abc');
+      expect(service.storage.watchRider).toHaveBeenCalledOnceWith('abc');
       expect(service.copyProviders).toHaveBeenCalledOnceWith(expected, user);
       expect(service.storage.updateRider).toHaveBeenCalledOnceWith(expected);
       expect(service.setCurrentUser).toHaveBeenCalledOnceWith(expected);
-      expect(service.logout).not.toHaveBeenCalled();
     });
   });
 });

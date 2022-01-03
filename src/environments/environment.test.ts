@@ -2,8 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import firebase from 'firebase/compat/app';
 import * as firebaseui from 'firebaseui';
+import {EmailAuthProvider, FacebookAuthProvider, GoogleAuthProvider} from 'firebase/auth';
 
 export const environment = {
   production: false,
@@ -26,7 +26,7 @@ export const environment = {
           'https://www.googleapis.com/auth/userinfo.profile',
           'https://www.googleapis.com/auth/userinfo.email'
         ],
-        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        provider: GoogleAuthProvider.PROVIDER_ID,
         customParameters: {
           // Forces account selection even when one account is available.
           prompt: 'select_account'
@@ -37,11 +37,11 @@ export const environment = {
           'public_profile',
           'email'
         ],
-        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        provider: FacebookAuthProvider.PROVIDER_ID
       },
       {
         requireDisplayName: true,
-        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
+        provider: EmailAuthProvider.PROVIDER_ID
       }
     ],
     // tosUrl: '/tos',
@@ -50,6 +50,9 @@ export const environment = {
   } as firebaseui.auth.Config,
   mapbox: {
     accessToken: 'test'
+  },
+  strava: {
+    clientId: '65987',
   },
   router: {
     enableTracing: true
