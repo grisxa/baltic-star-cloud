@@ -5,6 +5,8 @@ import {AuthService} from '../../services/auth.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {Subject} from 'rxjs';
 import {Rider} from '../../models/rider';
+import firebase from 'firebase/compat/app';
+import {environment} from '../../../environments/environment.test';
 
 class MockAuthService {
   user$ = new Subject<Rider | null>();
@@ -18,10 +20,16 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockAuth: MockAuthService;
+  let auth;
 
-  beforeAll(() => {
+  beforeAll(waitForAsync( () => {
+    firebase.initializeApp(environment.firebase);
+    auth = firebase.auth();
+    auth.useEmulator("http://localhost:9099");
+
     mockAuth = new MockAuthService();
-  });
+  }));
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
