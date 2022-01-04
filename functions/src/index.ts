@@ -247,7 +247,7 @@ export const updateBrevet = functions.firestore.document('brevets/{brevetUid}')
 
     console.log('= update brevet', brevetUid);
     // field selection
-    const {name, length} = change.after.data();
+    const {name, length, startDate, endDate} = change.after.data();
 
     return change.after.ref
       .collection('checkpoints').get()
@@ -257,11 +257,10 @@ export const updateBrevet = functions.firestore.document('brevets/{brevetUid}')
         const checkpoint = checkpointDoc.data();
         console.log(`update /brevets/ ${brevetUid} /checkpoints/ ${checkpoint.uid}`);
         return checkpointDoc.ref.set({
-            brevet: {uid: brevetUid, name, length}
+            brevet: {uid: brevetUid, name, length, startDate, endDate}
           }, {merge: true}
-          // FIXME: wait for inner promises
         ).then(() => db.doc(`checkpoints/${checkpoint.uid}`).set({
-            brevet: {uid: brevetUid, name, length}
+            brevet: {uid: brevetUid, name, length, startDate, endDate}
           }, {merge: true}
           )
         ).then(() => console.log(`updated /checkpoints/ ${checkpoint.uid}`));

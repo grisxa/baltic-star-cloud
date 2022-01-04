@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import firebase from 'firebase/app';
+
 import * as mapboxgl from 'mapbox-gl';
 import {environment} from '../../../environments/environment';
 import {AuthService} from '../../services/auth.service';
-import GeoPoint = firebase.firestore.GeoPoint;
+import {GeoPoint} from 'firebase/firestore';
 import LngLat = mapboxgl.LngLat;
 
 

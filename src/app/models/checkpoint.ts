@@ -1,10 +1,8 @@
 import {Brevet} from './brevet';
 import {RiderCheckIn} from './rider-check-in';
 import {RoutePoint} from './route-point';
-import firebase from 'firebase/app';
 
-import GeoPoint = firebase.firestore.GeoPoint;
-import Timestamp = firebase.firestore.Timestamp;
+import {GeoPoint, Timestamp} from 'firebase/firestore';
 
 // an hour in seconds
 const HOUR = 3600;

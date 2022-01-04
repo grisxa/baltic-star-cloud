@@ -21,10 +21,8 @@ export class BrevetListItemComponent implements OnInit {
 
   deleteBrevet(uid: string) {
     this.storage.deleteBrevet(uid)
-      .catch(error => {
-        console.error('brevet removal has failed', error);
-        this.snackBar.open(`Не удалось удалить бревет. ${error.message}`,
-          'Закрыть');
-      });
+      .catch(error => this.snackBar
+        .open(`Не удалось удалить бревет. ${error.message}`,
+          'Закрыть'));
   }
 }

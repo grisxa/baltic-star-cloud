@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, of, Subject} from 'rxjs';
+import {from, Observable, of, Subject} from 'rxjs';
 import {Checkpoint, NONE_CHECKPOINT} from '../../models/checkpoint';
 import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
@@ -10,17 +10,17 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage.service';
 import {Barcode} from '../../models/barcode';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
-import firebase from 'firebase/app';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
 import {BarcodeQueueService} from '../../services/barcode-queue.service';
 import {Offline} from '../../models/offline';
-import GeoPoint = firebase.firestore.GeoPoint;
+import {GeoPoint} from 'firebase/firestore';
+import {isNotNullOrUndefined} from '../../utils';
 
 @Component({
   selector: 'app-checkpoint-info',
@@ -81,13 +81,15 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
         return;
       }
       this.url = window.location.origin + `/c/${checkpointUid}`;
-      this.checkpoint$ = this.storage.getCheckpoint(checkpointUid);
+      this.checkpoint$ = from(this.storage.getCheckpoint(checkpointUid))
+        .pipe(filter(isNotNullOrUndefined));
       this.storage.watchBarcodes('checkpoints', checkpointUid)
-        .subscribe((codes: Barcode[]) => {
-          this.barcodes.data = codes;
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((codes: Barcode[]) => this.barcodes.data = codes);
           // this.dataSource.paginator = this.paginator;
-        });
+
       this.storage.watchCheckpointProgress(brevetUid, checkpointUid)
+        .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkIns: RiderCheckIn[]) => {
           this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
             ...checkIn,
@@ -129,11 +131,9 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
       // @ts-ignore
       this.checkpoint[field] = control.value;
       this.storage.updateCheckpoint(this.checkpoint)
-        .catch(error => {
-          console.error('checkpoint update has failed', error);
-          this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-            'Закрыть');
-        });
+        .catch(error => this.snackBar
+          .open(`Не удалось сохранить изменения. ${error.message}`,
+            'Закрыть'));
     } else {
       // @ts-ignore
       control?.setValue(this.checkpoint[field]);
@@ -150,7 +150,8 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
     this.updateField('selfcheck');
   }
   addBarcode() {
-    this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode']);
+    this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode'])
+      .catch(error => console.error('Navigation failed', error));
   }
 
   startScanner(): void {
@@ -192,11 +193,9 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
         if (data && data.latitude && data.longitude) {
           this.checkpoint.coordinates = new GeoPoint(data.latitude, data.longitude);
           this.storage.updateCheckpoint(this.checkpoint)
-            .catch(error => {
-              console.error('checkpoint update has failed', error);
-              this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-                'Закрыть');
-            });
+            .catch(error => this.snackBar
+              .open(`Не удалось сохранить изменения. ${error.message}`,
+                'Закрыть'));
         }
       });
   }

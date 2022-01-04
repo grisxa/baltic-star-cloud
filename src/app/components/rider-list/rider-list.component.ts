@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import {Subject} from 'rxjs';
-import {Rider} from '../../models/rider';
+import {Rider, RiderPublicDetails} from '../../models/rider';
 import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
@@ -15,7 +15,7 @@ import {Title} from '@angular/platform-browser';
   styleUrls: ['./rider-list.component.scss']
 })
 export class RiderListComponent implements OnInit, OnDestroy {
-  riders$ = new Subject<Rider[]>();
+  riders$ = new Subject<RiderPublicDetails[]>();
   unsubscribe$ = new Subject();
 
   constructor(private router: Router,
@@ -29,7 +29,7 @@ export class RiderListComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Список участников');
     this.storage.watchRiders()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((riders: Rider[]) => this.riders$.next(riders));
+      .subscribe((riders: RiderPublicDetails[]) => this.riders$.next(riders));
   }
 
   // release watchers
@@ -52,13 +52,11 @@ export class RiderListComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteRider(uid: string) {
-    this.storage.deleteRider(uid)
+  deleteRider(uid?: string) {
+    this.storage.deleteRider(uid || '')
       .then(() => console.log(`rider ${uid} has been removed`))
-      .catch(error => {
-        console.error('rider deletion has failed', error);
-        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
-          'Закрыть');
-      });
+      .catch(error => this.snackBar
+        .open(`Не удалось удалить участника. ${error.message}`,
+          'Закрыть'));
   }
 }

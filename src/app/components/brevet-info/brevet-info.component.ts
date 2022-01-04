@@ -6,8 +6,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/app';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+
+import {combineLatest, from, Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Brevet, NONE_BREVET} from '../../models/brevet';
 import {AuthService} from '../../services/auth.service';
@@ -24,12 +24,11 @@ import {isNotNullOrUndefined} from '../../utils';
 import {BarcodeQueueService} from '../../services/barcode-queue.service';
 import {Offline} from '../../models/offline';
 import {MapboxLocationDialogComponent} from '../mapbox-location-dialog/mapbox-location-dialog.component';
-import {Rider} from '../../models/rider';
 import {StravaActivityService, tokenExpired} from '../../services/strava-activity.service';
-import {environment} from '../../../environments/environment';
 import {TrackNotFound} from '../../models/track-not-found';
 import {StravaTokens} from 'src/app/models/strava-tokens';
-import Timestamp = firebase.firestore.Timestamp;
+import {Timestamp} from 'firebase/firestore';
+import {connectFunctionsEmulator, getFunctions, httpsCallable} from '@angular/fire/functions';
 
 type ProgressColumn = {
   id: string;
@@ -53,11 +52,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   mapId?: number;
   formGroup: FormGroup;
   showMap = false;
-  stravaClientId: string = environment.strava.clientId;
 
-  checkpoints$ = new Subject<Checkpoint[]>();
   checkpoints: Checkpoint[] = [];
-  riders: Rider[] = [];
 
   // FIXME: consider pre-defined
   // dynamic column names like cp, cp3 (no pre-defined count)
@@ -110,7 +106,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       const brevetUid = route.get('uid');
 
       if ('state' in query) {
-        console.log('= strava auth', query);
         if ('error' in query && query.error === 'access_denied') {
           this.snackBar.open(`Доступ запрещён`, 'Закрыть');
           this.router.navigate(['brevet', brevetUid])
@@ -125,7 +120,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         if (query.code) {
           this.strava.getToken(query.code)
-            .then((tokens: StravaTokens) => this.startImporting(tokens))
+            .then((tokens) => this.startImporting(tokens as StravaTokens))
             .then(() => this.router.navigate(['brevet', brevetUid]))
             .catch((error: Error) => {
               this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
@@ -134,26 +129,23 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
-    this.storage.watchRiders()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((riders: Rider[]) => {
-        this.riders = riders;
-      });
+
+    // cache checkpoints for a quick search
     this.storage.listCheckpoints()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((snapshot) => {
-        console.log(snapshot.docs.length + ' checkpoints in a cache');
-      });
+      .then((checkpoints: Checkpoint[]) => console.log(checkpoints.length + ' checkpoints in a cache'));
+
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('uid');
       if (!brevetUid) {
         return;
       }
-      this.brevet$ = this.storage.getBrevet(brevetUid);
+      this.brevet$ = from(this.storage.getBrevet(brevetUid))
+        .pipe(filter(isNotNullOrUndefined));
       this.storage.watchCheckpoints(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoints: Checkpoint[]) => {
-          this.checkpoints = checkpoints; // .map(doc => doc.data()) as Checkpoint[];
+          this.checkpoints = checkpoints;
+          // the rider name column
           this.columnsToDisplay = [firstColumn];
           this.checkpoints.forEach((cp, i) => {
             const id = `cp${i}`;
@@ -164,15 +156,16 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
               distance: cp.distance?.toString() || ''
             });
           });
+          // the checkpoint name row
           this.firstHeader = this.columnsToDisplay.map(c => c.id);
+          // the checkpoint distance row (km)
           this.secondHeader = this.columnsToDisplay.map(c => 'dist-' + c.id);
-          this.checkpoints$.next(this.checkpoints);
         });
       this.storage.watchBrevetProgress(brevetUid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((checkpoint: Checkpoint) => {
-          // FIXME: avoid self-assignment
-          this.progress.data = this.progress.data ? this.progress.data : [];
+          // NOTE: Keep replacing the data to trigger redraw
+          this.progress.data = this.progress.data || [];
 
           const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
           if (checkpointIndex === -1) {
@@ -297,11 +290,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.storage.updateBrevet(this.brevet)
-        .catch(error => {
-          console.error('brevet update has failed', error);
-          this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-           'Закрыть');
-        });
+        .catch(error => this.snackBar
+          .open(`Не удалось сохранить изменения. ${error.message}`,
+           'Закрыть'));
     } else {
       // @ts-ignore
       control?.setValue(this.brevet[field] instanceof Timestamp ?
@@ -319,13 +310,17 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const checkpoint = new Checkpoint({name: 'Новый', distance: 0} as RoutePoint);
-    this.storage.createCheckpoint(this.brevet, checkpoint).then(uid => {
-      this.router.navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid]);
-    });
+    this.storage.createCheckpoint(this.brevet, checkpoint)
+      .then(uid => this.router
+        .navigate(['brevet', this.brevet?.uid || NONE_BREVET, 'checkpoint', uid])
+        .catch(error => console.error('Navigation failed', error)));
   }
 
   importCheckpoints() {
-    const createCheckpoints = firebase.functions().httpsCallable('create_checkpoints');
+    connectFunctionsEmulator(getFunctions(), 'localhost', 9090);
+    console.log('= import checkpoints', this.brevet?.uid);
+
+    const createCheckpoints = httpsCallable(getFunctions(), 'create_checkpoints');
     return createCheckpoints({brevetUid: this.brevet?.uid})
       .then((result) => result.data)
       .then((result) => {
@@ -344,12 +339,12 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(dialogRef.afterClosed()))
       .subscribe((barcode: Barcode) => this.storage
         .filterCheckpoints(this.brevet?.uid || NONE_BREVET,
-          [{uid: barcode.code} as Checkpoint]).toPromise()
-        .then(checkpoints => checkpoints.length ?
+          [{uid: barcode.code} as Checkpoint])
+        .then((checkpoints: Checkpoint[]) => checkpoints.length ?
           this.queue.enqueueBarcode('riders', this.auth.user?.uid, barcode) :
           Promise.reject(new CheckpointNotFound('wrong checkpoint'))
         )
-        .catch(error => {
+        .catch((error: any) => {
           if (error instanceof CheckpointNotFound) {
             this.snackBar.open('Неверный контрольный пункт',
               'Закрыть');
@@ -406,7 +401,8 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   startImporting(tokens?: StravaTokens) {
-    tokens = tokens || this.auth.user?.strava;
+    tokens ||= this.auth.user?.strava;
+    console.log('= search', this.auth.user);
 
     if (!tokens) {
       this.strava.login(`${window.location.origin}/brevet/${this.brevet?.uid}`);
@@ -415,13 +411,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.snackBar.open(`Поиск запущен`, 'Закрыть');
     // chain possible token refreshing
     Promise.resolve()
-      .then(() => {
-        if (tokenExpired(tokens)) {
-          console.log('= expired strava tokens');
-          return this.strava.refreshToken(tokens);
-        }
-        return;
-      })
+      .then(() => !!tokens && tokenExpired(tokens) && !!this.strava.refreshToken(tokens))
       .then(() => this.strava
         .searchActivities(this.brevet?.uid, this.auth.user?.uid))
       .then((count: number) => {

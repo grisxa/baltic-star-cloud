@@ -24,10 +24,8 @@ export class CheckpointListItemComponent implements OnInit {
       return;
     }
     this.storage.deleteCheckpoint(this.checkpoint.brevet.uid, uid)
-      .catch(error => {
-        console.error('checkpoint deletion has failed', error);
-        this.snackBar.open(`Не удалось удалить КП. ${error.message}`,
-          'Закрыть');
-      });
+      .catch(error => this.snackBar
+        .open(`Не удалось удалить КП. ${error.message}`,
+          'Закрыть'));
   }
 }

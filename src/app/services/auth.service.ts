@@ -1,109 +1,44 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {of, Subject} from 'rxjs';
 import {StorageService} from './storage.service';
-import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails} from '../models/rider';
-import {switchMap, takeUntil} from 'rxjs/operators';
-import firebase from 'firebase/app';
+import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails, UserWithProfile} from '../models/rider';
+import {map, switchMap, takeUntil} from 'rxjs/operators';
+
 import {SettingService} from './setting.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import User = firebase.User;
-import UserInfo = firebase.UserInfo;
-
-type PendingProfiles = {
-  [name: string]: {
-    info: ProviderInfo;
-    profile?: ProviderDetails;
-  };
-};
+import {from, of, Subject} from 'rxjs';
+import {Auth, getAuth, getRedirectResult, signOut, User} from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements OnDestroy {
+  public state$: Auth;
   // may be either a Google Auth user or an UID-mapped rider
   user?: Rider;
   user$ = new Subject<Rider | undefined>();
   readonly unsubscribe$ = new Subject();
-  private pendingProfiles: PendingProfiles = {};
+  readonly logout$ = new Subject();
 
   constructor(
-    public fireAuth: AngularFireAuth,
-    private settings: SettingService,
-    private storage: StorageService,
+    public settings: SettingService,
+    public storage: StorageService,
     private snackBar: MatSnackBar,
   ) {
-    this.settings.setValue('user', '');
-    this.fireAuth.getRedirectResult()
-      .then((result) => {
-        if (result.additionalUserInfo) {
-          const providerId = result.additionalUserInfo.providerId;
-          const profile = result.additionalUserInfo.profile as ProviderDetails;
-          this.pendingProfiles[providerId] = {
-            profile,
-            info: Rider.copyAdditionalInfo(profile, providerId)
-          };
-          const user = result.user;
-        }
-      }).catch((error) => {
+    this.state$ = getAuth();
+    this.settings.setValue('user', undefined);
+
+    this.state$.onAuthStateChanged(this.stateObserver.bind(this),
+      (error) => console.error('Authentication error', error));
+
+    getRedirectResult(this.state$)
+      .catch((error) => {
         console.error('Authentication error', error);
         this.snackBar.open(`Не удалось подключить аккаунт. ${error.message}`,
           'Закрыть');
       });
 
-    this.fireAuth.authState.pipe(
-      takeUntil(this.unsubscribe$),
-      switchMap((user: User | null) => user !== null
-        ? storage.getRider(user?.uid).pipe(
-          switchMap((rider?: Rider) => {
-            if (rider !== undefined && Object.keys(rider).length > 0) {
-              const providerInfo: UserInfo | null = user?.providerData[0];
-              if (providerInfo?.providerId) {
-                this.pendingProfiles[providerInfo.providerId] = {
-                  info: providerInfo,
-                  profile: undefined,
-                };
-              }
-              return of(Rider.fromDoc({...rider, auth: user} as Rider));
-            } else {
-              return of(Rider.fromDoc({auth: user} as Rider));
-            }
-          })
-        )
-        : of(undefined)),
-      )
-      .subscribe(
-        (user?: Rider) => {
-          if (this.pendingProfiles && Object.keys(this.pendingProfiles).length) {
-            for (const [name, data] of Object.entries(this.pendingProfiles)) {
-              if (data.info?.providerId &&
-                !user?.providers?.find(p => p.providerId === data.info?.providerId)) {
-                user?.providers?.push(data.info);
-
-                // special case of Baltic star
-                if (data.info.providerId === 'oidc.balticstar') {
-                  const [firstName, lastName] = Rider.splitName(data.info?.displayName);
-                  Object.assign(user, {firstName, lastName});
-                  if (data.profile) {
-                    const overwrite: RiderPublicDetails = Rider.copyProviderProfile(data.profile);
-                    Object.assign(user, overwrite);
-                  }
-                }
-              }
-            }
-            this.storage.updateRider(user)
-              .catch((error) => console.error('Rider update error', error));
-            this.pendingProfiles = {};
-          }
-          this.user$.next(user);
-        }
-      );
-
     this.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user?: Rider) => {
-        this.user = user;
-        this.settings.setValue('user', this.user);
-      });
+      .subscribe((user?: Rider) => this.setCurrentUser(user));
   }
 
 // FIXME: when to destroy?
@@ -111,38 +46,77 @@ export class AuthService implements OnDestroy {
     this.unsubscribe$.next();
   }
 
+  setCurrentUser(rider?: Rider) {
+    this.user = rider;
+    this.settings.setValue('user', this.user);
+  }
+
+  stateObserver(user: User|null) {
+    if (user) {
+      // retrieve additional rider info
+      return this.storage.watchRider(user.uid).pipe(
+        takeUntil(this.logout$),
+        map((rider: Rider) => Rider.fromDoc({...rider, auth: user} as Rider)),
+        switchMap((rider: Rider) => {
+          this.user$.next(rider);
+          if (rider.hasCard && this.copyProviders(rider, user)) {
+            return from(this.storage.updateRider(rider));
+          }
+          return of();
+        })
+      ).toPromise();
+    }
+    else {
+      return this.logout().then(() => console.log('Logout completed'));
+    }
+  }
+
+  copyProviders(rider: Rider, user: UserWithProfile): boolean {
+    let needUpdate = false;
+    for (const data of user.providerData) {
+      if (data?.providerId &&
+        !rider.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
+        rider.providers.push(data);
+        needUpdate = true;
+
+        // special case of Baltic star
+        this.overwriteBalticStar(rider, data, user.profile);
+      }
+    }
+    return needUpdate;
+  }
+
+  overwriteBalticStar(rider: Rider, info?: ProviderInfo, profile?: ProviderDetails): Rider {
+    if (info?.providerId === 'oidc.balticstar') {
+      const [firstName, lastName] = Rider.splitName(info.displayName);
+      Object.assign(rider, {firstName, lastName, displayName: info.displayName});
+
+      if (profile) {
+        const overwrite: RiderPublicDetails = Rider.copyProviderProfile(profile);
+        Object.assign(rider, overwrite);
+      }
+    }
+    return rider;
+  }
+
   get isLoggedIn(): boolean {
     if (this.user === undefined) {
       this.user = this.settings.getValue('user');
     }
-    return this.user !== undefined;
+    return !!this.user;
   }
 
   get isAdmin(): boolean {
     if (this.user === undefined) {
       this.user = this.settings.getValue('user');
     }
-    return this.user !== null && !!this.user?.admin;
+    return !!this.user && this.user.admin;
   }
 
-  hasProvider(id: string): boolean {
-    return !!this.user?.providers?.find((p: ProviderInfo) => p.providerId === id);
-  }
-
-  async logout() {
+  logout(): Promise<void> {
     this.settings.removeKey('user');
     this.user$.next(undefined);
-    await this.fireAuth.signOut();
-  }
-
-  private addPendingProviders(user: firebase.User, rider: Rider) {
-    const providerInfo: UserInfo | null = user?.providerData[0];
-    if (providerInfo?.providerId &&
-      !rider.providers?.find(p => p.providerId === providerInfo?.providerId)) {
-      this.pendingProfiles[providerInfo.providerId] = {
-        info: providerInfo,
-        profile: undefined,
-      };
-    }
+    this.logout$.next();
+    return signOut(this.state$);
   }
 }

@@ -1,18 +1,59 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore} from '@angular/fire/firestore';
+import {collectionData, docData, Firestore} from '@angular/fire/firestore';
 import {Brevet} from '../models/brevet';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
-import {Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
+import {NONE_RIDER, Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
 import {Barcode} from '../models/barcode';
 import {catchError, filter, map, mergeMap} from 'rxjs/operators';
 import {RiderCheckIn} from '../models/rider-check-in';
-import firebase from 'firebase/app';
-import * as geofirestore from 'geofirestore';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, from, Observable, of} from 'rxjs';
 import {isNotNullOrUndefined} from '../utils';
-import GeoPoint = firebase.firestore.GeoPoint;
-import QuerySnapshot = firebase.firestore.QuerySnapshot;
-import Timestamp = firebase.firestore.Timestamp;
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  DocumentData,
+  FirestoreDataConverter,
+  GeoPoint,
+  getDoc,
+  getDocs,
+  orderBy,
+  PartialWithFieldValue,
+  query,
+  QueryDocumentSnapshot,
+  setDoc,
+  Timestamp,
+  updateDoc,
+  where,
+  WithFieldValue
+} from 'firebase/firestore';
+import * as geofirestore from 'geofirestore';
+// for geofirestore
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import {environment} from '../../environments/environment';
+
+const brevetConverter: FirestoreDataConverter<Brevet> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => Brevet.fromDoc(snapshot.data() as Brevet),
+  toFirestore: (it: PartialWithFieldValue<Brevet>): DocumentData => ({...it}),
+};
+const checkpointConverter: FirestoreDataConverter<Checkpoint> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as Checkpoint,
+  toFirestore: (it: PartialWithFieldValue<Checkpoint>): DocumentData => ({...it}),
+};
+const barcodeConverter: FirestoreDataConverter<Barcode> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as Barcode,
+  toFirestore: (it: PartialWithFieldValue<Barcode>): DocumentData => ({...it}),
+};
+const riderPrivateConverter: FirestoreDataConverter<RiderPrivateDetails> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as RiderPrivateDetails,
+  toFirestore: (it: PartialWithFieldValue<RiderPrivateDetails>): DocumentData => ({...it}),
+};
+const checkInConverter: FirestoreDataConverter<RiderCheckIn> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as RiderCheckIn,
+  toFirestore: (it: PartialWithFieldValue<RiderCheckIn>): DocumentData => ({...it}),
+};
 
 
 @Injectable({
@@ -21,67 +62,92 @@ import Timestamp = firebase.firestore.Timestamp;
 export class StorageService {
   geoCheckpoints: geofirestore.GeoCollectionReference;
 
-  constructor(private firestore: AngularFirestore) {
+  constructor(private firestore: Firestore) {
     /*
     firebase.firestore().clearPersistence().catch((error) => {
       console.error('Firestore cache cleaning error', error.code, error.message);
     });
      */
+    // TODO: switch from the compatibility mode when the library update is available
+    firebase.initializeApp(environment.firebase);
     this.geoCheckpoints = geofirestore
+      // @ts-ignore
       .initializeApp(firebase.firestore())
       .collection('checkpoints');
-
   }
 
-
-  listBrevets() {
-    return this.firestore
-      .collection<Brevet>('brevets', ref => ref.orderBy('startDate'))
-      .get();
-  }
-
-  createBrevet(brevet: Brevet) {
-    return this.firestore.collection('brevets').add({...brevet})
-      .then(docRef => {
-        brevet.uid = docRef.id;
-        docRef.update({uid: docRef.id});
-        return docRef.id;
-      })
+  listBrevets(): Promise<Brevet[]> {
+    return getDocs<Brevet>(query(
+      collection(this.firestore, 'brevets')
+        .withConverter<Brevet>(brevetConverter),
+      orderBy('startDate')))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
       .catch(error => {
-        console.error('Error adding document: ', error);
+        console.error('Error listing documents:', error);
+        return [];
       });
   }
 
-  getBrevet(uid: string) {
-    return this.firestore
-      .collection<Brevet>('brevets')
-      .doc(uid)
-      .valueChanges().pipe(
-        filter(isNotNullOrUndefined),
-        map(doc => Brevet.fromDoc(doc))
-      );
+  createBrevet(brevet: Brevet): Promise<string> {
+    return addDoc<Brevet>(
+      collection(this.firestore, 'brevets')
+        .withConverter<Brevet>(brevetConverter),
+      {...brevet} as WithFieldValue<Brevet>)
+      .then(docRef => {
+        brevet.uid = docRef.id;
+        return updateDoc(docRef, {uid: docRef.id})
+          .then(() => docRef.id);
+      })
+      .catch(error => {
+        console.error('Error adding document: ', error);
+        return Promise.reject(error);
+      });
+  }
+
+  getBrevet(uid: string): Promise<Brevet|undefined> {
+    return getDoc<Brevet>(doc(
+      collection(this.firestore, 'brevets')
+        .withConverter<Brevet>(brevetConverter),
+      uid))
+      .then(snapshot => snapshot.data())
+      .catch(error => {
+        console.error('Error reading document: ', error);
+        return Promise.reject(error);
+      });
   }
 
   deleteBrevet(brevetUid: string): Promise<void> {
-    return this.firestore
-      .collection<Brevet>('brevets')
-      .doc(brevetUid)
-      .delete();
+    return deleteDoc(doc(
+      collection(this.firestore, 'brevets'),
+      brevetUid))
+      .catch(error => {
+        console.error('Error deleting document: ', error);
+        return Promise.reject(error);
+      });
   }
 
-  updateBrevet(brevet: Brevet) {
-    return this.firestore
-      .collection<Brevet>('brevets')
-      .doc(brevet.uid)
-      .update({...brevet});
+  updateBrevet(brevet: Brevet): Promise<void> {
+    return updateDoc<Brevet>(doc(
+        collection(this.firestore, 'brevets')
+          .withConverter<Brevet>(brevetConverter),
+        brevet.uid),
+      {...brevet} as WithFieldValue<Brevet>)
+      .catch(error => {
+        console.error('Error updating document: ', error);
+        return Promise.reject(error);
+      });
   }
 
-  hasCheckpoint(brevetUid: string, checkpointUid: string) {
-    return this.firestore
-      .collection<Brevet>('brevets').doc(brevetUid)
-      .collection<Checkpoint>('checkpoints').doc(checkpointUid)
-      .get().toPromise()
-      .then(doc => doc.exists);
+  hasCheckpoint(brevetUid: string, checkpointUid: string): Promise<boolean> {
+    return getDoc<Checkpoint>(doc(
+        collection(doc(
+          collection(this.firestore, 'brevets')
+            .withConverter<Brevet>(brevetConverter),
+          brevetUid), 'checkpoints')
+          .withConverter<Checkpoint>(checkpointConverter),
+        checkpointUid
+      )
+    ).then((snapshot) => !!snapshot.exists);
   }
 
   /**
@@ -90,14 +156,14 @@ export class StorageService {
    * @param brevetUid The brevet UID
    * @param checkpoints The checkpoint list
    */
-  filterCheckpoints(brevetUid: string, checkpoints: Checkpoint[]) {
-    return this.firestore
-      .collection<Brevet>('brevets').doc(brevetUid)
-      .collection<Checkpoint>('checkpoints').get()
-      .pipe(
-        map((snapshot: QuerySnapshot<Checkpoint>) => snapshot.docs),
-        map(docs => checkpoints.filter(cp => docs.map(doc => doc.data().uid).includes(cp.uid)))
-      );
+  filterCheckpoints(brevetUid: string, checkpoints: Checkpoint[]): Promise<Checkpoint[]> {
+    return getDocs<Checkpoint>(query(
+      collection(doc(
+        collection(this.firestore, 'brevets'),
+        brevetUid), 'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter)))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
+      .then((docs) => checkpoints.filter(cp => docs.map(data => data.uid).includes(cp.uid)));
   }
 
   /**
@@ -106,208 +172,260 @@ export class StorageService {
    *
    * @param position
    */
-  listCloseCheckpoints(position: GeolocationPosition) {
+  listCloseCheckpoints(position: GeolocationPosition): Promise<Checkpoint[]> {
     return this.geoCheckpoints
       .near({
         center: new GeoPoint(position.coords.latitude, position.coords.longitude),
         radius: 1.2
-      }).get();
+      }).get()
+      .then(snapshot => snapshot.docs.map(d => d.data() as unknown as Checkpoint));
   }
 
-  listCheckpoints() {
-    return this.firestore
-      .collection<Checkpoint>('checkpoints')
-      .get();
+  listCheckpoints(): Promise<Checkpoint[]> {
+    return getDocs<Checkpoint>(query(
+      collection(this.firestore, 'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter)))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
+      .catch(error => {
+        console.error('Error listing documents:', error);
+        return [];
+      });
   }
 
-  createCheckpoint(brevet: Brevet, checkpoint: Checkpoint): Promise<string | void> {
+  createCheckpoint(brevet: Brevet, checkpoint: Checkpoint): Promise<string> {
     const {uid, name, length} = brevet;
-    return this.firestore
-      .collection<Brevet>('brevets').doc(brevet.uid)
-      .collection<Checkpoint>('checkpoints').add({
+    return addDoc<Checkpoint>(
+      collection(doc(
+        collection(this.firestore, 'brevets'),
+        brevet.uid), 'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter),
+      {
         ...checkpoint,
         brevet: {uid, name, length}
-      } as Checkpoint)
+      } as WithFieldValue<Checkpoint>)
       .then(docRef => {
         checkpoint.uid = docRef.id;
-        docRef.update({uid: docRef.id});
-        return docRef.id;
+        return updateDoc(docRef, {uid: docRef.id})
+          .then(() => docRef.id);
       })
       .then(checkpointUid => this.geoCheckpoints.doc(checkpointUid).set({
           ...checkpoint,
           brevet: {uid, name, length}
         }).then(() => checkpointUid)
       )
+      /*
+      .then(checkpointUid => setDoc<Checkpoint>(doc(
+          collection(this.firestore, 'checkpoints')
+            .withConverter<Checkpoint>(checkpointConverter),
+          checkpointUid),
+        {
+          ...checkpoint,
+          brevet: {uid, name, length}
+        } as WithFieldValue<Checkpoint>)
+        .then(() => checkpointUid)
+      )
+      */
       .catch(error => {
         console.error('Error adding document: ', error);
+        return Promise.reject(error);
       });
   }
 
-  getCheckpoint(checkpointUid: string) {
-    return this.firestore
-      .collection<Checkpoint>('checkpoints')
-      .doc(checkpointUid)
-      .valueChanges().pipe(
-        filter(isNotNullOrUndefined)
-      );
+  getCheckpoint(checkpointUid: string): Promise<Checkpoint|undefined> {
+    return getDoc<Checkpoint>(doc(
+      collection(this.firestore, 'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter),
+        checkpointUid))
+      .then(snapshot => snapshot.data())
+      .catch(error => {
+        console.error('Error reading document: ', error);
+        return Promise.reject(error);
+      });
   }
 
   deleteCheckpoint(brevetUid: string, checkpointUid: string): Promise<void> {
-    return this.firestore
-      .collection<Brevet>('brevets').doc(brevetUid)
-      .collection<Checkpoint>('checkpoints')
-      .doc(checkpointUid)
-      .delete();
+    return deleteDoc(doc(
+      collection(doc(
+          collection(this.firestore, 'brevets'), brevetUid),
+        'checkpoints'), checkpointUid))
+      .catch(error => {
+        console.error('Error deleting document: ', error);
+        return Promise.reject(error);
+      });
   }
 
-  updateCheckpoint(checkpoint: Checkpoint) {
+  updateCheckpoint(checkpoint: Checkpoint): Promise<void> {
+    /*
+    return updateDoc<Checkpoint>(doc(
+        collection(this.firestore, 'checkpoints')
+          .withConverter<Checkpoint>(checkpointConverter),
+        checkpoint.uid),
+      {...checkpoint, copy: false} as WithFieldValue<Checkpoint>)
+      .catch(error => {
+        console.error('Error updating document: ', error);
+        return Promise.reject(error);
+      });
+    */
     return this.geoCheckpoints.doc(checkpoint.uid)
-      .update({...checkpoint, copy: false});
+      .update({...checkpoint, copy: false})
+      .catch((error: any) => {
+        console.error('Error updating document: ', error);
+        return Promise.reject(error);
+      });
   }
 
-  getBarcodeRoot(checkpointUid: string): Observable<Checkpoint> {
-    return this.firestore
-      .collection<Checkpoint>('checkpoints')
-      .doc(checkpointUid)
-      .valueChanges().pipe(
-        filter(isNotNullOrUndefined)
-      );
+  getBarcodeRoot(checkpointUid: string): Promise<Checkpoint|undefined> {
+    return getDoc<Checkpoint>(doc(
+      collection(this.firestore, 'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter),
+      checkpointUid))
+      .then(snapshot => snapshot.data())
+      .catch(error => {
+        console.error('Error reading document: ', error);
+        return Promise.reject(error);
+      });
   }
 
   createBarcode(root: 'checkpoints' | 'riders',
                 controlUid: string = NONE_CHECKPOINT,
                 barcode: Barcode,
-                authUid?: string) {
+                authUid?: string): Promise<string> {
     if (!authUid) {
       return Promise.reject('No authentication string');
     }
-    return this.firestore
-      .collection<Checkpoint | Rider>(root).doc(controlUid)
-      .collection<Barcode>('barcodes').add({
+    return addDoc<Barcode>(collection(doc(
+      collection(this.firestore, root), controlUid),'barcodes')
+      .withConverter<Barcode>(barcodeConverter),
+      {
         ...barcode,
         control: controlUid,
         owner: authUid
-      })
+      } as WithFieldValue<Barcode>)
       .then(docRef => {
         barcode.uid = docRef.id;
-        docRef.update({uid: docRef.id});
-        return docRef.id;
+        return updateDoc(docRef, {uid: docRef.id})
+          .then(() => docRef.id);
+      })
+      .catch(error => {
+        console.error('Error adding document: ', error);
+        return Promise.reject(error);
       });
   }
 
-  createRider(rider: Rider) {
-    const publicDetails = rider.toPublicDoc();
+  createRider(rider: Rider): Promise<string> {
+    const publicDetails: RiderPublicDetails = rider.toPublicDoc();
 
     let docPromise: Promise<void>;
     if (rider.uid) {
-      docPromise = this.firestore
-          .collection<RiderPublicDetails>('riders')
-          .doc(rider.uid)
-          .set(publicDetails, {merge: true});
+      docPromise = setDoc<RiderPublicDetails>(
+        doc(collection(this.firestore, 'riders'), rider.uid),
+        publicDetails as PartialWithFieldValue<RiderPublicDetails>,
+        {merge: true});
     }
     else {
-      docPromise = this.firestore
-        .collection<RiderPublicDetails>('riders')
-        .add(rider.toPublicDoc())
+      docPromise = addDoc<RiderPublicDetails>(
+        collection(this.firestore, 'riders'), publicDetails)
         .then(docRef => {
           publicDetails.uid = docRef.id;
-          return docRef.update(publicDetails);
+          return updateDoc(docRef, {uid: docRef.id});
         });
     }
     return docPromise
-      .then(() => this.firestore
-        .collection<RiderPrivateDetails>('private')
-        .doc(publicDetails.uid)
-        .set(rider.toPrivateDoc({uid: publicDetails.uid}), {merge: true}))
-      .then(() => publicDetails.uid)
+      .then(() => setDoc<RiderPrivateDetails>(doc(
+        collection(this.firestore, 'private')
+          .withConverter<RiderPrivateDetails>(riderPrivateConverter),
+          rider.uid),
+          rider.toPrivateDoc({uid: publicDetails.uid}) as PartialWithFieldValue<RiderPrivateDetails>,
+          {merge: true}))
+      .then(() => publicDetails.uid || NONE_RIDER)
       .catch(error => {
         console.error('Error adding document: ', error);
+        return Promise.reject(error);
       });
   }
 
   deleteRider(uid: string): Promise<void> {
-    return this.firestore
-      .collection<RiderPrivateDetails>('private')
-      .doc(uid)
-      .delete()
-      .then(() =>this.firestore
-        .collection<RiderPublicDetails>('riders')
-        .doc(uid)
-        .delete()
-      );
+    return deleteDoc(doc(
+      collection(this.firestore, 'private'), uid))
+      .then(() => deleteDoc(doc(
+        collection(this.firestore, 'riders'), uid)))
+      .catch(error => {
+        console.error('Error deleting document: ', error);
+      });
   }
 
-  updateRider(rider?: Rider) {
+  updateRider(rider?: Rider): Promise<void> {
     if (!rider) {
       return Promise.reject();
     }
-    return this.firestore
-      .collection<RiderPublicDetails>('riders')
-      .doc(rider.uid)
-      .update(rider.toPublicDoc())
-      .then(() => this.firestore
-        .collection<RiderPrivateDetails>('private')
-        .doc(rider.uid)
-        .update(rider.toPrivateDoc())
-      );
+    return updateDoc<RiderPublicDetails>(doc(
+      collection(this.firestore, 'riders'),
+        rider.uid), rider.toPublicDoc() as WithFieldValue<RiderPublicDetails>)
+      .then(() => updateDoc<RiderPrivateDetails>(doc(
+        collection(this.firestore, 'private')
+          .withConverter<RiderPrivateDetails>(riderPrivateConverter),
+          rider.uid), rider.toPrivateDoc() as WithFieldValue<RiderPrivateDetails>))
+      .catch(error => {
+        console.error('Error updating document: ', error);
+        return Promise.reject(error);
+      });
   }
 
-  watchRider(uid?: string): Observable<Rider|undefined> {
+  watchRider(uid?: string): Observable<Rider> {
     if (!uid) {
-      return of(undefined);
+      return of({} as Rider);
     }
-    const publicDetails$ = this.firestore
-      .collection<RiderPublicDetails>('riders')
-      .doc(uid)
-      .valueChanges();
-    const privateDetails$ = this.firestore
-      .collection<RiderPrivateDetails>('private')
-      .doc(uid)
-      .valueChanges()
+    const publicDetails$ = docData<RiderPublicDetails>(doc(
+      collection(this.firestore, 'riders'), uid));
+    const privateDetails$ = docData<RiderPrivateDetails>(doc(
+      collection(this.firestore, 'private'), uid)
+        .withConverter<RiderPrivateDetails>(riderPrivateConverter))
       // test for access error
-      .pipe(catchError(error => of(undefined)));
+      .pipe(catchError(error => of({} as Rider)));
 
     return combineLatest([publicDetails$, privateDetails$])
       .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));
   }
 
-  getRider(uid?: string): Observable<Rider|undefined> {
+  getRider(uid?: string): Promise<Rider> {
     if (!uid) {
-      return of(undefined);
+      return Promise.resolve({} as Rider);
     }
-    const publicDetails$ = this.firestore
-      .collection<RiderPublicDetails>('riders')
-      .doc(uid)
-      .get()
-      .pipe(map(snapshot => snapshot.data()));
-    const privateDetails$ = this.firestore
-      .collection<RiderPrivateDetails>('private')
-      .doc(uid)
-      .get()
-      .pipe(
-        map(snapshot => snapshot.data()),
-        // test for access error
-        catchError(error => of(undefined))
-      );
-    return combineLatest([publicDetails$, privateDetails$])
-      .pipe(map(snapshots => Object.assign({} as Rider, snapshots[0], snapshots[1])));
+    const publicDetails$ = getDoc<RiderPublicDetails>(doc(
+      collection(this.firestore, 'riders'), uid))
+      .then((snapshot) => snapshot.data());
+    const privateDetails$ = getDoc<RiderPrivateDetails>(doc(
+      collection(this.firestore, 'private'), uid)
+      .withConverter<RiderPrivateDetails>(riderPrivateConverter))
+      .then((snapshot) => snapshot.data())
+      // test for access error
+      .catch((error) => {
+        console.error('Private details failure', error);
+        return {} as Rider;
+      });
+    return Promise.all([publicDetails$, privateDetails$])
+      .then((details) => Object.assign({} as Rider, ...details));
   }
 
-  watchRiders() {
-    return this.firestore
-      .collection<Rider>('riders',
-        ref => ref.where('hidden', '==', false)
-          .orderBy('lastName'))
-      .valueChanges();
+  /**
+   * Track the rider list returning public info.
+   * NOTE. Every document should have 'hidden' and 'lastName' fields.
+   */
+  watchRiders(): Observable<RiderPublicDetails[]> {
+    return collectionData<RiderPublicDetails>(query(
+      collection(this.firestore, 'riders'),
+      where('hidden', '==', false),
+      orderBy('lastName')));
   }
 
-  watchBarcodes(root: 'checkpoints' | 'riders', checkpointUid: string) {
-    return this.firestore
-      .collection<Checkpoint | Rider>(root)
-      .doc(checkpointUid)
-      .collection<Barcode>('barcodes',
-        ref => ref.orderBy('time', 'desc'))
-      .valueChanges().pipe(
+  watchBarcodes(root: 'checkpoints' | 'riders', checkpointUid: string): Observable<Barcode[]> {
+    return collectionData<Barcode>(query(
+      (collection(doc(
+        collection(this.firestore, root),
+        checkpointUid),'barcodes')
+      .withConverter<Barcode>(barcodeConverter)),
+      orderBy('time', 'desc')))
+    .pipe(
         map((barcodes: Barcode[]) => barcodes
           .map((b: Barcode) => new Barcode(new Timestamp(b.time.seconds, b.time.nanoseconds),
             b.name || b.code, b.message)))
@@ -315,29 +433,32 @@ export class StorageService {
   }
 
   watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
-    return this.firestore
-      .collection<Rider>('riders')
-      .get().pipe(
-        map(snapshot => snapshot.docs),
-        map(docs => docs.map(doc => doc.data())),
-        map((riders: Rider[]) => {
+    return from(getDocs<RiderPublicDetails>(query(
+      collection(this.firestore, 'riders')))
+      .then(snapshot => snapshot.docs.map(d => d.data())))
+      .pipe(
+        map((riders: RiderPublicDetails[]) => {
+          // collect rider codes
+          // TODO: save the code along with the barcode
           const dictionary: { [key: string]: string } = {};
-          riders.forEach(rider => dictionary[rider.uid] = rider.code || '');
+          riders.forEach(rider => dictionary[rider.uid || ''] = rider.code || '');
           return dictionary;
         }),
-        mergeMap(dictionary => this.firestore
-          .collection<Checkpoint>('checkpoints')
-          .doc(checkpointUid)
-          .valueChanges().pipe(
+        mergeMap((dictionary: { [key: string]: string }) => docData(doc(
+          collection(this.firestore, 'checkpoints')
+            .withConverter<Checkpoint>(checkpointConverter),
+          checkpointUid))
+          .pipe(
             // skip deleted checkpoints
             filter(isNotNullOrUndefined),
-            mergeMap((checkpoint: Checkpoint) => this.firestore
-              .collection<Brevet>('brevets')
-              .doc(checkpoint.brevet?.uid)
-              .collection<Checkpoint>('checkpoints')
-              .doc(checkpoint.uid)
-              .collection<RiderCheckIn>('riders')
-              .valueChanges().pipe(
+            mergeMap((checkpoint: Checkpoint) => collectionData<RiderCheckIn>(query(
+              collection(doc(
+                collection(doc(
+                  collection(this.firestore, 'brevets'), checkpoint.brevet?.uid),
+                  'checkpoints'), checkpoint.uid),
+                'riders')
+                .withConverter<RiderCheckIn>(checkInConverter)))
+              .pipe(
                 map((riders: RiderCheckIn[]) => riders.map(rider => {
                   const names = rider.name?.trim().split(/\s/);
                   const lastName = rider.lastName || names.pop();
@@ -348,6 +469,7 @@ export class StorageService {
                     name: `${lastName} ${firstName}`,
                     // TODO: rely on lastName presence (?) in the document
                     lastName, firstName,
+                    // TODO: save the code along with the barcode
                     code: rider.code || dictionary[rider.uid],
                   } as RiderCheckIn;
                 }))
@@ -355,31 +477,34 @@ export class StorageService {
             ))));
   }
 
-  watchCheckpoints(brevetUid: string) {
-    return this.firestore
-      .collection<Brevet>('brevets')
-      .doc(brevetUid)
-      .collection<Checkpoint>('checkpoints',
-        ref => ref.orderBy('distance'))
-      .valueChanges();
+  watchCheckpoints(brevetUid: string): Observable<Checkpoint[]> {
+    return collectionData<Checkpoint>(query(
+      collection(doc(
+          collection(this.firestore, 'brevets'), brevetUid),
+        'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter),
+      orderBy('distance')));
   }
 
-  watchBrevetProgress(brevetUid: string) {
-    return this.firestore
-      .collection<Brevet>('brevets')
-      .doc(brevetUid)
-      .collection<Checkpoint>('checkpoints',
-        ref => ref.orderBy('distance'))
-      .valueChanges().pipe(
+  watchBrevetProgress(brevetUid: string): Observable<Checkpoint> {
+    return collectionData<Checkpoint>(query(
+      collection(doc(
+          collection(this.firestore, 'brevets'), brevetUid),
+        'checkpoints')
+        .withConverter<Checkpoint>(checkpointConverter),
+      orderBy('distance')))
+    .pipe(
         mergeMap((checkpoints: Checkpoint[]) => checkpoints),
         filter((checkpoint: Checkpoint) => !!checkpoint.uid),
-        mergeMap((checkpoint: Checkpoint) => this.firestore
-          .collection<Brevet>('brevets')
-          .doc(brevetUid)
-          .collection<Checkpoint>('checkpoints')
-          .doc(checkpoint.uid)
-          .collection<RiderCheckIn>('riders')
-          .valueChanges().pipe(
+        // TODO: extract similar code as above
+        mergeMap((checkpoint: Checkpoint) => collectionData<RiderCheckIn>(query(
+          collection(doc(
+            collection(doc(
+              collection(this.firestore, 'brevets'), brevetUid),
+              'checkpoints'), checkpoint.uid),
+            'riders')
+            .withConverter<RiderCheckIn>(checkInConverter)))
+          .pipe(
             map((riders: RiderCheckIn[]) => ({
                 uid: checkpoint.uid,
                 riders: riders.map(rider => {

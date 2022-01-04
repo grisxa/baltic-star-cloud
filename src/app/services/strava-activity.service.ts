@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
-import firebase from 'firebase/app';
-import 'firebase/functions';
+
 import {StravaTokens} from '../models/strava-tokens';
 import {TrackNotFound} from '../models/track-not-found';
+import {getFunctions, httpsCallable} from '@angular/fire/functions';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class StravaActivityService {
   }
 
   getToken(code: string) {
-    const stravaToken = firebase.functions().httpsCallable('getStravaToken');
+    const stravaToken = httpsCallable(getFunctions(), 'getStravaToken');
     return stravaToken({ code })
       .then((result) => {
         console.log('= function result', result);
@@ -28,8 +28,8 @@ export class StravaActivityService {
       });
   }
 
-  refreshToken(tokens: unknown) {
-    const stravaToken = firebase.functions().httpsCallable('refreshStravaToken');
+  refreshToken(tokens: StravaTokens) {
+    const stravaToken = httpsCallable(getFunctions(),'refreshStravaToken');
     return stravaToken(tokens)
       .then((result) => {
         console.log('= function result', result);
@@ -38,10 +38,10 @@ export class StravaActivityService {
   }
 
   searchActivities(brevetUid?: string, riderUid?: string) {
-    const stravaSearch = firebase.functions().httpsCallable('search_activities');
+    const stravaSearch = httpsCallable(getFunctions(),'search_activities');
     return stravaSearch({brevetUid, riderUid})
       .then((result) => result.data)
-      .then((data) => {
+      .then((data: any) => {
         if (data.error === 404) {
           throw new TrackNotFound(data.message);
         }

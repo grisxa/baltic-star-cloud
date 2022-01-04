@@ -1,8 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AngularFireModule} from '@angular/fire';
-import {AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR} from '@angular/fire/firestore';
+import {connectFirestoreEmulator, enableMultiTabIndexedDbPersistence, provideFirestore} from '@angular/fire/firestore';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
@@ -19,8 +18,8 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {AngularFireAuthModule, USE_EMULATOR as USE_AUTH_EMULATOR} from '@angular/fire/auth';
-import {USE_EMULATOR as USE_FUNCTIONS_EMULATOR} from '@angular/fire/functions';
+import {provideAuth} from '@angular/fire/auth';
+import {connectFunctionsEmulator, getFunctions, provideFunctions} from '@angular/fire/functions';
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
 import {RiderInfoComponent} from './components/rider-info/rider-info.component';
@@ -47,7 +46,6 @@ import {OfflineSwitchComponent} from './components/offline-switch/offline-switch
 import {LoginComponent} from './components/login/login.component';
 import {AfterLoginComponent} from './components/after-login/after-login.component';
 import {canActivate, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
-import {FirebaseUIModule} from 'firebaseui-angular';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
 import {BrevetListItemComponent} from './components/brevet-list/brevet-list-item/brevet-list-item.component';
@@ -56,6 +54,11 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {MapboxLocationDialogComponent} from './components/mapbox-location-dialog/mapbox-location-dialog.component';
 import {MatSelectModule} from '@angular/material/select';
 import {MapboxRouteComponent} from './components/mapbox-route/mapbox-route.component';
+import {getFirestore} from 'firebase/firestore';
+import {provideFirebaseApp} from '@angular/fire/app';
+import {connectAuthEmulator, getAuth} from 'firebase/auth';
+import {initializeApp} from 'firebase/app';
+import {AngularFirestoreModule} from '@angular/fire/compat/firestore';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -120,10 +123,32 @@ const appRoutes: Routes = [
       appRoutes,
       environment.router
     ),
-    AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
-    AngularFireAuthModule,
-    FirebaseUIModule.forRoot(environment.auth),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      if (environment.useEmulators) {
+        connectFirestoreEmulator(firestore, 'localhost', 8080);
+      }
+      enableMultiTabIndexedDbPersistence(firestore)
+        .then(() => console.log('Firestore persistence on'))
+        .catch(error => console.error('Firestore persistence failure'));
+      return firestore;
+    }),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
+    provideAuth(() => {
+      const auth = getAuth();
+      if (environment.useEmulators) {
+        connectAuthEmulator(auth, 'http://localhost:9099');
+      }
+      return auth;
+    }),
     BrowserAnimationsModule,
     HttpClientModule,
     MatButtonModule,
@@ -154,18 +179,6 @@ const appRoutes: Routes = [
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {verticalPosition: 'top', duration: 5000}
-    },
-    {
-      provide: USE_FUNCTIONS_EMULATOR,
-      useValue: environment.useEmulators ? ['localhost', 5001] : undefined
-    },
-    {
-      provide: USE_FIRESTORE_EMULATOR,
-      useValue: environment.useEmulators ? ['localhost', 8080] : undefined
-    },
-    {
-      provide: USE_AUTH_EMULATOR,
-      useValue: environment.useEmulators ? ['localhost', 9099] : undefined
     },
   ],
   entryComponents: [

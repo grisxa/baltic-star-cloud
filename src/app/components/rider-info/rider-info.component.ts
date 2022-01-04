@@ -5,18 +5,15 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
-import firebase from 'firebase/app';
 import {Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
-
-
 import {Rider} from '../../models/rider';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {Barcode} from '../../models/barcode';
 import {environment} from '../../../environments/environment';
-import Timestamp = firebase.firestore.Timestamp;
-
+import {EmailAuthProvider, FacebookAuthProvider, getAuth, GoogleAuthProvider, linkWithRedirect, OAuthProvider} from 'firebase/auth';
+import {Timestamp} from 'firebase/firestore';
 
 @Component({
   selector: 'app-rider-info',
@@ -38,7 +35,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       cssClass: 'baltic-star',
       icon: 'icon_baltic_star',
       iconDisabled: 'icon_baltic_star_bw',
-      framework: new firebase.auth.OAuthProvider('oidc.balticstar')
+      framework: new OAuthProvider('oidc.balticstar')
     },
     {
       name: 'google.com',
@@ -46,7 +43,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       cssClass: 'google',
       icon: 'icon_google',
       iconDisabled: 'icon_google_bw',
-      framework: new firebase.auth.GoogleAuthProvider()
+      framework: new GoogleAuthProvider()
     },
     {
       name: 'facebook.com',
@@ -55,7 +52,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       icon: 'icon_facebook',
       // the same
       iconDisabled: 'icon_facebook',
-      framework: new firebase.auth.FacebookAuthProvider()
+      framework: new FacebookAuthProvider()
     },
   ];
   private unsubscribe$ = new Subject();
@@ -88,10 +85,10 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       this.rider$ = this.storage.watchRider(riderUid);
       this.url = window.location.origin + '/r/' + riderUid;
       this.storage.watchBarcodes('riders', riderUid)
-        .subscribe((codes: Barcode[]) => {
-          this.barcodes.data = codes;
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((codes: Barcode[]) => this.barcodes.data = codes);
           // this.dataSource.paginator = this.paginator;
-        });
+
     });
     this.rider$
       .pipe(
@@ -99,6 +96,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         filter<Rider|undefined>(Boolean),
         // @ts-ignore
       ).subscribe((rider: Rider) => {
+        console.log('= rider info', rider);
         if (rider.displayName) {
           this.titleService.setTitle(rider.displayName);
         }
@@ -133,12 +131,14 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
   delete() {
     if (this.rider) {
-      const currentUser = firebase.auth().currentUser;
+      const currentUser = getAuth().currentUser;
       const uid = this.rider.uid;
       this.storage.deleteRider(uid)
         .then(() => currentUser?.delete())
         .then(() => this.auth.logout())
-        .catch(error => console.error(`User ${uid} deletion error`, error));
+        .catch(error => this.snackBar
+          .open(`Не удалось удалить участника. ${error.message}`,
+            'Закрыть'));
     }
   }
 
@@ -151,31 +151,28 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
       (!!this.auth.user && !!this.rider && this.auth.user.uid === this.rider.owner);
   }
 
-  providerDisabled(id: string): boolean {
-    return this.auth.hasProvider(id);
-  }
-
   linkProvider(
     name: string,
-    provider: firebase.auth.OAuthProvider
-      | firebase.auth.GoogleAuthProvider
-      | firebase.auth.FacebookAuthProvider
-      | firebase.auth.EmailAuthProvider) {
+    provider: OAuthProvider
+      | GoogleAuthProvider
+      | FacebookAuthProvider
+      | EmailAuthProvider) {
     const config = environment.auth.signInOptions?.find(
-        // @ts-ignore
-        (settings: unknown) => settings.provider === name
+        (settings: any) => settings.provider === name
       );
     // @ts-ignore
     config?.scopes?.forEach((scope: string) => provider.addScope(scope));
     // @ts-ignore
     if (config?.customParameters) { provider.setCustomParameters(config?.customParameters); }
 
-    this.auth.user?.auth?.linkWithRedirect(provider)
-      .catch(error => {
-        console.error('Error linking: ', error);
-        this.snackBar.open(`Не удалось подключить аккаунт. ${error.message}`,
-          'Закрыть');
-      });
+    if (this.auth.user?.auth) {
+      linkWithRedirect(this.auth.user?.auth, provider)
+        .catch((error: any) => {
+          console.error('Error linking: ', error);
+          this.snackBar.open(`Не удалось подключить аккаунт. ${error.message}`,
+            'Закрыть');
+        });
+    }
   }
 
   updateField(field: string) {
@@ -208,11 +205,9 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         this.rider.updateDisplayName();
       }
       this.storage.updateRider(this.rider)
-        .catch(error => {
-          console.error('rider update has failed', error);
-          this.snackBar.open(`Не удалось сохранить изменения. ${error.message}`,
-            'Закрыть');
-        });
+        .catch(error => this.snackBar
+          .open(`Не удалось сохранить изменения. ${error.message}`,
+            'Закрыть'));
     } else {
       // @ts-ignore
       control?.setValue(this.rider[field] instanceof Timestamp ?

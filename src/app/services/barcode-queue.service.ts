@@ -5,8 +5,7 @@ import {Barcode} from '../models/barcode';
 import {Offline} from '../models/offline';
 import {SettingService} from './setting.service';
 import {NONE_CHECKPOINT} from '../models/checkpoint';
-import firebase from 'firebase/app';
-import Timestamp = firebase.firestore.Timestamp;
+import {Timestamp} from 'firebase/firestore';
 
 type SavedBarcode = {
   source: 'riders' | 'checkpoints';
@@ -50,7 +49,11 @@ export class BarcodeQueueService {
       // the latest code
       return this.storage
         .createBarcode(source, sourceUid, barcode, this.auth.user?.uid)
-        .then((uid) => this.settings.replaceToken('barcodes', tempUid, uid));
+        .then((uid: string) => this.settings.replaceToken('barcodes', tempUid, uid))
+        .catch(error => {
+          console.error('Barcode creation failure', error);
+          return Promise.reject(error);
+        });
     } else {
       return Promise.reject(new Offline('working offline'));
     }
