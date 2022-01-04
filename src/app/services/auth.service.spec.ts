@@ -52,7 +52,7 @@ describe('AuthService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-    expect((service.settings as unknown as MockSettingService).store).toEqual({'user': undefined});
+    expect((service.settings as unknown as MockSettingService).store).toEqual({user: undefined});
   });
 
   describe('isLoggedIn', () => {
@@ -141,25 +141,25 @@ describe('AuthService', () => {
 
     it('should add missing provider', () => {
       const rider = new Rider('a1', 'b2');
-      const user = { providerData: [{providerId: "any"}]} as User;
+      const user = { providerData: [{providerId: 'any'}]} as User;
 
       service.copyProviders(rider, user);
 
       expect(rider.providers).toEqual([{
-        providerId: "any"
+        providerId: 'any'
       }]);
-      expect(service.overwriteBalticStar).toHaveBeenCalledOnceWith(rider, {providerId: "any"}, undefined);
+      expect(service.overwriteBalticStar).toHaveBeenCalledOnceWith(rider, {providerId: 'any'}, undefined);
     });
 
     it('should skip existing provider', () => {
       const rider = new Rider('a1', 'b2');
-      rider.providers = [{providerId: "any"}];
-      const user = { providerData: [{providerId: "any"}]} as User;
+      rider.providers = [{providerId: 'any'}];
+      const user = { providerData: [{providerId: 'any'}]} as User;
 
       service.copyProviders(rider, user);
 
       expect(rider.providers).toEqual([{
-        providerId: "any"
+        providerId: 'any'
       }]);
       expect(service.overwriteBalticStar).not.toHaveBeenCalled();
     });
@@ -178,35 +178,36 @@ describe('AuthService', () => {
 
     it('should ignore other providers', () => {
       const rider = new Rider('a1', 'b2');
-      const info = {providerId: "any"}
+      const info = {providerId: 'any'};
 
       expect(service.overwriteBalticStar(rider, info)).toEqual(rider);
     });
 
     it('should copy name', () => {
       const rider = new Rider('a1', 'b2');
-      const info = {providerId: "oidc.balticstar", displayName: "John Doe"}
+      const info = {providerId: 'oidc.balticstar', displayName: 'John Doe'};
       const expected = Rider.fromDoc({
         owner: 'a1',
         uid: 'b2',
         firstName: 'John',
         lastName: 'Doe',
-        displayName: "John Doe"
+        displayName: 'John Doe'
       } as Rider);
 
       expect(service.overwriteBalticStar(rider, info)).toEqual(expected);
     });
 
     it('should override profile', () => {
+      /* eslint @typescript-eslint/naming-convention: "warn" */
       const rider = new Rider('a1', 'b2');
-      const info: ProviderInfo = {providerId: "oidc.balticstar", displayName: "John Doe"};
+      const info: ProviderInfo = {providerId: 'oidc.balticstar', displayName: 'John Doe'};
       const profile: ProviderDetails = {given_name: 'Jim', family_name: 'Bim', name: 'Jim Bim'} as ProviderDetails;
       const expected = Rider.fromDoc({
         owner: 'a1',
         uid: 'b2',
         firstName: 'Jim',
         lastName: 'Bim',
-        displayName: "Jim Bim"
+        displayName: 'Jim Bim'
       } as Rider);
 
       expect(service.overwriteBalticStar(rider, info, profile)).toEqual(expected);

@@ -81,7 +81,7 @@ export class StorageService {
       collection(this.firestore, 'brevets')
         .withConverter<Brevet>(brevetConverter),
       orderBy('startDate')))
-      .then(snapshot => snapshot.docs.map(doc => doc.data()))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
       .catch(error => {
         console.error('Error listing documents:', error);
         return [];
@@ -162,7 +162,7 @@ export class StorageService {
         collection(this.firestore, 'brevets'),
         brevetUid), 'checkpoints')
         .withConverter<Checkpoint>(checkpointConverter)))
-      .then(snapshot => snapshot.docs.map(doc => doc.data()))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
       .then((docs) => checkpoints.filter(cp => docs.map(data => data.uid).includes(cp.uid)));
   }
 
@@ -178,14 +178,14 @@ export class StorageService {
         center: new GeoPoint(position.coords.latitude, position.coords.longitude),
         radius: 1.2
       }).get()
-      .then(snapshot => snapshot.docs.map(doc => doc.data() as unknown as Checkpoint))
+      .then(snapshot => snapshot.docs.map(d => d.data() as unknown as Checkpoint));
   }
 
   listCheckpoints(): Promise<Checkpoint[]> {
     return getDocs<Checkpoint>(query(
       collection(this.firestore, 'checkpoints')
         .withConverter<Checkpoint>(checkpointConverter)))
-      .then(snapshot => snapshot.docs.map(doc => doc.data()))
+      .then(snapshot => snapshot.docs.map(d => d.data()))
       .catch(error => {
         console.error('Error listing documents:', error);
         return [];
@@ -435,7 +435,7 @@ export class StorageService {
   watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
     return from(getDocs<RiderPublicDetails>(query(
       collection(this.firestore, 'riders')))
-      .then(snapshot => snapshot.docs.map(doc => doc.data())))
+      .then(snapshot => snapshot.docs.map(d => d.data())))
       .pipe(
         map((riders: RiderPublicDetails[]) => {
           // collect rider codes

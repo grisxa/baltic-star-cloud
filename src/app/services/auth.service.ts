@@ -60,7 +60,7 @@ export class AuthService implements OnDestroy {
         switchMap((rider: Rider) => {
           this.user$.next(rider);
           if (rider.hasCard && this.copyProviders(rider, user)) {
-            return from(this.storage.updateRider(rider))
+            return from(this.storage.updateRider(rider));
           }
           return of();
         })
@@ -72,7 +72,7 @@ export class AuthService implements OnDestroy {
   }
 
   copyProviders(rider: Rider, user: UserWithProfile): boolean {
-    let needUpdate: boolean = false;
+    let needUpdate = false;
     for (const data of user.providerData) {
       if (data?.providerId &&
         !rider.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
