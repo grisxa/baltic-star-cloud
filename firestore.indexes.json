@@ -5,10 +5,12 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "hidden"
+          "fieldPath": "hidden",
+          "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastName"
+          "fieldPath": "lastName",
+          "order": "ASCENDING"
         }
       ]
     },
@@ -17,10 +19,12 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "startDate"
+          "fieldPath": "startDate",
+          "order": "ASCENDING"
         },
         {
-          "fieldPath": "endDate"
+          "fieldPath": "endDate",
+          "order": "ASCENDING"
         }
       ]
     }
