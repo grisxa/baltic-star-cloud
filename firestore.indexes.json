@@ -1,4 +1,29 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "riders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "hidden"
+        },
+        {
+          "fieldPath": "lastName"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "brevets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "startDate"
+        },
+        {
+          "fieldPath": "endDate"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
