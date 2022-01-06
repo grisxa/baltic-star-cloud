@@ -39,10 +39,11 @@ export const getStravaToken = functions.https.onCall((data, context) => {
       delete reply.athlete;
       return reply;
     })
-    .then((tokens: StravaTokens) => {
-      riderRef.update({strava: tokens});
-      return tokens;
-    })
+    .then((tokens: StravaTokens) => riderRef.get()
+      .then(snapshot => snapshot.data())
+      // don't keep the tokens after a revoke
+      .then((rider: any) => rider.stravaRevoke ? tokens : riderRef.update({strava: tokens})
+        .then(() => tokens)))
     .catch((error: Error) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);
     });
@@ -55,17 +56,19 @@ export const refreshStravaToken = functions.https.onCall((data, context) => {
 
   return riderRef.get()
     .then(snapshot => snapshot.data() || {})
-    .then(document => {
+    .then((rider: any) => {
       const body = {
         client_id: config.strava.client_id,
         client_secret: config.strava.client_secret,
         grant_type: 'refresh_token',
-        refresh_token: document.strava.refresh_token || data.tokens.refresh_token,
+        refresh_token: data.tokens?.refresh_token || rider.strava?.refresh_token,
       };
-      return axios.post(authBaseUrl + '/token', body);
+      return axios.post(authBaseUrl + '/token', body)
+        .then((reply: AxiosResponse) => reply.data as StravaTokens)
+        // don't keep the tokens after a revoke
+        .then((tokens: StravaTokens) => rider.stravaRevoke ? tokens : riderRef.update({strava: tokens})
+          .then(() => tokens));
     })
-    .then((reply: AxiosResponse) => reply.data as StravaTokens)
-    .then((tokens: StravaTokens) => riderRef.set({strava: tokens}, {merge: true}))
     .catch((error: Error) => {
       throw new functions.https.HttpsError('unauthenticated', error.message);
     });
