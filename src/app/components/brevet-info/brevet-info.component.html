@@ -62,7 +62,7 @@
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
-  <button *ngIf="brevet?.isStarted()" mat-raised-button (click)="startImporting()">
+  <button *ngIf="brevet?.isStarted()" mat-raised-button (click)="startImporting()" title="Connect to Strava">
     <mat-icon svgIcon="icon_strava"></mat-icon>
     Strava
   </button>
