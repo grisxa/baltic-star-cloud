@@ -43,11 +43,11 @@ export class AfterStravaComponent implements OnInit, OnDestroy {
           if (query.code) {
             this.strava.getToken(query.code)
               .then((tokens: StravaTokens) => this.settings.setValue('strava', tokens))
-              .then(() => this.router.navigateByUrl(back))
               .catch((error: Error) => {
                 this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
                 console.error(error);
-              });
+              })
+              .finally(() => this.router.navigateByUrl(back));
           }
         }
       });
