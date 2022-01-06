@@ -19,10 +19,6 @@
     ],
     "rewrites": [
       {
-        "source": "/hello",
-        "function": "helloWorld"
-      },
-      {
         "source": "/print/**",
         "function": "printCheckpoint"
       },
@@ -31,8 +27,8 @@
         "function": "jsonExport"
       },
       {
-        "source": "/strava/**",
-        "function": "stravaImport"
+        "source": "/strava-webhook",
+        "function": "stravaWebhook"
       },
       {
         "source": "**",
