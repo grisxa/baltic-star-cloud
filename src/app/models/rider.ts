@@ -80,6 +80,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
 
   // optional Strava connection
   strava?: StravaTokens;
+  stravaRevoke?: boolean;
 
   constructor(owner: string, uid: string, displayName?: string|null) {
     this.owner = owner;
@@ -179,6 +180,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
       'admin',
       'providers',
       'strava',
+      'stravaRevoke',
     ];
     const result = {} as RiderPrivateDetails;
     fields.forEach(

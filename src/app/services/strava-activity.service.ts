@@ -6,6 +6,8 @@ import {StravaTokens} from '../models/strava-tokens';
 import {TrackNotFound} from '../models/track-not-found';
 import {getFunctions, httpsCallable} from '@angular/fire/functions';
 
+const BASE_URL = 'https://www.strava.com/oauth';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,32 +16,38 @@ export class StravaActivityService {
   constructor(private http: HttpClient) { }
 
   login(back: string) {
-    window.location.href = `https://www.strava.com/oauth/authorize?client_id=${environment.strava.clientId}` +
-      `&response_type=code&redirect_uri=${back}` +
+    const redirect = `${window.location.origin}/after-strava?back=${back}`;
+    window.location.href = `${BASE_URL}/authorize?client_id=${environment.strava.clientId}` +
+      `&response_type=code&redirect_uri=${redirect}` +
       `&approval_prompt=force&scope=activity:read`;
   }
 
-  getToken(code: string) {
+  logout(token: string) {
+    return this.http.post(`${BASE_URL}/deauthorize?access_token=${token}`, '').toPromise();
+  }
+
+  getToken(code: string): Promise<StravaTokens> {
     const stravaToken = httpsCallable(getFunctions(), 'getStravaToken');
     return stravaToken({ code })
-      .then((result) => {
-        console.log('= function result', result);
-        return result.data;
-      });
+      .then((result) => result.data as StravaTokens);
   }
 
-  refreshToken(tokens: StravaTokens) {
+  refreshToken(tokens?: StravaTokens): Promise<StravaTokens> {
     const stravaToken = httpsCallable(getFunctions(),'refreshStravaToken');
     return stravaToken(tokens)
-      .then((result) => {
-        console.log('= function result', result);
-        return result;
-      });
+      .then((result) => result.data as StravaTokens);
   }
 
-  searchActivities(brevetUid?: string, riderUid?: string) {
-    const stravaSearch = httpsCallable(getFunctions(),'search_activities');
-    return stravaSearch({brevetUid, riderUid})
+  searchActivities(brevetUid?: string, riderUid?: string, tokens?: StravaTokens) {
+    if (!brevetUid) {
+      throw new TrackNotFound('Unknown brevet');
+    }
+    if (!riderUid) {
+      throw new TrackNotFound('Unknown rider');
+    }
+
+    const stravaSearch = httpsCallable(getFunctions(),'stravaSearchActivities');
+    return stravaSearch({brevetUid, riderUid, tokens})
       .then((result) => result.data)
       .then((data: any) => {
         if (data.error === 404) {

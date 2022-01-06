@@ -14,6 +14,7 @@ import {Barcode} from '../../models/barcode';
 import {environment} from '../../../environments/environment';
 import {EmailAuthProvider, FacebookAuthProvider, getAuth, GoogleAuthProvider, linkWithRedirect, OAuthProvider} from 'firebase/auth';
 import {Timestamp} from 'firebase/firestore';
+import {StravaActivityService} from '../../services/strava-activity.service';
 
 @Component({
   selector: 'app-rider-info',
@@ -62,6 +63,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
               private titleService: Title,
               public auth: AuthService,
               public dialog: MatDialog,
+              private strava: StravaActivityService,
               private storage: StorageService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
@@ -96,7 +98,6 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         filter<Rider|undefined>(Boolean),
         // @ts-ignore
       ).subscribe((rider: Rider) => {
-        console.log('= rider info', rider);
         if (rider.displayName) {
           this.titleService.setTitle(rider.displayName);
         }
@@ -173,6 +174,19 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
             'Закрыть');
         });
     }
+  }
+
+  get isStravaLinked(): boolean {
+    return !!this.rider && !!this.rider.strava;
+  }
+
+  linkStrava() {
+    if (this.rider) {
+      this.rider.stravaRevoke = false;
+      return this.storage.updateRider(this.rider)
+        .then(() => this.strava.login(`/rider/${this.rider?.uid}`));
+    }
+    return;
   }
 
   updateField(field: string) {

@@ -59,6 +59,7 @@ import {provideFirebaseApp} from '@angular/fire/app';
 import {connectAuthEmulator, getAuth} from 'firebase/auth';
 import {initializeApp} from 'firebase/app';
 import {AngularFirestoreModule} from '@angular/fire/compat/firestore';
+import {AfterStravaComponent} from './components/after-strava/after-strava.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: 'brevets', pathMatch: 'full'},
@@ -72,6 +73,7 @@ const appRoutes: Routes = [
   {path: 'riders', component: RiderListComponent},
   {path: 'brevet', component: BrevetListComponent},
   {path: 'brevets', component: BrevetListComponent},
+  {path: 'after-strava', component: AfterStravaComponent},
   {
     path: 'checkpoint/:uid/addbarcode',
     component: AddBarcodeComponent,
@@ -112,6 +114,7 @@ const appRoutes: Routes = [
     OfflineSwitchComponent,
     LoginComponent,
     AfterLoginComponent,
+    AfterStravaComponent,
     BrevetListItemComponent,
     CheckpointListItemComponent,
     MapboxRouteComponent

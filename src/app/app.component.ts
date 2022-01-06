@@ -45,6 +45,10 @@ export class AppComponent {
         'icon_strava',
         this.domSanitizer
           .bypassSecurityTrustResourceUrl('/assets/icons/strava.svg')
+      ).addSvgIcon(
+        'icon_strava_bw',
+        this.domSanitizer
+          .bypassSecurityTrustResourceUrl('/assets/icons/strava-bw.svg')
       );
   }
 }

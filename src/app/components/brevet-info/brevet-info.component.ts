@@ -7,7 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {Title} from '@angular/platform-browser';
 
-import {combineLatest, from, Observable, of, Subject} from 'rxjs';
+import {from, Observable, of, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Brevet, NONE_BREVET} from '../../models/brevet';
 import {AuthService} from '../../services/auth.service';
@@ -28,7 +28,7 @@ import {StravaActivityService, tokenExpired} from '../../services/strava-activit
 import {TrackNotFound} from '../../models/track-not-found';
 import {StravaTokens} from 'src/app/models/strava-tokens';
 import {Timestamp} from 'firebase/firestore';
-import {connectFunctionsEmulator, getFunctions, httpsCallable} from '@angular/fire/functions';
+import {getFunctions, httpsCallable} from '@angular/fire/functions';
 
 type ProgressColumn = {
   id: string;
@@ -100,35 +100,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.titleService.setTitle('Бревет');
-    combineLatest([this.route.queryParams, this.route.paramMap])
-    .subscribe(params => {
-      const [query, route] = params;
-      const brevetUid = route.get('uid');
-
-      if ('state' in query) {
-        if ('error' in query && query.error === 'access_denied') {
-          this.snackBar.open(`Доступ запрещён`, 'Закрыть');
-          this.router.navigate(['brevet', brevetUid])
-            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
-          return;
-        }
-        if ('scope' in query && !query.scope.includes('activity:read')) {
-          this.snackBar.open(`Не достаточно разрешений`, 'Закрыть');
-          this.router.navigate(['brevet', brevetUid])
-            .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
-          return;
-        }
-        if (query.code) {
-          this.strava.getToken(query.code)
-            .then((tokens) => this.startImporting(tokens as StravaTokens))
-            .then(() => this.router.navigate(['brevet', brevetUid]))
-            .catch((error: Error) => {
-              this.snackBar.open(`Ошибка. ${error.message}`, 'Закрыть');
-              console.error(error);
-            });
-        }
-      }
-    });
 
     // cache checkpoints for a quick search
     this.storage.listCheckpoints()
@@ -139,6 +110,11 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!brevetUid) {
         return;
       }
+
+      if (this.settings.getValue('strava-import')) {
+        this.startImporting(brevetUid);
+      }
+
       this.brevet$ = from(this.storage.getBrevet(brevetUid))
         .pipe(filter(isNotNullOrUndefined));
       this.storage.watchCheckpoints(brevetUid)
@@ -317,16 +293,9 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   importCheckpoints() {
-    connectFunctionsEmulator(getFunctions(), 'localhost', 9090);
-    console.log('= import checkpoints', this.brevet?.uid);
-
     const createCheckpoints = httpsCallable(getFunctions(), 'create_checkpoints');
     return createCheckpoints({brevetUid: this.brevet?.uid})
-      .then((result) => result.data)
-      .then((result) => {
-        console.log('= function result', result);
-        return result;
-      });
+      .then((result) => result.data);
   }
 
   startScanner() {
@@ -400,20 +369,23 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  startImporting(tokens?: StravaTokens) {
-    tokens ||= this.auth.user?.strava;
-    console.log('= search', this.auth.user);
+  startImporting(brevetUid?: string) {
+    let tokens: StravaTokens = this.settings.getValue('strava') || this.auth.user?.strava;
 
     if (!tokens) {
-      this.strava.login(`${window.location.origin}/brevet/${this.brevet?.uid}`);
+      this.settings.setValue('strava-import', true);
+      this.strava.login(`/brevet/${this.brevet?.uid}`);
       return;
     }
+    this.settings.removeKey('strava-import');
+
     this.snackBar.open(`Поиск запущен`, 'Закрыть');
     // chain possible token refreshing
     Promise.resolve()
-      .then(() => !!tokens && tokenExpired(tokens) && !!this.strava.refreshToken(tokens))
+      .then(() => (tokenExpired(tokens) && this.strava.refreshToken(tokens)) || tokens)
+      .then((newTokens: StravaTokens) => tokens = newTokens)
       .then(() => this.strava
-        .searchActivities(this.brevet?.uid, this.auth.user?.uid))
+        .searchActivities(brevetUid || this.brevet?.uid, this.auth.user?.uid, tokens))
       .then((count: number) => {
         this.snackBar.open(`Добавлено ${count} отметок`,
           'Закрыть');
@@ -426,6 +398,16 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           this.snackBar.open(`Ошибка импорта. ${error.message}`,
             'Закрыть');
+        }
+      })
+      .finally(() => {
+        // Cleanup temporary Strava access (optional)
+        this.settings.removeKey('strava');
+
+        // Revoke authorization
+        if (this.auth.user?.stravaRevoke) {
+          this.strava.logout(tokens.access_token)
+            .catch(error => console.error('Strava de-authorization error', error.message));
         }
       });
   }
