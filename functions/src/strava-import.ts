@@ -65,6 +65,10 @@ export const refreshStravaToken = functions.https.onCall((data, context) => {
       };
       return axios.post(authBaseUrl + '/token', body)
         .then((reply: AxiosResponse) => reply.data as StravaTokens)
+        .then((reply: StravaTokens) => {
+          reply.athlete_id = data.tokens?.athlete_id || rider.strava?.athlete_id;
+          return reply;
+        })
         // don't keep the tokens after a revoke
         .then((tokens: StravaTokens) => rider.stravaRevoke ? tokens : riderRef.update({strava: tokens})
           .then(() => tokens));
