@@ -293,6 +293,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   importCheckpoints() {
+    this.snackBar.open(`Импорт запущен`, 'Закрыть');
     const createCheckpoints = httpsCallable(getFunctions(), 'createCheckpoints');
     return createCheckpoints({brevetUid: this.brevet?.uid})
       .then((result) => result.data);
