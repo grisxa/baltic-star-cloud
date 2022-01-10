@@ -228,7 +228,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   }
 
   get hasCard(): boolean {
-    return !!this.owner;
+    return !!this.code;
   }
 }
 

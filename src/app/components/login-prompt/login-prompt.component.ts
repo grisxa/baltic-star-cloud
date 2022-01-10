@@ -21,7 +21,7 @@ export class LoginPromptComponent implements OnInit, OnDestroy {
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
       .subscribe((user?: Rider) => {
         this.userName = user?.displayName || '';
-        if (user && user.hasCard) {
+        if (user?.uid) {
           this.url = `/rider/${user.uid}`;
         }
       });
