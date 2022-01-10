@@ -37,7 +37,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           signInSuccessWithAuthResult: this.onSuccess.bind(this),
           signInFailure: this.onError.bind(this),
         },
-        signInSuccessUrl: '/after-login',
       }
     );
 
@@ -84,7 +83,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.router.navigate(['after-login'])
       .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
-    return true;
+    return false;
   }
 
   onError(error: AuthUIError) {

@@ -4,7 +4,7 @@ import {AuthService} from '../../services/auth.service';
 import {Rider} from '../../models/rider';
 import {StorageService} from '../../services/storage.service';
 import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {SettingService} from '../../services/setting.service';
 
 @Component({
@@ -24,7 +24,7 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
     const info = this.settings.getValue('info');
     this.settings.removeKey('info');
 
-    this.auth.user$.pipe(takeUntil(this.unsubscribe$))
+    this.auth.user$.pipe(takeUntil(this.unsubscribe$), take(1))
       .subscribe((user?: Rider) => {
         // create a card for the new account and redirect to it
         if (user && !user.hasCard) {
