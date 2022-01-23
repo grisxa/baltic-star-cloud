@@ -361,10 +361,12 @@ export class StorageService {
     return updateDoc<RiderPublicDetails>(doc(
       collection(this.firestore, 'riders'),
         rider.uid), rider.toPublicDoc() as WithFieldValue<RiderPublicDetails>)
-      .then(() => updateDoc<RiderPrivateDetails>(doc(
-        collection(this.firestore, 'private')
-          .withConverter<RiderPrivateDetails>(riderPrivateConverter),
-          rider.uid), rider.toPrivateDoc() as WithFieldValue<RiderPrivateDetails>))
+      .then(() => setDoc<RiderPrivateDetails>(doc(
+          collection(this.firestore, 'private')
+            .withConverter<RiderPrivateDetails>(riderPrivateConverter),
+          rider.uid),
+        rider.toPrivateDoc() as WithFieldValue<RiderPrivateDetails>,
+        {merge: true}))
       .catch(error => {
         console.error('Error updating document: ', error);
         return Promise.reject(error);
