@@ -87,7 +87,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     this.uid = uid;
 
     [this.firstName, this.lastName] = Rider.splitName(displayName);
-    this.displayName = `${this.firstName} ${this.lastName}`;
+    this.updateDisplayName();
 
     // empty transparent pixel
     // this.image = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
@@ -134,6 +134,22 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     };
     return copyDefinedProperties(draft);
   };
+
+  updateNameWithProviders() {
+    if (this.providers.length === 0) {
+      return;
+    }
+
+    let displayName = this.providers[0].displayName;
+    const balticStar = this.providers?.find(info => info?.providerId === 'oidc.balticstar');
+    if (balticStar) {
+      this.code = balticStar.uid?.padStart(6, '0');
+      displayName = balticStar.displayName;
+    }
+
+    [this.firstName, this.lastName] = Rider.splitName(displayName);
+    this.updateDisplayName();
+  }
 
   static fromDoc(doc: Rider) {
     // the first provider data goes to the 'providers' list below

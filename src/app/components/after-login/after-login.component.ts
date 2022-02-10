@@ -30,6 +30,13 @@ export class AfterLoginComponent implements OnInit, OnDestroy {
         if (user && !user.hasCard) {
           user.owner = user.uid;
           user.updateInfo(info);
+          // try overwriting the name
+          if (user.firstName === '?' ||
+            user.firstName === undefined ||
+            user.lastName === '?' ||
+            user.lastName === undefined) {
+            user.updateNameWithProviders();
+          }
           this.storage.createRider(user)
             .then(newUid => this.zone.run(() => this.router
               .navigate(['rider', newUid])
