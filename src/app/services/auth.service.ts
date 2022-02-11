@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {StorageService} from './storage.service';
-import {ProviderDetails, ProviderInfo, Rider, RiderPublicDetails, UserWithProfile} from '../models/rider';
+import {Rider} from '../models/rider';
 import {map, switchMap, takeUntil} from 'rxjs/operators';
 
 import {SettingService} from './setting.service';
@@ -59,7 +59,7 @@ export class AuthService implements OnDestroy {
         map((rider: Rider) => Rider.fromDoc({...rider, auth: user} as Rider)),
         switchMap((rider: Rider) => {
           this.user$.next(rider);
-          if (rider.hasCard && this.copyProviders(rider, user)) {
+          if (rider.hasCard && rider.copyProviders(user)) {
             return from(this.storage.updateRider(rider));
           }
           return of();
@@ -69,34 +69,6 @@ export class AuthService implements OnDestroy {
     else {
       return this.logout().then(() => console.log('Logout completed'));
     }
-  }
-
-  copyProviders(rider: Rider, user: UserWithProfile): boolean {
-    let needUpdate = false;
-    for (const data of user.providerData) {
-      if (data?.providerId &&
-        !rider.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
-        rider.providers.push(data);
-        needUpdate = true;
-
-        // special case of Baltic star
-        this.overwriteBalticStar(rider, data, user.profile);
-      }
-    }
-    return needUpdate;
-  }
-
-  overwriteBalticStar(rider: Rider, info?: ProviderInfo, profile?: ProviderDetails): Rider {
-    if (info?.providerId === 'oidc.balticstar') {
-      const [firstName, lastName] = Rider.splitName(info.displayName);
-      Object.assign(rider, {firstName, lastName, displayName: info.displayName});
-
-      if (profile) {
-        const overwrite: RiderPublicDetails = Rider.copyProviderProfile(profile);
-        Object.assign(rider, overwrite);
-      }
-    }
-    return rider;
   }
 
   get isLoggedIn(): boolean {

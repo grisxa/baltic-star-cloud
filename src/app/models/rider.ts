@@ -135,6 +135,34 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return copyDefinedProperties(draft);
   };
 
+  copyProviders(user: UserWithProfile): boolean {
+    let needUpdate = false;
+    for (const data of user.providerData) {
+      if (data?.providerId &&
+        !this.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
+        this.providers.push(data);
+        needUpdate = true;
+
+        // special case of Baltic star
+        this.overwriteBalticStar(data, user.profile);
+      }
+    }
+    return needUpdate;
+  }
+
+  overwriteBalticStar(info?: ProviderInfo, profile?: ProviderDetails): Rider {
+    if (info?.providerId === 'oidc.balticstar') {
+      const [firstName, lastName] = Rider.splitName(info.displayName);
+      Object.assign(this, {firstName, lastName, displayName: info.displayName});
+
+      if (profile) {
+        const overwrite: RiderPublicDetails = Rider.copyProviderProfile(profile);
+        Object.assign(this, overwrite);
+      }
+    }
+    return this;
+  }
+
   updateNameWithProviders() {
     if (this.providers.length === 0) {
       return;
