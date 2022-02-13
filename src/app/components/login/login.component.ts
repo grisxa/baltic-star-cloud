@@ -18,6 +18,7 @@ import AuthUIError = firebaseui.auth.AuthUIError;
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  uiShown = false;
   private unsubscribe$ = new Subject();
   private authUI?: firebaseui.auth.AuthUI;
 
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         callbacks: {
           signInSuccessWithAuthResult: this.onSuccess.bind(this),
           signInFailure: this.onError.bind(this),
+          uiShown: () => this.uiShown = true,
         },
       }
     );
