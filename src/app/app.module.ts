@@ -62,7 +62,7 @@ import {AngularFirestoreModule} from '@angular/fire/compat/firestore';
 import {AfterStravaComponent} from './components/after-strava/after-strava.component';
 
 const appRoutes: Routes = [
-  {path: '', redirectTo: 'brevets', pathMatch: 'full'},
+  {path: '', component: BrevetListComponent, pathMatch: 'full'},
   {path: 'rider/:uid', component: RiderInfoComponent},
   // a shortcut
   {path: 'r/:uid', component: RiderInfoComponent},
@@ -88,7 +88,7 @@ const appRoutes: Routes = [
     component: AfterLoginComponent,
     ...canActivate(() => redirectUnauthorizedTo(['login']))
   },
-  {path: '**', redirectTo: 'brevets'},
+  {path: '**', component: BrevetListComponent},
 ];
 
 @NgModule({
