@@ -274,6 +274,9 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   get hasCard(): boolean {
     return !!this.code;
   }
+  get saved(): boolean {
+    return !!this.owner;
+  }
 }
 
 const copyDefinedProperties = (draft: RiderPublicDetails|ProviderInfo): RiderPublicDetails|ProviderInfo => {
