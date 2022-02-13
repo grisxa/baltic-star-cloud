@@ -96,9 +96,9 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   static splitName(displayName?: string|null) {
     // put fallbacks for first/last name
     displayName = displayName || '';
-    const name = displayName.split(/\s+/);
-    const lastName = name.pop() || '?';
+    const name = displayName.trim().split(/\s+/);
     const firstName = name.shift() || '?';
+    const lastName = name.pop() || '?';
     return [firstName, lastName];
   }
 

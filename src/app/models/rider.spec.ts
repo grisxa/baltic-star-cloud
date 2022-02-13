@@ -103,4 +103,25 @@ describe('Rider', () => {
     });
   });
 
+  describe('splitName', () => {
+    it('should accept empty', () => {
+      expect(Rider.splitName()).toEqual(['?', '?']);
+      expect(Rider.splitName(null)).toEqual(['?', '?']);
+      expect(Rider.splitName('')).toEqual(['?', '?']);
+    });
+
+    it('should find first name', () => {
+      expect(Rider.splitName('John')).toEqual(['John', '?']);
+    });
+
+    it('should find first and last name', () => {
+      expect(Rider.splitName('John Doe')).toEqual(['John', 'Doe']);
+    });
+
+    it('should trim spaces', () => {
+      expect(Rider.splitName('John ')).toEqual(['John', '?']);
+      expect(Rider.splitName(' John')).toEqual(['John', '?']);
+      expect(Rider.splitName(' John ')).toEqual(['John', '?']);
+    });
+  });
 });
