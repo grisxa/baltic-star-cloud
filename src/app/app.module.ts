@@ -44,7 +44,6 @@ import {CheckpointSearchDialogComponent} from './components/checkpoint-search-di
 import {MapboxDialogComponent} from './components/mapbox-dialog/mapbox-dialog.component';
 import {OfflineSwitchComponent} from './components/offline-switch/offline-switch.component';
 import {LoginComponent} from './components/login/login.component';
-import {AfterLoginComponent} from './components/after-login/after-login.component';
 import {canActivate, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from '@angular/material/sort';
@@ -83,11 +82,6 @@ const appRoutes: Routes = [
     path: 'login',
     children: [{path: '**', component: LoginComponent}]
   },
-  {
-    path: 'after-login',
-    component: AfterLoginComponent,
-    ...canActivate(() => redirectUnauthorizedTo(['login']))
-  },
   {path: '**', component: BrevetListComponent},
 ];
 
@@ -113,7 +107,6 @@ const appRoutes: Routes = [
     MapboxLocationDialogComponent,
     OfflineSwitchComponent,
     LoginComponent,
-    AfterLoginComponent,
     AfterStravaComponent,
     BrevetListItemComponent,
     CheckpointListItemComponent,

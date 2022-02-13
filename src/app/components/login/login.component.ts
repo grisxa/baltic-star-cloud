@@ -4,8 +4,8 @@ import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {Subject} from 'rxjs';
 import {SettingService} from '../../services/setting.service';
-import {takeUntil} from 'rxjs/operators';
-import {ProviderDetails, Rider} from '../../models/rider';
+import {distinctUntilChanged, filter, take, takeUntil} from 'rxjs/operators';
+import {ExtraProviderInfo, mergeProviderInfo, ProviderDetails, Rider} from '../../models/rider';
 import * as firebaseui from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
 import {environment} from 'src/environments/environment';
@@ -42,17 +42,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.route.url.subscribe((paths: UrlSegment[]) => {
+    this.route.url.pipe(take(1)).subscribe((paths: UrlSegment[]) => {
       if (paths && paths.length) {
         this.settings.setValue('info', paths.join('/'));
       }
     });
-    this.auth.user$.pipe(takeUntil(this.unsubscribe$))
+
+    // when you are logged in but open /login again
+    this.auth.user$.pipe(
+      filter(user => !!user),
+      distinctUntilChanged(Rider.equal),
+      takeUntil(this.unsubscribe$),
+    )
       .subscribe((user?: Rider) => {
-        if (user) {
-          this.zone.run(() => this.router.navigate(['after-login'])
-            .catch(error => console.error('Navigation failed', error)));
-        }
+        this.zone.run(() => this.router.navigate(['rider', user?.uid])
+          .catch(error => console.error('Navigation failed', error)));
       });
   }
 
@@ -62,6 +66,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authUI?.delete();
   }
 
+  // when you return after logging in with one of the providers
   onSuccess(authResult: any, redirectUrl: string): boolean {
     // GoogleAdditionalUserInfo / GenericAdditionalUserInfo
     const info = authResult.additionalUserInfo;
@@ -75,16 +80,18 @@ export class LoginComponent implements OnInit, OnDestroy {
             'Закрыть');
         });
     }
-    if (info?.isNewUser) {
-      const provider = Object.assign({},
-        Rider.copyProviderInfo(authResult.user),
-        Rider.copyAdditionalInfo(info.profile as ProviderDetails, info.providerId) as UserInfo
-      );
-      authResult.user?.providerData?.push(provider);
-    }
 
-    this.router.navigate(['after-login'])
-      .catch((error: Error) => console.warn(`Navigation error: ${error.message}`));
+    const extraProviders: ExtraProviderInfo = {
+      profile: info.profile,
+      providers: mergeProviderInfo(
+        authResult.user.providerData,
+        [
+          Rider.copyProviderInfo(authResult.user) as UserInfo,
+          Rider.copyAdditionalInfo(info.profile as ProviderDetails, info.providerId) as UserInfo,
+        ])
+    };
+    this.auth.addProviderInfo(extraProviders);
+
     return false;
   }
 

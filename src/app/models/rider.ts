@@ -3,14 +3,39 @@ import {StravaTokens} from './strava-tokens';
 import {Timestamp} from 'firebase/firestore';
 import {User, UserInfo} from 'firebase/auth';
 
-
 export const NONE_RIDER = 'none';
+const PUBLIC_FIELDS = [
+  'owner',
+  'uid',
+  'code',
+  'displayName',
+  'firstName',
+  'lastName',
+  'birthDate',
+  'city',
+  'country',
+  'hidden',
+];
+const PRIVATE_FIELDS = [
+  'owner',
+  'uid',
+  'admin',
+  'alive',
+  'providers',
+  'strava',
+  'stravaRevoke',
+];
 
 export interface UserWithProfile extends User {
 
   // optional collection of provider details
   profile?: ProviderDetails;
 }
+
+export type ExtraProviderInfo = {
+  profile?: ProviderDetails;
+  providers?: ProviderInfo[];
+};
 
 /* eslint @typescript-eslint/naming-convention: "warn" */
 export type ProviderDetails = {
@@ -26,6 +51,7 @@ export type ProviderDetails = {
   id?: string;
 };
 
+// copy of the UserInfo with possibly undefined properties
 export type ProviderInfo = {
   displayName?: string|null;
   email?: string|null;
@@ -52,6 +78,7 @@ export type RiderPrivateDetails = {
   uid?: string;
   owner?: string;
   admin: boolean;
+  alive: boolean;
 
   // linked OAuth accounts
   providers?: ProviderInfo[];
@@ -69,6 +96,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
 
   hidden = false;
   admin = false;
+  alive = false;
 
   code?: string;
   displayName?: string|null;
@@ -135,16 +163,16 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return copyDefinedProperties(draft);
   };
 
-  copyProviders(user: UserWithProfile): boolean {
+  copyProviders(providers?: ProviderInfo[], profile?: ProviderDetails): boolean {
     let needUpdate = false;
-    for (const data of user.providerData) {
+    for (const data of providers || []) {
       if (data?.providerId &&
         !this.providers.find((p: ProviderInfo) => p.providerId === data.providerId)) {
         this.providers.push(data);
         needUpdate = true;
 
-        // special case of Baltic star
-        this.overwriteBalticStar(data, user.profile);
+        // special case of the Baltic star club
+        this.overwriteBalticStar(data, profile);
       }
     }
     return needUpdate;
@@ -153,7 +181,11 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   overwriteBalticStar(info?: ProviderInfo, profile?: ProviderDetails): Rider {
     if (info?.providerId === 'oidc.balticstar') {
       const [firstName, lastName] = Rider.splitName(info.displayName);
-      Object.assign(this, {firstName, lastName, displayName: info.displayName});
+      Object.assign(this, {
+        firstName, lastName,
+        displayName: info.displayName,
+        code: info.uid?.padStart(6, '0'),
+      });
 
       if (profile) {
         const overwrite: RiderPublicDetails = Rider.copyProviderProfile(profile);
@@ -163,54 +195,22 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return this;
   }
 
-  updateNameWithProviders() {
-    if (this.providers.length === 0) {
-      return;
-    }
-
-    let displayName = this.providers[0].displayName;
-    const balticStar = this.providers?.find(info => info?.providerId === 'oidc.balticstar');
-    if (balticStar) {
-      this.code = balticStar.uid?.padStart(6, '0');
-      displayName = balticStar.displayName;
-    }
-
-    [this.firstName, this.lastName] = Rider.splitName(displayName);
-    this.updateDisplayName();
-  }
-
   static fromDoc(doc: Rider) {
     // the first provider data goes to the 'providers' list below
-    const providerInfo: UserInfo | null | undefined = doc.auth?.providerData?.shift();
+    const providerInfo: ProviderInfo | undefined = doc.providers?.[0];
+    // a name fallback for email-password registration
+    const authInfo: ProviderInfo = Rider.copyProviderInfo(doc.auth);
 
     const rider = new Rider(doc.owner,
       doc.uid || doc.auth?.uid || providerInfo?.uid || '',
-      doc.displayName || providerInfo?.displayName || '');
+      doc.displayName || providerInfo?.displayName || authInfo.displayName || '');
 
-    if (providerInfo?.providerId &&
-      !rider.providers?.find(p => p.providerId === providerInfo?.providerId)) {
-      rider.providers.push(Rider.copyProviderInfo(providerInfo));
-    }
-
-    const profile: RiderPublicDetails = Rider.copyProviderProfile(doc.auth?.profile);
-    return Object.assign(rider, profile, doc);
+    return Object.assign(rider, doc);
   }
 
   toPublicDoc(): RiderPublicDetails {
-    const fields = [
-      'owner',
-      'uid',
-      'code',
-      'displayName',
-      'firstName',
-      'lastName',
-      'birthDate',
-      'city',
-      'country',
-      'hidden',
-    ];
     const result = {} as RiderPublicDetails;
-    fields.forEach(
+    PUBLIC_FIELDS.forEach(
       // @ts-ignore
       (key: string) => this[key] !== undefined ? result[key] = this[key] : null
     );
@@ -218,16 +218,8 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
   }
 
   toPrivateDoc(extra?: {[key: string]: any}): RiderPrivateDetails {
-    const fields = [
-      'owner',
-      'uid',
-      'admin',
-      'providers',
-      'strava',
-      'stravaRevoke',
-    ];
     const result = {} as RiderPrivateDetails;
-    fields.forEach(
+    PRIVATE_FIELDS.forEach(
       // @ts-ignore
       (key: string) => this[key] !== undefined ? result[key] = this[key] : null
     );
@@ -235,6 +227,18 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
       Object.assign(result, extra);
     }
     return result;
+  }
+
+  static equal(a?: Rider, b?: Rider): boolean {
+    const keys = PUBLIC_FIELDS.concat(PRIVATE_FIELDS);
+
+    const deepCompare = (x?: any, y?: any): boolean => !x && !y || !!x && !!y && JSON.stringify(Object.entries(x).sort()) === JSON.stringify(Object.entries(y).sort());
+
+    // @ts-ignore
+    return keys.every(key => !!a && !!b && (typeof(b[key]) === 'object' || a[key] === b[key]))
+      && deepCompare(a?.strava, b?.strava)
+      && !!a?.providers.every((info, i) => deepCompare(info, b?.providers[i]))
+      && !!b?.providers.every((info, i) => deepCompare(info, a?.providers[i]))
   }
 
   updateInfo(encoded: string) {
@@ -286,4 +290,22 @@ const copyDefinedProperties = (draft: RiderPublicDetails|ProviderInfo): RiderPub
     (key: string) => draft[key] !== undefined ? result[key] = draft[key] : null
   );
   return result;
+};
+
+export const mergeProviderInfo = (...lists: UserInfo[][]): UserInfo[] => {
+  const infoList: UserInfo[] = lists.flat();
+  type UserInfoSet = {[id: string]: UserInfo};
+
+  const infoSet: UserInfoSet = infoList.reduce(
+    (acc: UserInfoSet, info?: UserInfo) => {
+      acc[info?.providerId || ''] = Object.assign(
+        {} as ProviderInfo,
+        acc[info?.providerId || ''] || {},
+        Rider.copyProviderInfo(info)
+      );
+      return acc;
+    },
+    {} as UserInfoSet
+  );
+  return Object.values(infoSet).filter((info: UserInfo) => !!info);
 };
