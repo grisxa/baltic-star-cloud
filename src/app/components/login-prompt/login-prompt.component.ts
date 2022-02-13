@@ -11,20 +11,21 @@ import {Rider} from '../../models/rider';
 })
 export class LoginPromptComponent implements OnInit, OnDestroy {
   userName = 'unknown';
-  url = '';
+  userUid? = '';
   readonly unsubscribe$ = new Subject();
 
   constructor(public auth: AuthService) {
   }
 
+  setupUser(user?: Rider) {
+    this.userName = user?.displayName || 'unknown';
+    this.userUid = user?.uid;
+  }
+
   ngOnInit() {
+    this.setupUser(this.auth.user);
     this.auth.user$.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((user?: Rider) => {
-        this.userName = user?.displayName || '';
-        if (user?.uid) {
-          this.url = `/rider/${user.uid}`;
-        }
-      });
+      .subscribe((user?: Rider) => this.setupUser(user));
   }
 
   ngOnDestroy() {

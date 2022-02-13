@@ -1,10 +1,10 @@
 <div>
   <button class="login" *ngIf="!auth.isLoggedIn" mat-raised-button [routerLink]="['/login']"><mat-icon>exit_to_app</mat-icon>Войти</button>
-  <div *ngIf="auth.isLoggedIn && url">
-    <a [href]="url" title="Личная карточка"><mat-icon>person</mat-icon></a>
-    <a [href]="url" title="Личная карточка">{{userName}}</a>
+  <div *ngIf="auth.isLoggedIn && userUid">
+    <a [routerLink]="['/rider', userUid]" title="Личная карточка"><mat-icon>person</mat-icon></a>
+    <a [routerLink]="['/rider', userUid]" title="Личная карточка">{{userName}}</a>
   </div>
-  <div *ngIf="auth.isLoggedIn && !url"><mat-icon>person</mat-icon> {{userName}}</div>
+  <div *ngIf="auth.isLoggedIn && !userUid"><mat-icon>person</mat-icon> {{userName}}</div>
   <app-offline-switch *ngIf="auth.isAdmin"></app-offline-switch>
   <img id="strava" src="/assets/api_logo_cptblWith_strava_horiz_light.svg" alt="Compatible with Strava"/>
 </div>
