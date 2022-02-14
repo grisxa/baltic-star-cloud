@@ -15,7 +15,7 @@ type SavedBarcode = {
 };
 
 // 12 days for timestamp comparison
-const DOZEN_DAYS_IN_SECONDS = 60 * 60; // * 24 * 12;
+const DOZEN_DAYS_IN_SECONDS = 60 * 60 * 24 * 12;
 const PREFIX = 'random_';
 
 @Injectable({
@@ -60,7 +60,7 @@ export class BarcodeQueueService {
   }
 
   // try sending old codes again
-  repeatSending(skip?: string) {
+  repeatSending(skip?: string, force = false) {
     const savedCodes: { [key: string]: SavedBarcode } = this.settings.getValue('barcodes');
 
     // check all the records
@@ -74,7 +74,9 @@ export class BarcodeQueueService {
         if (savedCode.barcode.time.seconds < Date.now() / 1000 - DOZEN_DAYS_IN_SECONDS) {
           this.settings.removeToken('barcodes', oldUid);
         }
-        continue;
+        if (!force) {
+          continue;
+        }
       }
       // the most recent code is being sent immediately
       if (oldUid === skip) {
@@ -89,5 +91,17 @@ export class BarcodeQueueService {
         .createBarcode(savedCode.source, savedCode.sourceUid, savedCode.barcode, savedCode.authUid)
         .then((uid) => this.settings.replaceToken('barcodes', oldUid, uid));
     }
+  }
+
+  listQueue() {
+    const savedCodes: { [key: string]: SavedBarcode } = this.settings.getValue('barcodes') || {};
+
+    return Object.keys(savedCodes)
+      .sort((a, b) => savedCodes[b].barcode.time.seconds - savedCodes[a].barcode.time.seconds)
+      .map(uid => ({
+        time: new Timestamp(savedCodes[uid].barcode.time.seconds, savedCodes[uid].barcode.time.nanoseconds),
+        code: savedCodes[uid].barcode.code,
+        sent: !uid.startsWith(PREFIX)
+      }));
   }
 }

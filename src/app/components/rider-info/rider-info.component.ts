@@ -15,6 +15,7 @@ import {environment} from '../../../environments/environment';
 import {EmailAuthProvider, FacebookAuthProvider, getAuth, GoogleAuthProvider, linkWithRedirect, OAuthProvider} from 'firebase/auth';
 import {Timestamp} from 'firebase/firestore';
 import {StravaActivityService} from '../../services/strava-activity.service';
+import {BarcodeQueueService} from '../../services/barcode-queue.service';
 
 @Component({
   selector: 'app-rider-info',
@@ -28,6 +29,8 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
   barcodes = new MatTableDataSource<Barcode>();
   barcodeColumnsToDisplay = ['time', 'code', 'message'];
+  archive = new MatTableDataSource();
+  archiveColumnsToDisplay = ['time', 'code', 'sent'];
 
   providers = [
     {
@@ -65,6 +68,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
               public dialog: MatDialog,
               private strava: StravaActivityService,
               private storage: StorageService,
+              private queue: BarcodeQueueService,
               private snackBar: MatSnackBar) {
     this.formGroup = new FormGroup({
       firstName: new FormControl('', Validators.required),
@@ -79,6 +83,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.titleService.setTitle('Участник');
+    this.archive.data = this.queue.listQueue();
     this.route.paramMap.subscribe(params => {
       const riderUid = params.get('uid');
       if (!riderUid) {
@@ -187,6 +192,16 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
         .then(() => this.strava.login(`/rider/${this.rider?.uid}`));
     }
     return;
+  }
+
+  get isOnline(): boolean {
+    return navigator.onLine
+  }
+
+  send() {
+    if (navigator.onLine) {
+      this.queue.repeatSending(undefined, true);
+    }
   }
 
   updateField(field: string) {
