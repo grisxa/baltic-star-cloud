@@ -4,6 +4,7 @@ import * as mapboxGL from 'mapbox-gl';
 import {Popup} from 'mapbox-gl';
 import {environment} from '../../../environments/environment';
 import {GeoPoint} from 'firebase/firestore';
+import {drawJsonRoute} from '../common';
 import LngLat = mapboxGL.LngLat;
 
 
@@ -49,24 +50,7 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
       if (!this.validCoordinates(startPoint)) {
         this.toTheRouteStart();
       }
-
-      this.map.addSource('route', {
-        type: 'geojson',
-        data: this.geoJSON
-      });
-      this.map.addLayer({
-        id: 'route',
-        type: 'line',
-        source: 'route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': 'red',
-          'line-width': 2
-        }
-      });
+      drawJsonRoute(this.map, this.geoJSON);
     });
 
 //    center: validPoint(this.data.center) ? this.data.center : DEFAULT_CENTER,

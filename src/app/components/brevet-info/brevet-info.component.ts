@@ -334,6 +334,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       minWidth: 'min(99vw, 600px)',
       maxHeight: '99vh',
       data: {
+        geoJSON: this.geoJSON,
         center: {
           lng: this.checkpoints[0].coordinates?.longitude,
           lat: this.checkpoints[0].coordinates?.latitude

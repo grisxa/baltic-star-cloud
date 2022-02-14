@@ -10,11 +10,13 @@ import {FormControl, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {Timestamp} from 'firebase/firestore';
+import {drawJsonRoute} from '../common';
 import LngLat = mapboxGL.LngLat;
 
 const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 
 type MapboxLocationDialogSettings = {
+  geoJSON: any;
   center: LngLat;
   checkpoints?: Checkpoint[];
   brevetUid: string;
@@ -83,6 +85,8 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
     this.geoLocate.on('trackuserlocationstart', () => {
       this.locationStarted = true;
     });
+
+    this.map.on('load', () => drawJsonRoute(this.map, this.data.geoJSON));
 
     // wait for 0.5 sec and start location
     this.errorTimeout = setTimeout(() => this.locationStarted ||
