@@ -6,6 +6,15 @@
     flex-direction: row;
     align-items: center;
     margin-left: 5px;
+    margin-right: 5px;
+
+    .logo {
+      margin: 0;
+    }
+  }
+
+  .footer {
+    flex-wrap: wrap;
   }
 
   button.login {
