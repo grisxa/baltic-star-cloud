@@ -1,8 +1,8 @@
 <h2><span>Календарь велоклуба</span>
     <span>«Балтийская звезда»</span></h2>
-<app-brevet-archive [brevets]="oldBrevets"></app-brevet-archive>
 <mat-list>
   <app-brevet-list-item *ngFor="let brevet of newBrevets" [brevet]="brevet"></app-brevet-list-item>
 </mat-list>
+<app-brevet-archive [brevets]="oldBrevets"></app-brevet-archive>
 <app-add-button *ngIf="auth.isAdmin" (click)="addBrevet()"></app-add-button>
 <div class="row"><a title="Участники бреветов" [routerLink]="['/riders']">Список участников</a></div>

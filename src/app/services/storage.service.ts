@@ -80,7 +80,7 @@ export class StorageService {
     return getDocs<Brevet>(query(
       collection(this.firestore, 'brevets')
         .withConverter<Brevet>(brevetConverter),
-      orderBy('startDate')))
+      orderBy('startDate', 'desc')))
       .then(snapshot => snapshot.docs.map(d => d.data()))
       .catch(error => {
         console.error('Error listing documents:', error);
