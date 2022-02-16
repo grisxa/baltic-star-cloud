@@ -1,18 +1,23 @@
 <ng-container *ngIf="!!brevets && brevets.length > 0">
-  <button mat-raised-button title="Свернуть" *ngIf="settings.getValue('expand_brevets') else expandButton"
-          (click)="settings.setValue('expand_brevets', false)">
-    <mat-icon>expand_less</mat-icon>
-    Архив
-  </button>
-  <ng-template #expandButton>
-    <button mat-raised-button title="Развернуть"
-            (click)="settings.setValue('expand_brevets', true)">
-      <mat-icon>expand_more</mat-icon>
-      Архив
-    </button>
-  </ng-template>
-  <div class="brevet-list" [class.admin]="auth.isAdmin" *ngIf="settings.getValue('expand_brevets')">
-    <app-brevet-list-item *ngFor="let brevet of brevets" class="brevet-row"
-                          [brevet]="brevet"></app-brevet-list-item>
-  </div>
+  <mat-accordion>
+    <mat-expansion-panel (opened)="settings.setValue('expand_brevets', true)"
+                         (closed)="settings.setValue('expand_brevets', false)"
+                         [expanded]="settings.getValue('expand_brevets')"
+                         class="archive-container">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Архив
+        </mat-panel-title>
+        <mat-panel-description>
+          Прошедшие бреветы
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <div class="brevet-list" [class.admin]="auth.isAdmin" *ngIf="settings.getValue('expand_brevets')">
+          <app-brevet-list-item *ngFor="let brevet of brevets" class="brevet-row"
+                                [brevet]="brevet"></app-brevet-list-item>
+        </div>
+      </ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
 </ng-container>

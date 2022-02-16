@@ -59,6 +59,7 @@ import {connectAuthEmulator, getAuth} from 'firebase/auth';
 import {initializeApp} from 'firebase/app';
 import {AngularFirestoreModule} from '@angular/fire/compat/firestore';
 import {AfterStravaComponent} from './components/after-strava/after-strava.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 const appRoutes: Routes = [
   {path: '', component: BrevetListComponent, pathMatch: 'full'},
@@ -153,6 +154,7 @@ const appRoutes: Routes = [
     MatPaginatorModule,
     MatIconModule,
     ReactiveFormsModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,

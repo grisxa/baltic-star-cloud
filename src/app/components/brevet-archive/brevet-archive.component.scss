@@ -17,4 +17,27 @@
   .admin {
     grid-template-columns: 1fr 2fr 4fr 2fr;
   }
+
+  .archive-container.mat-expansion-panel {
+    max-width: 32em;
+    @media screen and (min-width: 32.625em) {
+      margin: 0 5px;
+    }
+
+    .mat-expansion-panel-header {
+      padding: 0 15px;
+    }
+  }
+
+  .archive-container.mat-expansion-panel::ng-deep {
+    .mat-expansion-panel-content {
+      .mat-expansion-panel-body {
+        font-size: 1rem;
+        padding: 0;
+        @media screen and (min-width: 32.625em) {
+          padding: 0 5px;
+        }
+      }
+    }
+  }
 }
