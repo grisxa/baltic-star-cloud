@@ -13,4 +13,20 @@
   h3 {
     margin-left: 5px;
   }
+
+  .brevet-list {
+    display: grid;
+    grid-template-columns: 2fr 4fr 1fr;
+    max-width: 32em;
+    align-items: baseline;
+
+    .brevet-row {
+      display: contents;
+    }
+  }
+
+  .admin {
+    grid-template-columns: 1fr 2fr 4fr 2fr;
+  }
+
 }

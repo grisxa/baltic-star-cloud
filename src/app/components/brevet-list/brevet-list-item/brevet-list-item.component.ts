@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
 import {StorageService} from '../../../services/storage.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -6,6 +6,8 @@ import {Brevet} from '../../../models/brevet';
 
 @Component({
   selector: 'app-brevet-list-item',
+  styleUrls: ['./brevet-list-item.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './brevet-list-item.component.html'
 })
 export class BrevetListItemComponent implements OnInit {

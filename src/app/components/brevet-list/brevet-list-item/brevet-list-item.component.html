@@ -1,10 +1,14 @@
-<mat-list-item *ngIf="brevet">
-  <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteBrevet(brevet.uid)">
-    <mat-icon>delete_forever</mat-icon>
-  </button>
-  <span>{{brevet.startDate?.toDate() | date: 'dd/MM/yyyy'}}</span>
-  <a [title]="brevet.name" [routerLink]="['/brevet', brevet.uid]">
-    {{brevet.name}}
-  </a>
-  <span>({{brevet.length}} км)</span>
-</mat-list-item>
+<ng-container *ngIf="brevet">
+  <div *ngIf="auth.isAdmin">
+    <button mat-icon-button (click)="deleteBrevet(brevet.uid)">
+      <mat-icon>delete_forever</mat-icon>
+    </button>
+  </div>
+  <div class="date">{{brevet.startDate?.toDate() | date: 'dd/MM/yyyy'}}</div>
+  <div>
+    <a [title]="brevet.name" [routerLink]="['/brevet', brevet.uid]">
+      {{brevet.name}}
+    </a>
+  </div>
+  <div>({{brevet.length}}&nbsp;км)</div>
+</ng-container>

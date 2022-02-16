@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Brevet} from '../../models/brevet';
 import {SettingService} from '../../services/setting.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-brevet-archive',
@@ -10,7 +11,7 @@ import {SettingService} from '../../services/setting.service';
 export class BrevetArchiveComponent implements OnInit {
   @Input() brevets?: Brevet[];
 
-  constructor(public settings: SettingService) { }
+  constructor(public settings: SettingService, public auth: AuthService) { }
 
   ngOnInit() {
   }
