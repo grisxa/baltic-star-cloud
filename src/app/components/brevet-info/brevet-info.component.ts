@@ -420,4 +420,18 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  saveResults() {
+    this.snackBar.open(`Запись запущена`, 'Закрыть');
+
+    const save = httpsCallable(getFunctions(), 'saveResults');
+    return save({brevetUid: this.brevet?.uid})
+      .then((result) => result.data)
+      .then(reply => {
+        this.snackBar.open(`Запись завершена ${reply}`,
+          'Закрыть');
+      })
+      .catch(error => {
+        console.error('result saving error', error);
+      });
+  }
 }

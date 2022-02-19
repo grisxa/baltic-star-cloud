@@ -96,6 +96,7 @@
 </mat-list>
 
 <h3>Отметки участников</h3>
+<button mat-raised-button class="save" *ngIf="auth.isAdmin" (click)="saveResults()"><mat-icon>save</mat-icon>Сохранить</button>
 <div class="table-container">
   <table mat-table [dataSource]="progress" matSort [matSortDisableClear]="true">
     <ng-container matColumnDef="name" sticky>
