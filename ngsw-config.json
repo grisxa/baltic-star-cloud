@@ -41,6 +41,10 @@
   ],
   "navigationUrls": [
     "!/assets/**",
+    "!/print/**",
+    "!/json/**",
+    "!/strava-webhook",
+    "!/**/*__*/**",
     "/**"
   ]
 }
