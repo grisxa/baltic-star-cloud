@@ -5,7 +5,6 @@ import {switchMap} from 'rxjs/operators';
 import {GeoFirestore} from 'geofirestore';
 
 export * from './checkpoint-print';
-export * from './json-export';
 export * from './strava-import';
 // import * as crypto from 'crypto';
 import GeoPoint = admin.firestore.GeoPoint;
