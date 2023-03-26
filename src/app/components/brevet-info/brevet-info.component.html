@@ -45,7 +45,7 @@
 </div>
 </form>
 
-<div *ngIf="brevet?.mapUrl" class="plotarouteMap">
+<div *ngIf="brevet?.mapUrl" class="plotaroute-map">
   <button mat-raised-button *ngIf="!showMap" (click)="showMap=!showMap"><mat-icon>map</mat-icon>Карта</button>
   <button mat-raised-button *ngIf="showMap"  (click)="showMap=!showMap"><mat-icon>expand_less</mat-icon>Карта</button>
   <button mat-raised-button *ngIf="auth.isAdmin" (click)="importCheckpoints()"><mat-icon>sync</mat-icon>Импорт</button>
