@@ -5,6 +5,7 @@ import {AuthService} from '../../services/auth.service';
 import {Brevet} from '../../models/brevet';
 import {StorageService} from '../../services/storage.service';
 import {Timestamp} from 'firebase/firestore';
+import {getFunctions, httpsCallable} from '@angular/fire/functions';
 
 const WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -43,5 +44,11 @@ export class BrevetListComponent implements OnInit {
       this.router.navigate(['brevet', uid])
         .catch(error => console.error('Navigation failed', error));
     });
+  }
+
+  saveBrevets() {
+    const saveBrevetList = httpsCallable(getFunctions(),'saveBrevetList');
+    return saveBrevetList()
+      .then((result) => result.data);
   }
 }

@@ -60,6 +60,7 @@ import {initializeApp} from 'firebase/app';
 import {AngularFirestoreModule} from '@angular/fire/compat/firestore';
 import {AfterStravaComponent} from './components/after-strava/after-strava.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {SaveListButtonComponent} from './components/save-list-button/save-list-button.component';
 
 const appRoutes: Routes = [
   {path: '', component: BrevetListComponent, pathMatch: 'full'},
@@ -100,6 +101,7 @@ const appRoutes: Routes = [
     EditModeDirective,
     EditableComponent,
     AddButtonComponent,
+    SaveListButtonComponent,
     DateTimePickerComponent,
     SafeUrlPipe,
     AddBarcodeComponent,
