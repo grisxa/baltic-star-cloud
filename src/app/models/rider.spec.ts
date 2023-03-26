@@ -1,5 +1,4 @@
 import {ProviderDetails, ProviderInfo, Rider} from './rider';
-import {User} from 'firebase/auth';
 
 describe('Rider', () => {
   it('should create an instance', () => {
@@ -17,27 +16,14 @@ describe('Rider', () => {
     });
 
     it('should ignore empty list', () => {
-      const user = {providerData: []} as unknown as User;
-
-      rider.copyProviders(user);
-
-      expect(rider.providers).toEqual([]);
-      expect(rider.overwriteBalticStar).not.toHaveBeenCalled();
-    });
-
-    it('should ignore undefined data', () => {
-      const user = {providerData: [undefined]} as unknown as User;
-
-      rider.copyProviders(user);
+      rider.copyProviders([]);
 
       expect(rider.providers).toEqual([]);
       expect(rider.overwriteBalticStar).not.toHaveBeenCalled();
     });
 
     it('should add missing provider', () => {
-      const user = { providerData: [{providerId: 'any'}]} as User;
-
-      rider.copyProviders(user);
+      rider.copyProviders([{providerId: 'any'}]);
 
       expect(rider.providers).toEqual([{
         providerId: 'any'
@@ -47,9 +33,8 @@ describe('Rider', () => {
 
     it('should skip existing provider', () => {
       rider.providers = [{providerId: 'any'}];
-      const user = { providerData: [{providerId: 'any'}]} as User;
 
-      rider.copyProviders(user);
+      rider.copyProviders([{providerId: 'any'}]);
 
       expect(rider.providers).toEqual([{
         providerId: 'any'
@@ -74,10 +59,11 @@ describe('Rider', () => {
 
     it('should copy name', () => {
       const rider = new Rider('a1', 'b2');
-      const info = {providerId: 'oidc.balticstar', displayName: 'John Doe'};
+      const info = {providerId: 'oidc.balticstar', displayName: 'John Doe', uid: '7'};
       const expected = Rider.fromDoc({
         owner: 'a1',
         uid: 'b2',
+        code: '000007',
         firstName: 'John',
         lastName: 'Doe',
         displayName: 'John Doe'
@@ -89,11 +75,12 @@ describe('Rider', () => {
     it('should override profile', () => {
       /* eslint @typescript-eslint/naming-convention: "warn" */
       const rider = new Rider('a1', 'b2');
-      const info: ProviderInfo = {providerId: 'oidc.balticstar', displayName: 'John Doe'};
+      const info: ProviderInfo = {providerId: 'oidc.balticstar', displayName: 'John Doe', uid: '7'};
       const profile: ProviderDetails = {given_name: 'Jim', family_name: 'Bim', name: 'Jim Bim'} as ProviderDetails;
       const expected = Rider.fromDoc({
         owner: 'a1',
         uid: 'b2',
+        code: '000007',
         firstName: 'Jim',
         lastName: 'Bim',
         displayName: 'Jim Bim'

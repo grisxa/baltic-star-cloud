@@ -156,7 +156,7 @@ describe('AuthService', () => {
       await service.stateObserver(user);
 
       expect(service.storage.watchRider).toHaveBeenCalledOnceWith('abc');
-      expect(rider.copyProviders).toHaveBeenCalledOnceWith(user);
+      expect(rider.copyProviders).toHaveBeenCalledOnceWith([user], undefined);
       expect(service.storage.updateRider).toHaveBeenCalledOnceWith(expected);
       expect(service.setCurrentUser).toHaveBeenCalledOnceWith(expected);
     });
