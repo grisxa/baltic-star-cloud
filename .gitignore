@@ -40,7 +40,12 @@ speed-measure-plugin*.json
 npm-debug.log
 yarn-error.log
 testem.log
+**/firestore-debug.log
+**/ui-debug.log
 /typings
+
+src/environments/environment.prod.ts
+src/environments/environment.ts
 
 # System Files
 .DS_Store
