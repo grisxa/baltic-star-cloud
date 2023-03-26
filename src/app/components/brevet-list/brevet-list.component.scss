@@ -1,8 +1,7 @@
 :host {
   h2 {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
 
     span {
       display: block;
