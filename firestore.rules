@@ -53,10 +53,9 @@ service cloud.firestore {
 
       match /barcodes/{barcode} {
         allow read;
-        /* accept signed codes either by the checkpoint or by the rider */
-        allow create: if request.resource.data.signature != null
-                      /* optionally accept manually entered codes by an authenticated user */
-                      || (request.auth.uid != null && isOwner(request));
+        /* accept manually entered codes by an authenticated user */
+        allow create: if request.auth.uid != null && isOwner(request);
+
         // TODO: improve
         allow update: if request.auth.uid != null;
         /* delete barcode reports in console only */
