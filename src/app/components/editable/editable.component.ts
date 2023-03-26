@@ -96,7 +96,7 @@ export class EditableComponent implements OnInit, OnDestroy {
           this.currentView = this.editModeTemplate.template;
           try {
             this.changeDetectorRef.detectChanges();
-          } catch (error) {
+          } catch (error: any) {
             console.warn('change detection has failed', error.message);
           }
 

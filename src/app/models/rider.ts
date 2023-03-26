@@ -265,7 +265,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     try {
       const bytes = Buffer.from(encoded, 'base64');
       info = JSON.parse(bytes.toString('utf-8'));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Base64/JSON parsing error', error.message);
     }
     return info;
