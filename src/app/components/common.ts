@@ -7,6 +7,7 @@ export const drawJsonRoute = (map: Map, geoJSON: any) => {
       data: geoJSON
     });
     map.addLayer({
+      /* eslint @typescript-eslint/naming-convention: "warn" */
       id: 'route',
       type: 'line',
       source: 'route',

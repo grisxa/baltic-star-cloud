@@ -32,7 +32,7 @@ export class AuthService implements OnDestroy {
 
     getRedirectResult(this.state$)
       .then((authResult?: any) => {
-        this.providerInfo['providers'] = mergeProviderInfo(
+        this.providerInfo.providers = mergeProviderInfo(
           authResult?.user.providerData,
           [Rider.copyProviderInfo(authResult?.user) as UserInfo],
         );
@@ -48,7 +48,7 @@ export class AuthService implements OnDestroy {
       .subscribe((user?: Rider) => this.setCurrentUser(user));
   }
 
-// FIXME: when to destroy?
+  // FIXME: when to destroy?
   ngOnDestroy() {
     this.unsubscribe$.next();
   }

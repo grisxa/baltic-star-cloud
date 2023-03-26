@@ -375,7 +375,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     let tokens: StravaTokens = this.settings.getValue('strava') || this.auth.user?.strava;
 
     if (this.settings.getValue('strava-import') && !tokens) {
-      console.error("Can't get Strava tokens");
+      console.error('Can\'t get Strava tokens');
       this.settings.removeKey('strava-import');
       return;
     }
