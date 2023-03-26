@@ -39,7 +39,7 @@ export const printCheckpoint = functions.https.onRequest((request, response) => 
       pdf.font('default').text('веломарафонский клуб', 265, 170);
 
       pdf.fontSize(30);
-      pdf.font('default').text('Бревет ' + checkpoint.brevet.name,
+      pdf.font('default').text(`Бревет ${checkpoint.brevet.name}, ${checkpoint.brevet.length} км`,
         50, 220, {width: 550});
       pdf.font('default').text(checkpoint.displayName + ': ' +
         checkpoint.distance + ' км',
@@ -50,7 +50,14 @@ export const printCheckpoint = functions.https.onRequest((request, response) => 
         `${startDate.getMonth() + 1}.${startDate.getFullYear()}`;
       pdf.font('default').text(displayDate, 80, 260);
 
-      const url = `https://brevet.online/c/${checkpointUid}`;
+      const endDate = checkpoint.brevet.endDate.toDate();
+      const displayWarning1 = 'Внимание! Проводится велопробег!';
+      pdf.font('default').text(displayWarning1, 50, 705);
+      const displayWarning2 = `Просим не снимать плакат до ${endDate.getDate()}.` +
+        `${endDate.getMonth() + 1}.${endDate.getFullYear()}`;
+      pdf.font('default').text(displayWarning2, 50, 730);
+
+      const url = `https://brevet.top/c/${checkpointUid}`;
       return QRCode.toDataURL(url, {type: 'image/png', errorCorrectionLevel: 'M'});
     })
     .then(image => {
