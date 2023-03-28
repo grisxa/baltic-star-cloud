@@ -9,7 +9,7 @@ export const environment = {
   production: false,
   firebase: {
     apiKey: 'test',
-    authDomain: 'baltic-star-cloud.web.app',
+    authDomain: 'brevet.top',
     databaseURL: 'https://baltic-star-cloud.firebaseio.com',
     projectId: 'baltic-star-cloud',
     storageBucket: 'baltic-star-cloud.appspot.com',
