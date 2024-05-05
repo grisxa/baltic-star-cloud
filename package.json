@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "env-cmd -f .env ng serve",
     "build": "env-cmd -f .env ng build",
-    "test": "ng test",
+    "prod": "env-cmd -f .env ng build --configuration production",
+    "test": "env-cmd -f .env ng test",
     "lint": "ng lint --fix && stylelint --fix src/**/*.scss",
     "e2e": "ng e2e"
   },

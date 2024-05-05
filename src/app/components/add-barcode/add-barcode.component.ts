@@ -77,6 +77,7 @@ export class AddBarcodeComponent implements OnInit, OnDestroy {
    */
   onSave() {
     if (this.dateControl?.valid && this.codeControl?.valid) {
+      this.barcode.time = new Timestamp(this.barcode.time.seconds, 123456789);
       this.storage.createBarcode('checkpoints',
         this.checkpoint?.uid, this.barcode, this.auth.user?.uid)
         .then(uid => this.location.back());
