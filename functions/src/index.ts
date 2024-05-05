@@ -1,4 +1,6 @@
+// @ts-ignore
 import * as functions from 'firebase-functions';
+// @ts-ignore
 import * as admin from 'firebase-admin';
 import {from, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';

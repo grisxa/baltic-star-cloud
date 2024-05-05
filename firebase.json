@@ -10,7 +10,7 @@
     ]
   },
   "hosting": {
-    "site": "beta-brevet-online", /* "baltic-star-cloud", "beta-brevet-online", */
+    "site": "baltic-star-cloud", /* "baltic-star-cloud", "beta-brevet-online", */
     "public": "dist",
     "ignore": [
       "firebase.json",

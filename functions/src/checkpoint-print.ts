@@ -1,10 +1,18 @@
+// @ts-ignore
 import * as functions from 'firebase-functions';
 import * as PDFDocument from 'pdfkit';
+// @ts-ignore
 import * as admin from 'firebase-admin';
 import * as QRCode from 'qrcode';
+import * as express from 'express';
+
+import DocumentSnapshot = admin.firestore.DocumentSnapshot;
+import DocumentData = admin.firestore.DocumentData;
+
 
 /* eslint max-len: ["error", { "ignoreStrings": true, "code": 100 }] */
-export const printCheckpoint = functions.https.onRequest((request, response) => {
+export const printCheckpoint = functions.https.onRequest(
+  (request: express.Request, response: express.Response) => {
   const pdf = new PDFDocument({size: 'A4'});
 
   const search = request.path.match(/brevet\/([^/]+)\/checkpoint\/([^/]+)/) || [];
@@ -16,7 +24,7 @@ export const printCheckpoint = functions.https.onRequest((request, response) => 
   return admin.firestore()
     .collection('brevets').doc(brevetUid)
     .collection('checkpoints').doc(checkpointUid)
-    .get().then(doc => {
+    .get().then((doc: DocumentSnapshot<DocumentData>) => {
       const checkpoint = doc.data() || {brevet: {}};
       const filename = `checkpoint-${checkpointUid}.pdf`;
       response.setHeader('Content-disposition', `inline; filename="${filename}"`);
@@ -60,7 +68,7 @@ export const printCheckpoint = functions.https.onRequest((request, response) => 
       const url = `https://brevet.top/c/${checkpointUid}`;
       return QRCode.toDataURL(url, {type: 'image/png', errorCorrectionLevel: 'M'});
     })
-    .then(image => {
+    .then((image: string) => {
       pdf.image(image, 30, 360, {width: 350, height: 350});
       pdf.image(image, 380, 380, {width: 180, height: 180});
       pdf.image(image, 360, 580, {width: 100, height: 100});
@@ -68,7 +76,7 @@ export const printCheckpoint = functions.https.onRequest((request, response) => 
       pdf.pipe(response);
       pdf.end();
     })
-    .catch(error => {
+    .catch((error: Error) => {
       console.error(`Can't print brevet ${brevetUid} checkpoint ${checkpointUid}`, error.message);
       response.sendStatus(500);
     });
