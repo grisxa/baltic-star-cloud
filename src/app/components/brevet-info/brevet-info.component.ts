@@ -430,7 +430,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.snackBar.open(`Загрузка запущена`, 'Закрыть');
 
-    const uploadTrack = httpsCallable(getFunctions(), 'upload_track');
+    const uploadTrack = httpsCallable(getFunctions(), 'uploadTrack');
 
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
