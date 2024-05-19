@@ -420,6 +420,44 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  uploadTrack(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const selectedFile: File | undefined = inputElement?.files?.[0];
+    if (!selectedFile) {
+      this.snackBar.open(`Файл не выбран`, 'Закрыть');
+      return;
+    }
+
+    this.snackBar.open(`Загрузка запущена`, 'Закрыть');
+
+    const uploadTrack = httpsCallable(getFunctions(), 'upload_track');
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    })
+    .then(content => uploadTrack({brevetUid: this.brevet?.uid, riderUid: this.auth.user?.uid, track: content}))
+      .then((result) => result.data)
+      .then((data: any) => {
+        if (data.error === 404 || data.error === 400) {
+          // TODO: update error types
+          throw new Error(data.message);
+        }
+        return data.message;
+      })
+      .then((count: number) => {
+        this.snackBar.open(`Добавлено ${count} отметок`,
+          'Закрыть');
+      })
+      .catch(error => {
+        console.error('track import error', error);
+        this.snackBar.open(`Ошибка импорта. ${error.message}`,
+          'Закрыть');
+      });
+  }
+
   saveResults() {
     this.snackBar.open(`Запись запущена`, 'Закрыть');
 

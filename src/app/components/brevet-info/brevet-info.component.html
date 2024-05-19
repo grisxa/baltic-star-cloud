@@ -62,10 +62,15 @@
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
-  <button *ngIf="brevet?.isStarted() && brevet?.endDate" mat-raised-button (click)="startImporting()" title="Connect to Strava">
+  <button *ngIf="brevet?.isFinished()" mat-raised-button (click)="startImporting()" title="Connect to Strava">
     <mat-icon svgIcon="icon_strava"></mat-icon>
     Strava
   </button>
+  <button *ngIf="brevet?.isFinished()" mat-raised-button (click)="fileInput.click()" title="Upload a GPX track">
+    <mat-icon>upload</mat-icon>
+    Трек
+  </button>
+  <input type="file" #fileInput style="display: none" (change)="uploadTrack($event)">
 </div>
 
 <h3>Контрольные пункты</h3>

@@ -30,4 +30,9 @@ export class Brevet {
     const time: Timestamp = Timestamp.now();
     return (!this.startDate || this.startDate.seconds <= time.seconds);
   }
+
+  isFinished(): boolean {
+    const time: Timestamp = Timestamp.now();
+    return (!this.endDate || this.endDate.seconds <= time.seconds);
+  }
 }
