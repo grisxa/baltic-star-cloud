@@ -7,6 +7,7 @@ export class Brevet {
   name: string;
   length: number;
   startDate: Timestamp;
+  openDate?: Timestamp;
   endDate?: Timestamp;
   mapUrl?: string;
   track?: {
@@ -28,7 +29,8 @@ export class Brevet {
 
   isStarted(): boolean {
     const time: Timestamp = Timestamp.now();
-    return (!this.startDate || this.startDate.seconds <= time.seconds);
+    const openDate = this.openDate || this.startDate;
+    return (!openDate || openDate.seconds <= time.seconds);
   }
 
   isFinished(): boolean {
