@@ -29,6 +29,7 @@ export class Brevet {
 
   isStarted(): boolean {
     const time: Timestamp = Timestamp.now();
+    // NOTE: openDate = startDate - 30 minutes or earlier
     const openDate = this.openDate || this.startDate;
     return (!openDate || openDate.seconds <= time.seconds);
   }

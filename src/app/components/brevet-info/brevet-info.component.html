@@ -54,11 +54,11 @@
 
 <h3 *ngIf="allowCheckIn">Самоотметка</h3>
 <div class="row" *ngIf="allowCheckIn">
-  <button mat-raised-button (click)="startScanner()">
+  <button *ngIf="brevet?.isStarted()" mat-raised-button (click)="startScanner()">
     <mat-icon>camera_alt</mat-icon>
     Сканировать
   </button>
-  <button *ngIf="geoLocation.isLocationAvailable()" mat-raised-button (click)="locateOnMap()">
+  <button *ngIf="geoLocation.isLocationAvailable() && brevet?.isStarted()" mat-raised-button (click)="locateOnMap()">
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
