@@ -150,7 +150,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           }
           checkpoint.riders?.forEach(rider => {
             const known = this.progress.data.find(row => row.uid === rider.uid);
-            const checkIn = Array.isArray(rider.time) ? rider.time[0] : null;
+            const checkIn = Array.isArray(rider.time) ? checkpointIndex === 0 ? rider.time[rider.time.length - 1] : rider.time[0] : null;
             if (known) {
               // a property with variable name: cp1, cp3, etc.
               // @ts-ignore
