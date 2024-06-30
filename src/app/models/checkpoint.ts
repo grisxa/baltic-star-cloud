@@ -28,6 +28,10 @@ export class Checkpoint {
   // Checkpoint info page, rider table
   riders?: RiderCheckIn[];
 
+  // Checkpoint open time
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+
   constructor(routePoint: RoutePoint) {
     this.displayName = routePoint.name;
     this.distance = routePoint.distance;
@@ -46,3 +50,26 @@ export class Checkpoint {
       && (!this.brevet?.endDate || this.brevet.endDate.seconds + HOUR >= time.seconds);
   }
 }
+
+export const orderCheckpointsByTyme = (a: Checkpoint, b: Checkpoint, currentTime: number): number => {
+  const aStart: number = a.startDate ? a.startDate.toMillis() : -Infinity;
+  const bStart: number = b.startDate ? b.startDate.toMillis() : -Infinity;
+  const aEnd: number = a.endDate ? a.endDate.toMillis() : Infinity;
+  const bEnd: number = b.endDate ? b.endDate.toMillis() : Infinity;
+
+  // consider the checkpoint is open by default
+  const aOpen: boolean = aStart <= currentTime && currentTime <= aEnd;
+  const bOpen: boolean = bStart <= currentTime && currentTime <= bEnd;
+
+  if (aOpen && !bOpen) {
+    return -1;
+  } else if (!aOpen && bOpen) {
+    return 1;
+  } else if (aOpen && bOpen) {
+    return aStart === bStart ? aEnd === bEnd ? 0 : aEnd - bEnd : aStart - bStart;
+  } else {
+    return 0;
+  }
+};
+
+export const orderCheckpointsByDistance = (a: Checkpoint, b: Checkpoint): number => (a.delta || 0) - (b.delta || 0);
