@@ -195,7 +195,7 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   }
 
   get isOnline(): boolean {
-    return navigator.onLine
+    return navigator.onLine;
   }
 
   send() {

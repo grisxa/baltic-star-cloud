@@ -238,7 +238,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
     return keys.every(key => !!a && !!b && (typeof(b[key]) === 'object' || a[key] === b[key]))
       && deepCompare(a?.strava, b?.strava)
       && !!a?.providers.every((info, i) => deepCompare(info, b?.providers[i]))
-      && !!b?.providers.every((info, i) => deepCompare(info, a?.providers[i]))
+      && !!b?.providers.every((info, i) => deepCompare(info, a?.providers[i]));
   }
 
   updateInfo(encoded: string) {
