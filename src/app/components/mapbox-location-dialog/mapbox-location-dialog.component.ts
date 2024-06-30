@@ -122,7 +122,8 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   }
 
   onLocationChanged(event: unknown) {
-    const {timestamp, coords} = event as GeolocationPosition;
+    const location: GeolocationPosition = event as GeolocationPosition;
+    const {timestamp, coords} = location;
     const quickResult: Checkpoint[] | undefined = this.quickSearch(coords, this.data.checkpoints);
     if (quickResult) {
       // sort them by the distance, then by the previous check-in
@@ -138,11 +139,17 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.storage.listCloseCheckpoints(event as GeolocationPosition)
+    this.storage.listCloseCheckpoints(location)
       .then(docs => docs
         .map((doc): Checkpoint => Object.assign({} as Checkpoint,
           // add a distance
-          doc, {delta: doc.distance})))
+          doc, {
+            delta: geoDistance(
+              doc.coordinates?.latitude || 0,
+              doc.coordinates?.longitude || 0,
+              location.coords.latitude,
+              location.coords.longitude)
+          })))
       // sort them by the distance, then by the previous check-in
       // TODO: || orderCheckpointsByTime(a, b, Date.now()) ||
       .then(checkpoints => checkpoints.sort((a, b) => orderCheckpointsByDistance(a, b) || orderCheckpointsByVisit(a, b, this.archive)))
