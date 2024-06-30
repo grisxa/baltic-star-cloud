@@ -1,17 +1,20 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {FormControl, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Timestamp} from 'firebase/firestore';
 import * as mapboxGL from 'mapbox-gl';
 import {Popup} from 'mapbox-gl';
-import {environment} from '../../../environments/environment';
-import {Checkpoint} from '../../models/checkpoint';
-import {StorageService} from '../../services/storage.service';
-import {NONE_BREVET} from '../../models/brevet';
-import {FormControl, Validators} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {Timestamp} from 'firebase/firestore';
+
+import {NONE_BREVET} from '../../models/brevet';
+import {CheckIns, Checkpoint, orderCheckpointsByDistance, orderCheckpointsByVisit} from '../../models/checkpoint';
+import {BarcodeQueueService} from '../../services/barcode-queue.service';
+import {StorageService} from '../../services/storage.service';
 import {drawJsonRoute} from '../common';
 import LngLat = mapboxGL.LngLat;
+
+import {environment} from '../../../environments/environment';
 
 const DEFAULT_CENTER = new LngLat(30.317, 59.95);
 
@@ -33,18 +36,28 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
   checkpointsAround?: Checkpoint[];
   checkpointControl: FormControl;
   errorTimeout?: any;
+  archive?: CheckIns;
 
   private locationStarted = false;
   private selectedCheckpointUid?: string;
   private unsubscribe$ = new Subject();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: MapboxLocationDialogSettings,
-              private storage: StorageService) {
+              private storage: StorageService,
+              private queue: BarcodeQueueService
+  ) {
     this.checkpointControl = new FormControl({value: null, disabled: true},
       Validators.required);
   }
 
   ngOnInit(): void {
+    this.archive = this.queue.listQueue().reduce(
+      (acc: CheckIns, checkIn) => {
+        acc[checkIn.code] = acc[checkIn.code] ? [...acc[checkIn.code], checkIn.time].sort() : [checkIn.time];
+        return acc;
+      },
+      {} as CheckIns
+    );
     // @ts-ignore
     mapboxGL.accessToken = environment.mapbox.accessToken;
     this.map = new mapboxGL.Map({
@@ -112,8 +125,9 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
     const {timestamp, coords} = event as GeolocationPosition;
     const quickResult: Checkpoint[] | undefined = this.quickSearch(coords, this.data.checkpoints);
     if (quickResult) {
-      const checkpoints = quickResult.sort(
-        (a: Checkpoint, b: Checkpoint) => (a.delta || 0) - (b.delta || 0));
+      // sort them by the distance, then by the previous check-in
+      // TODO: || orderCheckpointsByTime(a, b, Date.now()) ||
+      const checkpoints = quickResult.sort((a, b) => orderCheckpointsByDistance(a, b) || orderCheckpointsByVisit(a, b, this.archive));
       this.checkpointsAround = checkpoints;
       if (checkpoints.length) {
         this.checkpointControl.enable();
@@ -129,45 +143,59 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
         .map((doc): Checkpoint => Object.assign({} as Checkpoint,
           // add a distance
           doc, {delta: doc.distance})))
-      // sort them by the distance, closest first
-      .then(checkpoints => checkpoints.sort(
-        (a: Checkpoint, b: Checkpoint) => (a.delta || 0) - (b.delta || 0)))
+      // sort them by the distance, then by the previous check-in
+      // TODO: || orderCheckpointsByTime(a, b, Date.now()) ||
+      .then(checkpoints => checkpoints.sort((a, b) => orderCheckpointsByDistance(a, b) || orderCheckpointsByVisit(a, b, this.archive)))
       // skip checkpoints not in the brevet
       .then(checkpoints => this.storage
         .filterCheckpoints(this.data.brevetUid || NONE_BREVET, checkpoints))
-      // filter out checkpoints by brevet's date
-      .then(checkpoints => checkpoints
-        .filter((cp: Checkpoint) => Checkpoint.prototype.isOnline.call(cp, Timestamp.now())))
       .then(checkpoints => {
         this.checkpointsAround = checkpoints;
         if (checkpoints.length) {
           this.checkpointControl.enable();
           this.checkpointControl.setValue(this.validateSelection(checkpoints, this.selectedCheckpointUid));
-        }
-        else {
+        } else {
           this.checkpointControl.disable();
           this.checkpointControl.setValue(null);
         }
       });
   }
 
-  // calculate a distance to the control points and compare
+  /**
+   * Keep control point within 1200 m and online
+   *
+   * @param center - the position
+   * @param checkpoints - a list of control points with coordinates
+   * @return a list of the closest checkpoints
+   */
   quickSearch(center: GeolocationCoordinates, checkpoints?: Checkpoint[]) {
     return checkpoints?.filter((cp: Checkpoint) => Checkpoint.prototype
       .isOnline.call(cp, Timestamp.now()))
       .map((point: Checkpoint) => ({
-      ...point,
-      delta: geoDistance(point.coordinates?.latitude || 0,
-        point.coordinates?.longitude || 0,
-        center.latitude, center.longitude)
-    } as Checkpoint))
+        ...point,
+        delta: geoDistance(point.coordinates?.latitude || 0,
+          point.coordinates?.longitude || 0,
+          center.latitude, center.longitude)
+      } as Checkpoint))
       .filter((point: Checkpoint) => 1200 > (point.delta || Infinity));
   }
 
+  /**
+   * If the coordinates are set and not empty
+   *
+   * @param coordinates - LngLat object
+   */
   validPoint(coordinates: LngLat) {
     return coordinates && coordinates.lat && coordinates.lng;
   }
 
+  /**
+   * Match the checkpoint list and the uid
+   *
+   * @param checkpoints - the checkpoint list
+   * @param uid - the uid to find
+   * @return either the uid or the first provided checkpoint's uid
+   */
   validateSelection(checkpoints: Checkpoint[], uid?: string): string {
     return uid && checkpoints.find(cp => cp.uid === uid) ? uid : checkpoints[0].uid;
   }
@@ -182,7 +210,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
  * @param lon2 - Longitude of the second point
  */
 
- export const geoDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+export const geoDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   if (lat1 === lat2 && lon1 === lon2) {
     return 0;
   }
