@@ -2,9 +2,9 @@
   <button mat-icon-button *ngIf="auth.isAdmin" (click)="deleteCheckpoint(checkpoint.uid)">
     <mat-icon>delete_forever</mat-icon>
   </button>
-  <a [title]="checkpoint.displayName" [routerLink]="['/brevet',
+  <a [title]="checkpoint.displayName || checkpoint.name" [routerLink]="['/brevet',
    checkpoint.brevet?.uid || 'none', 'checkpoint',
-   checkpoint.uid || 'none']">{{checkpoint.displayName}}</a>,
+   checkpoint.uid || 'none']">{{checkpoint.displayName || checkpoint.name}}</a>,
   {{checkpoint.distance}} км
   <mat-icon *ngIf="checkpoint.sleep" class="checkpoint-type-icon"
             title="Спальный" svgIcon="icon_bed"></mat-icon>

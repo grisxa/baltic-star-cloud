@@ -100,6 +100,7 @@ export class Rider implements RiderPublicDetails, RiderPrivateDetails {
 
   code?: string;
   displayName?: string|null;
+  name?: string;
   firstName?: string;
   lastName?: string;
   birthDate?: Timestamp;

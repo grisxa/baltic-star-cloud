@@ -11,6 +11,7 @@ export const NONE_CHECKPOINT = 'none';
 export class Checkpoint {
   // TODO: switch to name
   displayName?: string;
+  name?: string;
   uid = NONE_CHECKPOINT;
   // to the start by track
   distance?: number;

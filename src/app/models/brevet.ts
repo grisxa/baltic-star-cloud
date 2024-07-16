@@ -1,4 +1,5 @@
 import {GeoPoint, Timestamp} from 'firebase/firestore';
+import {Checkpoint} from "./checkpoint";
 
 export const NONE_BREVET = 'none';
 
@@ -14,6 +15,8 @@ export class Brevet {
     distance: number;
     coordinates: GeoPoint;
   }[];
+  checkpoints?: Checkpoint[];
+  results?: {[key: string]: {[key: string]: any}};
 
   constructor(uid: string, name: string, length: number, startDate: Timestamp) {
     this.uid = uid;

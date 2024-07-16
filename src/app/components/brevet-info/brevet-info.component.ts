@@ -113,80 +113,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.brevet$ = from(this.storage.getBrevet(brevetUid))
         .pipe(filter(isNotNullOrUndefined));
-      this.storage.watchCheckpoints(brevetUid)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((checkpoints: Checkpoint[]) => {
-          this.checkpoints = checkpoints;
-          // the rider name column
-          this.columnsToDisplay = [firstColumn];
-          this.checkpoints.forEach((cp, i) => {
-            const id = `cp${i}`;
-            this.columnsToDisplay.push({
-              id,
-              name: cp.displayName || NONE_CHECKPOINT,
-              type: cp.sleep ? 'checkpoint-type-sleep' : cp.selfcheck ? 'checkpoint-type-selfcheck' : '',
-              distance: cp.distance?.toString() || ''
-            });
-          });
-          // the checkpoint name row
-          this.firstHeader = this.columnsToDisplay.map(c => c.id);
-          // the checkpoint distance row (km)
-          this.secondHeader = this.columnsToDisplay.map(c => 'dist-' + c.id);
-        });
-      this.storage.watchBrevetProgress(brevetUid)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((checkpoint: Checkpoint) => {
-          // NOTE: Keep replacing the data to trigger redraw
-          this.progress.data = this.progress.data || [];
 
-          const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
-          if (checkpointIndex === -1) {
-            console.warn(`unknown checkpoint ${checkpoint.uid}`);
-            return;
-          }
-          checkpoint.riders?.forEach(rider => {
-            const known = this.progress.data.find(row => row.uid === rider.uid);
-            const checkIn = Array.isArray(rider.time) ? checkpointIndex === 0 ? rider.time[rider.time.length - 1] : rider.time[0] : null;
-            if (known) {
-              // a property with variable name: cp1, cp3, etc.
-              // @ts-ignore
-              known[`cp${checkpointIndex}`] = checkIn;
-            } else {
-              const row = {
-                name: rider.name,
-                code: rider.code,
-                lastName: rider.lastName,
-                uid: rider.uid,
-                [`cp${checkpointIndex}`]: checkIn
-              } as unknown as RiderCheckIn;
-              this.progress.data.push(row);
-            }
-          });
-          this.table?.renderRows();
-/*
-          const toExport = this.progress.data.map(row => {
-            const newRow = {
-              code: (this.riders.find(r => r.uid === row.uid) || {})['code'],
-              name: row.name
-            };
-            for (const col in row) {
-              // @ts-ignore
-              const time = row[col];
-              if (time instanceof Timestamp) {
-                const hours = time.toDate().getHours()
-                const minutes = time.toDate().getMinutes();
-                // @ts-ignore
-                newRow[col] = time.toDate().toString();
-                //  (hours > 9 ? hours : "0" + hours) + ":" + (minutes > 9 ? minutes : "0" + minutes);
-              }
-            }
-            return newRow;
-          });
-          // console.log('= brevet result export', JSON.stringify(toExport));
- */
-
-          // this.dataSource.paginator = this.paginator;
-        });
     });
     this.brevet$
       .pipe(
@@ -200,6 +127,65 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
           // cache checkpoints for a quick search
           this.storage.listCheckpoints(brevet.uid)
             .then((checkpoints: Checkpoint[]) => console.log(checkpoints.length + ' checkpoints in a cache'));
+        }
+        if (brevet.isStarted()) {
+          this.checkpoints = brevet.checkpoints || [];
+          this.onCheckpointsReady();
+        } else {
+          this.storage.watchCheckpoints(brevet.uid)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((checkpoints: Checkpoint[]) => {
+              this.checkpoints = checkpoints;
+              this.onCheckpointsReady();
+            });
+        }
+
+        if (brevet.isStarted() && !brevet.isFinished()) {
+          this.storage.watchBrevetProgress(brevet.uid)
+          .pipe(takeUntil(this.unsubscribe$))
+          .subscribe((checkpoint: Checkpoint) => {
+            // NOTE: Keep replacing the data to trigger redraw
+            this.progress.data = this.progress.data || [];
+
+            const checkpointIndex = this.checkpoints.findIndex(cp => cp.uid === checkpoint.uid);
+            if (checkpointIndex === -1) {
+              console.warn(`unknown checkpoint ${checkpoint.uid}`);
+              return;
+            }
+            checkpoint.riders?.forEach(rider => {
+              const known = this.progress.data.find(row => row.uid === rider.uid);
+              const checkIn = Array.isArray(rider.time) ? checkpointIndex === 0 ? rider.time[rider.time.length - 1] : rider.time[0] : null;
+              if (known) {
+                // a property with variable name: cp1, cp3, etc.
+                // @ts-ignore
+                known[`cp${checkpointIndex}`] = checkIn;
+              } else {
+                const row = {
+                  name: rider.name,
+                  code: rider.code,
+                  lastName: rider.lastName,
+                  uid: rider.uid,
+                  [`cp${checkpointIndex}`]: checkIn
+                } as unknown as RiderCheckIn;
+                this.progress.data.push(row);
+              }
+            });
+            this.table?.renderRows();
+          });
+        } else {
+          Object.entries(brevet.results || {}).forEach(([key, rider]) => {
+            const [firstName = '', lastName = ''] = rider.name?.trim().split(/\s+/) ?? [];
+            const row: {[key: string]: any} = {
+              name: `${lastName} ${firstName}`,
+              code: rider.code,
+              lastName: rider.lastName || lastName || firstName,
+              uid: rider.uid
+            };
+            rider.checkins.forEach((time: Timestamp, i: number) => row[`cp${i}`] = time);
+            this.progress.data.push(row as RiderCheckIn);
+          });
+          this.table?.renderRows();
+          this.progress.sort = this.sort;
         }
 
         if (brevet.track) {
@@ -220,6 +206,24 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         this.formGroup.controls
           .startDate?.setValue(brevet.startDate ? brevet.startDate.toDate() : null);
       });
+  }
+
+  onCheckpointsReady() {
+    // the rider name column
+    this.columnsToDisplay = [firstColumn];
+    this.checkpoints.forEach((cp, i) => {
+      const id = `cp${i}`;
+      this.columnsToDisplay.push({
+        id,
+        name: cp.displayName || cp.name || NONE_CHECKPOINT,
+        type: cp.sleep ? 'checkpoint-type-sleep' : cp.selfcheck ? 'checkpoint-type-selfcheck' : '',
+        distance: cp.distance?.toString() || ''
+      });
+    });
+    // the checkpoint name row
+    this.firstHeader = this.columnsToDisplay.map(c => c.id);
+    // the checkpoint distance row (km)
+    this.secondHeader = this.columnsToDisplay.map(c => 'dist-' + c.id);
   }
 
   // release watchers
