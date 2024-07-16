@@ -101,10 +101,6 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.titleService.setTitle('Бревет');
 
-    // cache checkpoints for a quick search
-    this.storage.listCheckpoints()
-      .then((checkpoints: Checkpoint[]) => console.log(checkpoints.length + ' checkpoints in a cache'));
-
     this.route.paramMap.subscribe(params => {
       const brevetUid = params.get('uid');
       if (!brevetUid) {
@@ -199,6 +195,13 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((brevet: Brevet) => {
         this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
+
+        if (!brevet.isFinished()) {
+          // cache checkpoints for a quick search
+          this.storage.listCheckpoints(brevet.uid)
+            .then((checkpoints: Checkpoint[]) => console.log(checkpoints.length + ' checkpoints in a cache'));
+        }
+
         if (brevet.track) {
           this.geoJSON = {
             type: 'Feature',

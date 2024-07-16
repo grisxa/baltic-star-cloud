@@ -185,10 +185,12 @@ export class StorageService {
       .then(snapshot => snapshot.docs.map(d => d.data() as unknown as Checkpoint));
   }
 
-  listCheckpoints(): Promise<Checkpoint[]> {
+  listCheckpoints(brevetUid: string): Promise<Checkpoint[]> {
     return getDocs<Checkpoint>(query(
       collection(this.firestore, 'checkpoints')
-        .withConverter<Checkpoint>(checkpointConverter)))
+        .withConverter<Checkpoint>(checkpointConverter),
+        where('brevet.uid', '==', brevetUid),
+        orderBy('distance')))
       .then(snapshot => snapshot.docs.map(d => d.data()))
       .catch(error => {
         console.error('Error listing documents:', error);
