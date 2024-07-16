@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {collectionData, docData, Firestore} from '@angular/fire/firestore';
 import {Brevet} from '../models/brevet';
+import {BrevetList} from '../models/brevet-list';
 import {Checkpoint, NONE_CHECKPOINT} from '../models/checkpoint';
 import {NONE_RIDER, Rider, RiderPrivateDetails, RiderPublicDetails} from '../models/rider';
 import {Barcode} from '../models/barcode';
@@ -37,6 +38,10 @@ import {environment} from '../../environments/environment';
 const brevetConverter: FirestoreDataConverter<Brevet> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => Brevet.fromDoc(snapshot.data() as Brevet),
   toFirestore: (it: PartialWithFieldValue<Brevet>): DocumentData => ({...it}),
+};
+const brevetListConverter: FirestoreDataConverter<BrevetList> = {
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => BrevetList.fromDoc(snapshot.data() as BrevetList),
+  toFirestore: (it: PartialWithFieldValue<BrevetList>): DocumentData => ({...it}),
 };
 const checkpointConverter: FirestoreDataConverter<Checkpoint> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as Checkpoint,
@@ -77,11 +82,10 @@ export class StorageService {
   }
 
   listBrevets(): Promise<Brevet[]> {
-    return getDocs<Brevet>(query(
-      collection(this.firestore, 'brevets')
-        .withConverter<Brevet>(brevetConverter),
-      orderBy('startDate', 'desc')))
-      .then(snapshot => snapshot.docs.map(d => d.data()))
+    return getDoc<BrevetList>(doc(
+      collection(this.firestore, 'brevets').withConverter<BrevetList>(brevetListConverter), 'list'))
+      .then(snapshot => snapshot.data())
+      .then(data => data?.brevets || [])
       .catch(error => {
         console.error('Error listing documents:', error);
         return [];
