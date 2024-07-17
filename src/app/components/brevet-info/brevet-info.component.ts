@@ -130,6 +130,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         if (brevet.isStarted()) {
           this.checkpoints = brevet.checkpoints || [];
+          this.checkpoints.forEach(cp => cp.brevet = {uid: brevet.uid} as Brevet);
           this.onCheckpointsReady();
         } else {
           this.storage.watchCheckpoints(brevet.uid)
