@@ -54,19 +54,19 @@
 
 <h3 *ngIf="allowCheckIn">Самоотметка</h3>
 <div class="row" *ngIf="allowCheckIn">
-  <button *ngIf="brevet?.isStarted()" mat-raised-button (click)="startScanner()">
+  <button *ngIf="brevet?.hasStarted()" mat-raised-button (click)="startScanner()">
     <mat-icon>camera_alt</mat-icon>
     Сканировать
   </button>
-  <button *ngIf="geoLocation.isLocationAvailable() && brevet?.isStarted()" mat-raised-button (click)="locateOnMap()">
+  <button *ngIf="geoLocation.isLocationAvailable() && brevet?.hasStarted()" mat-raised-button (click)="locateOnMap()">
     <mat-icon>my_location</mat-icon>
     Координаты
   </button>
-  <button *ngIf="brevet?.isFinished()" mat-raised-button (click)="startImporting()" title="Connect to Strava">
+  <button *ngIf="brevet?.hasFinished()" mat-raised-button (click)="startImporting()" title="Connect to Strava">
     <mat-icon svgIcon="icon_strava"></mat-icon>
     Strava
   </button>
-  <button *ngIf="brevet?.isFinished()" mat-raised-button (click)="fileInput.click()" title="Upload a track">
+  <button *ngIf="brevet?.hasFinished()" mat-raised-button (click)="fileInput.click()" title="Upload a track">
     <mat-icon>upload</mat-icon>
     Трек
   </button>

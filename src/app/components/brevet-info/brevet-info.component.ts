@@ -123,13 +123,15 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
         this.titleService.setTitle(`Бревет ${brevet.name}`);
         this.brevet = brevet;
 
-        if (!brevet.isFinished()) {
+        if (!brevet.hasFinished()) {
           // cache checkpoints for a quick search
           this.storage.listCheckpoints(brevet.uid)
             .then((checkpoints: Checkpoint[]) => console.log(checkpoints.length + ' checkpoints in a cache'));
         }
-        if (brevet.isStarted()) {
+        if (brevet.hasStarted()) {
+          // No checkpoint changes expected after the brevet starts
           this.checkpoints = brevet.checkpoints || [];
+          // inject the brevet uid
           this.checkpoints.forEach(cp => cp.brevet = {uid: brevet.uid} as Brevet);
           this.onCheckpointsReady();
         } else {
@@ -141,7 +143,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             });
         }
 
-        if (brevet.isStarted() && !brevet.isFinished()) {
+        if (brevet.isOnline(Timestamp.now())) {
           this.storage.watchBrevetProgress(brevet.uid)
           .pipe(takeUntil(this.unsubscribe$))
           .subscribe((checkpoint: Checkpoint) => {
@@ -174,6 +176,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             this.table?.renderRows();
           });
         } else {
+          // After the brevet ends switch to the static data
           Object.entries(brevet.results || {}).forEach(([key, rider]) => {
             const [firstName = '', lastName = ''] = rider.name?.trim().split(/\s+/) ?? [];
             const row: {[key: string]: any} = {
