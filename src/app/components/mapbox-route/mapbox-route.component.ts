@@ -65,7 +65,7 @@ export class MapboxRouteComponent implements OnInit, OnDestroy {
         focusAfterOpen: false,
         anchor: 'bottom',
         className: 'popup',
-      }).setHTML(cp.displayName || 'КП')
+      }).setHTML(cp.name || cp.displayName || 'КП')
         // @ts-ignore possibly undefined coordinates due to previous validCoordinates()
         .setLngLat(new LngLat(cp.coordinates.longitude, cp.coordinates.latitude))
         .addTo(this.map));
