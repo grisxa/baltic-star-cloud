@@ -81,7 +81,7 @@ export class MapboxLocationDialogComponent implements OnInit, OnDestroy {
         focusAfterOpen: false,
         anchor: 'bottom',
         className: 'popup',
-      }).setHTML(cp.displayName || 'КП')
+      }).setHTML(cp.name || cp.displayName || 'КП')
         // @ts-ignore
         .setLngLat(new LngLat(cp.coordinates.longitude, cp.coordinates.latitude))
         .addTo(this.map));
