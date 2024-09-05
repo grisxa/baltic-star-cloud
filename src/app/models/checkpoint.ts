@@ -33,10 +33,22 @@ export class Checkpoint {
   startDate?: Timestamp;
   endDate?: Timestamp;
 
+  // Saved results
+  checkIns?: RiderCheckIn[];
+
   constructor(routePoint: RoutePoint) {
     this.displayName = routePoint.name;
     this.distance = routePoint.distance;
     this.coordinates = new GeoPoint(routePoint.lat || 0, routePoint.lng || 0);
+  }
+
+  static fromDoc(doc: Checkpoint) {
+    const checkpoint = new Checkpoint({
+      displayName: doc.displayName,
+      distance: doc.distance,
+      coordinates: doc.coordinates,
+    } as unknown as RoutePoint);
+    return Object.assign(checkpoint, doc);
   }
 
   /**
@@ -47,8 +59,15 @@ export class Checkpoint {
    */
 
   isOnline(time: Timestamp): boolean {
-    return (!this.brevet?.startDate || this.brevet.startDate.seconds - HOUR <= time.seconds)
-      && (!this.brevet?.endDate || this.brevet.endDate.seconds + HOUR >= time.seconds);
+    /**
+     * The checkpoint is online while the brevet is online
+     */
+    return !this.brevet || Brevet.prototype.isOnline.call(this.brevet, time);
+  }
+
+  isClosed(): boolean {
+    const time: Timestamp = Timestamp.now();
+    return (!this.endDate || this.endDate.seconds + HOUR < time.seconds);
   }
 }
 

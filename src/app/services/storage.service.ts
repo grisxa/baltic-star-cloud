@@ -44,7 +44,7 @@ const brevetListConverter: FirestoreDataConverter<BrevetList> = {
   toFirestore: (it: PartialWithFieldValue<BrevetList>): DocumentData => ({...it}),
 };
 const checkpointConverter: FirestoreDataConverter<Checkpoint> = {
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => snapshot.data() as Checkpoint,
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => Checkpoint.fromDoc(snapshot.data() as Checkpoint),
   toFirestore: (it: PartialWithFieldValue<Checkpoint>): DocumentData => ({...it}),
 };
 const barcodeConverter: FirestoreDataConverter<Barcode> = {

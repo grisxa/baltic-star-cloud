@@ -114,6 +114,17 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
         this.formGroup.controls.distance?.setValue(checkpoint.distance);
         this.formGroup.controls.sleep?.setValue(checkpoint.sleep);
         this.formGroup.controls.selfcheck?.setValue(checkpoint.selfcheck);
+
+        if (checkpoint.isClosed()) {
+          this.unsubscribe$.next();
+          this.riders.data = checkpoint.checkIns || [];
+          /*
+          expect
+            lastName: checkIn.lastName,
+            in: checkIn.time[0],
+            out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
+           */
+        }
       });
   }
 
