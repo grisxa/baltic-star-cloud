@@ -440,7 +440,7 @@ export class StorageService {
       );
   }
 
-  watchCheckpointProgress(brevetUid: string, checkpointUid: string) {
+  watchCheckpointProgress(checkpointUid: string) {
     return from(getDocs<RiderPublicDetails>(query(
       collection(this.firestore, 'riders')))
       .then(snapshot => snapshot.docs.map(d => d.data())))
