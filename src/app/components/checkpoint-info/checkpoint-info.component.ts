@@ -10,7 +10,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {StorageService} from '../../services/storage.service';
 import {Barcode} from '../../models/barcode';
 import {RiderCheckIn} from '../../models/rider-check-in';
-import {filter, takeUntil} from 'rxjs/operators';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {ScannerDialogComponent} from '../../scanner-dialog/scanner-dialog.component';
 import {MapboxDialogComponent} from '../mapbox-dialog/mapbox-dialog.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -74,40 +74,24 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
   ngOnInit() {
     this.titleService.setTitle('Контрольный пункт');
     this.barcodes.paginator = this.paginator || null;
-    this.route.paramMap.subscribe(params => {
-      const brevetUid = params.get('brevetUid');
-      const checkpointUid = params.get('checkpointUid');
-      if (!brevetUid || !checkpointUid) {
-        return;
-      }
-      this.url = window.location.origin + `/c/${checkpointUid}`;
-      this.checkpoint$ = from(this.storage.getCheckpoint(checkpointUid))
-        .pipe(filter(isNotNullOrUndefined));
-      this.storage.watchBarcodes('checkpoints', checkpointUid)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((codes: Barcode[]) => this.barcodes.data = codes);
-          // this.dataSource.paginator = this.paginator;
 
-      this.storage.watchCheckpointProgress(brevetUid, checkpointUid)
-        .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((checkIns: RiderCheckIn[]) => {
-          this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
-            ...checkIn,
-            // TODO: rely on lastName presence (?) in the document
-            lastName: checkIn.lastName,
-            in: checkIn.time[0],
-            out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
-          } as RiderCheckIn));
-          // this.dataSource.paginator = this.paginator;
-        });
-    });
-    this.checkpoint$
-      .pipe(takeUntil(this.unsubscribe$))
+    this.route.paramMap
+      .pipe(
+        map(params => params.get('checkpointUid') as string),
+        filter(checkpointUid => !!checkpointUid),
+      )
+      .subscribe((checkpointUid: string) => {
+        this.url = window.location.origin + `/c/${checkpointUid}`;
+        this.subscribeCheckpoint(checkpointUid);
+        this.subscribeBarcodes(checkpointUid);
+        this.subscribeCheckIns(checkpointUid);
+      });
+  }
+
+  private subscribeCheckpoint(checkpointUid: string) {
+    from(this.storage.getCheckpoint(checkpointUid))
+      .pipe(takeUntil(this.unsubscribe$), filter(isNotNullOrUndefined))
       .subscribe((checkpoint: Checkpoint) => {
-        // FIXME: triggers on a checkpoint deletion
-        if (checkpoint === undefined) {
-          return;
-        }
         this.titleService.setTitle(`${checkpoint.displayName} - Бревет ${checkpoint.brevet?.name}`);
         this.checkpoint = checkpoint;
         this.formGroup.controls.displayName?.setValue(checkpoint.displayName);
@@ -116,15 +100,38 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
         this.formGroup.controls.selfcheck?.setValue(checkpoint.selfcheck);
 
         if (checkpoint.isClosed()) {
-          this.unsubscribe$.next();
-          this.riders.data = checkpoint.checkIns || [];
-          /*
-          expect
-            lastName: checkIn.lastName,
-            in: checkIn.time[0],
-            out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
-           */
+          setTimeout(() => {
+            this.unsubscribe$.next();
+            // checkpoint.checkIns may be not saved as of now
+            if (checkpoint.checkIns) {
+              this.riders.data = checkpoint.checkIns;
+            }
+            /*
+            expect
+              lastName: checkIn.lastName,
+              in: checkIn.time[0],
+              out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
+             */
+            }, 5000);
         }
+      });
+  }
+
+  private subscribeBarcodes(checkpointUid: string) {
+    this.storage.watchBarcodes('checkpoints', checkpointUid)
+          .pipe(takeUntil(this.unsubscribe$))
+          .subscribe((codes: Barcode[]) => this.barcodes.data = codes);
+  }
+  private subscribeCheckIns(checkpointUid: string) {
+    this.storage.watchCheckpointProgress(checkpointUid)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((checkIns: RiderCheckIn[]) => {
+        this.riders.data = checkIns.map((checkIn: RiderCheckIn) => ({
+          ...checkIn,
+          lastName: checkIn.lastName,
+          in: checkIn.time[0],
+          out: checkIn.time.length > 1 ? checkIn.time[checkIn.time.length - 1] : null,
+        } as RiderCheckIn));
       });
   }
 
@@ -160,6 +167,7 @@ export class CheckpointInfoComponent implements OnInit, OnDestroy, AfterViewInit
     this.formGroup.controls.selfcheck?.setValue(event.source.checked);
     this.updateField('selfcheck');
   }
+
   addBarcode() {
     this.router.navigate(['checkpoint', this.checkpoint?.uid || NONE_CHECKPOINT, 'addbarcode'])
       .catch(error => console.error('Navigation failed', error));
