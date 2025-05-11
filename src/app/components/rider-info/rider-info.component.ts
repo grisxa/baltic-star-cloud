@@ -6,7 +6,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Title} from '@angular/platform-browser';
 import {Observable, of, Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import {filter, map, switchMap, takeUntil} from 'rxjs/operators';
 import {Rider} from '../../models/rider';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
@@ -84,44 +84,47 @@ export class RiderInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.titleService.setTitle('Участник');
     this.archive.data = this.queue.listQueue();
-    this.route.paramMap.subscribe(params => {
-      const riderUid = params.get('uid');
-      if (!riderUid) {
-        return;
-      }
-      this.rider$ = this.storage.watchRider(riderUid);
-      this.url = window.location.origin + '/r/' + riderUid;
-      this.storage.watchBarcodes('riders', riderUid)
+    this.route.paramMap.pipe(
+      map(params => params.get('uid')),
+      filter(riderUid => !!riderUid),
+      switchMap(riderUid => {
+        this.url = window.location.origin + '/r/' + riderUid;
+        return this.storage.watchRider(riderUid);
+      })
+    )
+    .subscribe(rider => {
+      this.rider$ = of(rider);
+      this.storage.watchBarcodes('riders', rider.uid)
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe((codes: Barcode[]) => this.barcodes.data = codes);
-          // this.dataSource.paginator = this.paginator;
+      // this.dataSource.paginator = this.paginator;
 
-    });
-    this.rider$
-      .pipe(
-        takeUntil(this.unsubscribe$),
-        filter<Rider|undefined>(Boolean),
-        // @ts-ignore
-      ).subscribe((rider: Rider) => {
-        if (rider.displayName) {
-          this.titleService.setTitle(rider.displayName);
-        }
-        this.rider = Rider.fromDoc(rider);
-        this.formGroup.controls.firstName?.setValue(rider.firstName);
-        this.formGroup.controls.lastName?.setValue(rider.lastName);
-        this.formGroup.controls.country?.setValue(rider.country);
-        this.formGroup.controls.code?.setValue(rider.code);
-        this.formGroup.controls.city?.setValue(rider.city);
-        this.formGroup.controls.birthDate?.setValue(rider.birthDate
-          ? rider.birthDate.toDate()
-          : null);
-        rider.providers?.forEach(linked => {
-          const provider = this.providers.find(p => p.name === linked.providerId);
-          if (provider) {
-            provider.disabled = true;
+      this.rider$
+        .pipe(
+          takeUntil(this.unsubscribe$),
+          filter<Rider | undefined>(Boolean),
+          // @ts-ignore
+        ).subscribe((rider: Rider) => {
+          if (rider.displayName) {
+            this.titleService.setTitle(rider.displayName);
           }
+          this.rider = Rider.fromDoc(rider);
+          this.formGroup.controls.firstName?.setValue(rider.firstName);
+          this.formGroup.controls.lastName?.setValue(rider.lastName);
+          this.formGroup.controls.country?.setValue(rider.country);
+          this.formGroup.controls.code?.setValue(rider.code);
+          this.formGroup.controls.city?.setValue(rider.city);
+          this.formGroup.controls.birthDate?.setValue(rider.birthDate
+            ? rider.birthDate.toDate()
+            : null);
+          rider.providers?.forEach(linked => {
+            const provider = this.providers.find(p => p.name === linked.providerId);
+            if (provider) {
+              provider.disabled = true;
+            }
+          });
         });
-      });
+    });
   }
 
   // release watchers
