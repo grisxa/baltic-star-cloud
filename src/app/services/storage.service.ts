@@ -379,7 +379,7 @@ export class StorageService {
       });
   }
 
-  watchRider(uid?: string): Observable<Rider> {
+  watchRider(uid: string|null): Observable<Rider> {
     if (!uid) {
       return of({} as Rider);
     }
