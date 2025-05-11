@@ -57,4 +57,11 @@ export class Brevet {
     return (!this.startDate || this.startDate.seconds - HOUR <= time.seconds)
       && (!this.endDate || this.endDate.seconds + HOUR >= time.seconds);
   }
+
+  hasCheckpoints(): boolean {
+    /**
+     * Check if the checkpoints have been defined
+     */
+    return !!this.checkpoints?.length
+  }
 }
