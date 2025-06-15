@@ -157,7 +157,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             checkpoint.riders?.forEach(rider => {
               const known = this.progress.data.find(row => row.uid === rider.uid);
-              const checkIn = Array.isArray(rider.time) ? checkpointIndex === 0 ? rider.time[rider.time.length - 1] : rider.time[0] : null;
+              const checkIn = this.selectCheckIn(rider.time, checkpointIndex);
               if (known) {
                 // a property with variable name: cp1, cp3, etc.
                 // @ts-ignore
@@ -185,7 +185,7 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
               lastName: rider.lastName || lastName || firstName,
               uid: rider.uid
             };
-            rider.checkins.forEach((time: Timestamp, i: number) => row[`cp${i}`] = time);
+            rider.checkins.forEach((time: Timestamp[], i: number) => row[`cp${i}`] = this.selectCheckIn(time, i));
             this.progress.data.push(row as RiderCheckIn);
           });
           this.table?.renderRows();
@@ -482,5 +482,29 @@ export class BrevetInfoComponent implements OnInit, OnDestroy, AfterViewInit {
       .catch(error => {
         console.error('result saving error', error);
       });
+  }
+
+  private selectCheckIn(time: Timestamp | Timestamp[] | { [key: string]: Timestamp }, checkpointIndex: number) {
+    /**
+     * Selects the check-in time based on the checkpoint index.
+     * Takes the latest available time for the first checkpoint (the start) or the first time for others.
+     *
+     * @param time The array of timestamps.
+     * @param checkpointIndex The index of the checkpoint.
+     * @returns The selected check-in time or null if the input is not an array.
+     */
+    if (time instanceof Timestamp) {
+      return time;
+    }
+    else if (Array.isArray(time)) {
+      return checkpointIndex === 0 ? time[time.length - 1] : time[0];
+    } else if(typeof time === 'object' && time !== null) {
+      const checkIns = Object.keys(time)
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(key => time[key]);
+      return checkpointIndex === 0 ? checkIns[checkIns.length - 1] : checkIns[0];
+    } else {
+      return null;
+    }
   }
 }
