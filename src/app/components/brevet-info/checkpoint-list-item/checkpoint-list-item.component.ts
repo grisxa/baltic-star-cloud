@@ -23,6 +23,9 @@ export class CheckpointListItemComponent implements OnInit {
     if (!this.checkpoint?.brevet?.uid) {
       return;
     }
+    if (!confirm('Удалить КП? Все записи будут утеряны.')) {
+      return;
+    }
     this.storage.deleteCheckpoint(this.checkpoint.brevet.uid, uid)
       .catch(error => this.snackBar
         .open(`Не удалось удалить КП. ${error.message}`,
